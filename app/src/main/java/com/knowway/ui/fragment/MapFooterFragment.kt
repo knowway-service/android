@@ -1,4 +1,4 @@
-package com.knowway.fragment
+package com.knowway.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,8 +11,8 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.example.knowway.R
-import com.knowway.activity.ChatActivity
-import com.knowway.activity.MypageActivity
+import com.knowway.ui.activity.ChatActivity
+import com.knowway.ui.activity.MypageActivity
 
 class MapFooterFragment : Fragment() {
 

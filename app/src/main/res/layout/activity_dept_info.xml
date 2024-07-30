@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.knowway.activity.DeptInfoActivity">
+    tools:context="com.knowway.ui.activity.DeptInfoActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>
