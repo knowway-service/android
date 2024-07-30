@@ -10,27 +10,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowWay">
         <activity
-            android:name="com.knowway.activity.ChatActivity"
+            android:name="com.knowway.ui.activity.ChatActivity"
             android:exported="false" />
         <activity
-            android:name="com.knowway.activity.DeptInfoActivity"
+            android:name="com.knowway.ui.activity.DeptInfoActivity"
             android:exported="false" />
         <activity
-            android:name="com.knowway.activity.MypageActivity"
+            android:name="com.knowway.ui.activity.MypageActivity"
             android:exported="false" />
         <activity
-            android:name="com.knowway.activity.OnboardingActivity"
+            android:name="com.knowway.ui.activity.OnboardingActivity"
             android:exported="true">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
 
 
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
         <activity
-            android:name="com.knowway.activity.MainActivity"
+            android:name="com.knowway.ui.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

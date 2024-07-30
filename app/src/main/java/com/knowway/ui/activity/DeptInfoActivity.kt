@@ -1,12 +1,12 @@
-package com.knowway.activity
+package com.knowway.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.knowway.R
 
-class MypageActivity : AppCompatActivity() {
+class DeptInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mypage)
+        setContentView(R.layout.activity_dept_info)
     }
 }
