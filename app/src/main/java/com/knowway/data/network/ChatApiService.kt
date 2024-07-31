@@ -22,7 +22,7 @@ interface ChatApiService {
     companion object {
         fun create(): ChatApiService {
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://${BuildConfig.WEBSOCKET_IP}:8080/")
+                .baseUrl("http://${BuildConfig.BASE_IP_ADDRESS}:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             return retrofit.create(ChatApiService::class.java)
