@@ -16,6 +16,7 @@ import com.knowway.data.model.SendMessage
 import com.knowway.ui.viewmodel.ChatViewModel
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
+import org.json.JSONObject
 import java.net.URI
 import java.text.SimpleDateFormat
 import kotlin.random.Random
@@ -27,8 +28,8 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var adapter: ChatAdapter
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
-    private var storeId: Long = 1
-    private var memberId: Long = 3
+    private var storeId: Long = 2
+    private var memberId: Long = 9
     private lateinit var webSocketClient: WebSocketClient
     private lateinit var userNickname: String
 
@@ -36,8 +37,8 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        storeId = intent.getLongExtra("storeId", 1)
-        memberId = intent.getLongExtra("memberId", 3)
+        storeId = intent.getLongExtra("storeId", 2)
+        memberId = intent.getLongExtra("memberId", 9)
 
         userNickname = generateRandomNickname()
 
@@ -59,7 +60,16 @@ class ChatActivity : AppCompatActivity() {
             if (messageContent.isNotEmpty()) {
                 val sendMessage = SendMessage(memberId, storeId, messageContent, userNickname)
                 viewModel.sendMessage(sendMessage)
-                webSocketClient.send(messageContent)
+
+                val timestamp = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                val jsonMessage = JSONObject().apply {
+                    put("memberId", memberId)
+                    put("messageContent", messageContent)
+                    put("userNickname", userNickname)
+                    put("timestamp", timestamp)
+                }
+                webSocketClient.send(jsonMessage.toString())
+
                 messageInput.text.clear()
             }
         }
@@ -76,7 +86,7 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun initializeWebSocket() {
-        val uri = URI("ws://${BuildConfig.BASE_IP_ADDRESS}:8080/ws/chat")
+        val uri = URI("ws://${BuildConfig.BASE_IP_ADDRESS}:8080/ws/chat/$storeId")
         webSocketClient = object : WebSocketClient(uri) {
             override fun onOpen(handshakedata: ServerHandshake?) {
                 // 연결이 열렸을 때
@@ -84,15 +94,27 @@ class ChatActivity : AppCompatActivity() {
 
             override fun onMessage(message: String?) {
                 runOnUiThread {
-                    val chatMessage = ChatMessage(
-                        0,
-                        memberId,
-                        message ?: "",
-                        userNickname,
-                        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-                    )
-                    viewModel.addMessage(chatMessage)
-                    recyclerView.scrollToPosition(adapter.itemCount - 1)
+                    message?.let {
+                        try {
+                            val jsonObject = JSONObject(it)
+                            val senderId = jsonObject.getLong("memberId")
+                            val messageContent = jsonObject.getString("messageContent")
+                            val senderNickname = jsonObject.getString("userNickname")
+                            val timestamp = jsonObject.getString("timestamp")
+
+                            val chatMessage = ChatMessage(
+                                0,
+                                senderId,
+                                messageContent,
+                                senderNickname,
+                                timestamp
+                            )
+                            viewModel.addMessage(chatMessage)
+                            recyclerView.scrollToPosition(adapter.itemCount - 1)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
                 }
             }
 
