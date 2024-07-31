@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.knowway.BuildConfig
+import com.knowway.Constants
 import com.knowway.R
 import com.knowway.adapter.ChatAdapter
 import com.knowway.data.model.ChatMessage
@@ -17,6 +18,7 @@ import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
 import java.text.SimpleDateFormat
+import kotlin.random.Random
 import java.util.*
 
 class ChatActivity : AppCompatActivity() {
@@ -26,15 +28,18 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
     private var storeId: Long = 1
-    private var memberId: Long = 21
+    private var memberId: Long = 3
     private lateinit var webSocketClient: WebSocketClient
+    private lateinit var userNickname: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
         storeId = intent.getLongExtra("storeId", 1)
-        memberId = intent.getLongExtra("memberId", 21)
+        memberId = intent.getLongExtra("memberId", 3)
+
+        userNickname = generateRandomNickname()
 
         recyclerView = findViewById(R.id.chat_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -52,7 +57,7 @@ class ChatActivity : AppCompatActivity() {
         sendButton.setOnClickListener {
             val messageContent = messageInput.text.toString()
             if (messageContent.isNotEmpty()) {
-                val sendMessage = SendMessage(memberId, storeId, messageContent, "UserNickname")
+                val sendMessage = SendMessage(memberId, storeId, messageContent, userNickname)
                 viewModel.sendMessage(sendMessage)
                 webSocketClient.send(messageContent)
                 messageInput.text.clear()
@@ -64,8 +69,14 @@ class ChatActivity : AppCompatActivity() {
         initializeWebSocket()
     }
 
+    private fun generateRandomNickname(): String {
+        val adjective = Constants.adjectives[Random.nextInt(Constants.adjectives.size)]
+        val noun = Constants.nouns[Random.nextInt(Constants.nouns.size)]
+        return "$adjective $noun"
+    }
+
     private fun initializeWebSocket() {
-        val uri = URI("ws://${BuildConfig.WEBSOCKET_IP}:8080/ws/chat")
+        val uri = URI("ws://${BuildConfig.BASE_IP_ADDRESS}:8080/ws/chat")
         webSocketClient = object : WebSocketClient(uri) {
             override fun onOpen(handshakedata: ServerHandshake?) {
                 // 연결이 열렸을 때
@@ -77,7 +88,7 @@ class ChatActivity : AppCompatActivity() {
                         0,
                         memberId,
                         message ?: "",
-                        "UserNickname",
+                        userNickname,
                         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
                     )
                     viewModel.addMessage(chatMessage)
