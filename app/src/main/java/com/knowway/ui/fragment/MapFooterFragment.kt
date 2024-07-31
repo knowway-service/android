@@ -10,7 +10,7 @@ import android.view.animation.TranslateAnimation
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
-import com.example.knowway.R
+import com.knowway.R
 import com.knowway.ui.activity.ChatActivity
 import com.knowway.ui.activity.MypageActivity
 

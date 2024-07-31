@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.knowway">
+    package="com.knowway">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="com.knowway.MyApplication"
         android:networkSecurityConfig="@xml/network_security_config"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,7 +14,7 @@
         android:theme="@style/Theme.KnowWay">
         <activity
             android:name="com.knowway.ui.activity.ChatActivity"
-            android:exported="false"
+            android:exported="true"
             android:windowSoftInputMode="adjustPan|adjustUnspecified">
 <!--        <intent-filter>-->
 <!--            <action android:name="android.intent.action.MAIN" />-->

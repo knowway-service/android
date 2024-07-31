@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import com.example.knowway.R
+import com.knowway.R
 import com.knowway.ui.activity.DeptInfoActivity
 import com.knowway.ui.activity.MypageActivity
 
