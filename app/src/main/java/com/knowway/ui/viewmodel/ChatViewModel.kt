@@ -26,8 +26,6 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     fun sendMessage(message: SendMessage) {
         viewModelScope.launch {
-//            chatRepository.postMessage(message)
-//            loadMessages(message.departmentStoreId)
             try {
                 val response = chatRepository.postMessage(message)
                 if (response.isSuccessful) {
