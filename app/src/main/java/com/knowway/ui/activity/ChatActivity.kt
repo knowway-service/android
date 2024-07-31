@@ -1,6 +1,7 @@
 package com.knowway.ui.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import androidx.activity.viewModels
@@ -29,7 +30,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
     private var storeId: Long = 2
-    private var memberId: Long = 9
+    private var memberId: Long = 3
     private lateinit var webSocketClient: WebSocketClient
     private lateinit var userNickname: String
 
@@ -38,7 +39,7 @@ class ChatActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat)
 
         storeId = intent.getLongExtra("storeId", 2)
-        memberId = intent.getLongExtra("memberId", 9)
+        memberId = intent.getLongExtra("memberId", 3)
 
         userNickname = generateRandomNickname()
 
@@ -60,8 +61,7 @@ class ChatActivity : AppCompatActivity() {
             if (messageContent.isNotEmpty()) {
                 val sendMessage = SendMessage(memberId, storeId, messageContent, userNickname)
                 viewModel.sendMessage(sendMessage)
-
-                val timestamp = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+                val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault()).format(Date())
                 val jsonMessage = JSONObject().apply {
                     put("memberId", memberId)
                     put("messageContent", messageContent)
@@ -109,6 +109,7 @@ class ChatActivity : AppCompatActivity() {
                                 senderNickname,
                                 timestamp
                             )
+
                             viewModel.addMessage(chatMessage)
                             recyclerView.scrollToPosition(adapter.itemCount - 1)
                         } catch (e: Exception) {
