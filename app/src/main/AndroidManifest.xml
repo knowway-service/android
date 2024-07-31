@@ -23,8 +23,14 @@
 <!--        </intent-filter>-->
         </activity>
         <activity
-            android:name="com.knowway.ui.activity.DeptInfoActivity"
-            android:exported="false" />
+            android:name="com.knowway.ui.activity.DepartmentStoreSearch"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="com.knowway.ui.activity.MypageActivity"
             android:exported="false" />
@@ -35,11 +41,6 @@
         <activity
             android:name="com.knowway.ui.activity.MainActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 
