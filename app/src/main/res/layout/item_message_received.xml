@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:gravity="bottom">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_received_bubble"
+        android:layout_marginBottom="10dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nickname"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/dark_grey"
+            android:layout_marginBottom="3dp"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="start"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@drawable/received_bubble_bg">
+
+            <TextView
+                android:id="@+id/textMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="250dp"
+                android:textColor="@color/black"
+                android:text="현대 IT and E"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textSize="12sp"
+            android:textColor="@color/dark_grey"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:layout_marginTop="3dp"/>
+    </LinearLayout>
+</LinearLayout>
