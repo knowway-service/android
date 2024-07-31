@@ -1,5 +1,6 @@
 package com.knowway.data.network
 
+import com.knowway.BuildConfig
 import com.knowway.data.model.ChatMessage
 import com.knowway.data.model.SendMessage
 import retrofit2.Response
@@ -15,13 +16,13 @@ interface ChatApiService {
     @GET("chats/{departmentStoreId}")
     suspend fun getMessages(@Path("departmentStoreId") departmentStoreId: Long): List<ChatMessage>
 
-    @POST("chats/messages")
+    @POST("chats")
     suspend fun postMessage(@Body message: SendMessage): Response<Void>
 
     companion object {
         fun create(): ChatApiService {
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://ip:8080/")
+                .baseUrl("http://${BuildConfig.WEBSOCKET_IP}:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             return retrofit.create(ChatApiService::class.java)

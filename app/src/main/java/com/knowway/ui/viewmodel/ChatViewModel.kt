@@ -1,6 +1,7 @@
 package com.knowway.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,8 +26,18 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     fun sendMessage(message: SendMessage) {
         viewModelScope.launch {
-            chatRepository.postMessage(message)
-            loadMessages(message.departmentStoreId)
+//            chatRepository.postMessage(message)
+//            loadMessages(message.departmentStoreId)
+            try {
+                val response = chatRepository.postMessage(message)
+                if (response.isSuccessful) {
+                    loadMessages(message.departmentStoreId)
+                } else {
+                    Log.e("ChatViewModel", "Failed to send message: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Exception while sending message", e)
+            }
         }
     }
 

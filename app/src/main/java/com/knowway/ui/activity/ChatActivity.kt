@@ -7,7 +7,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.knowway.R
+import com.knowway.BuildConfig
+import com.knowway.R
 import com.knowway.adapter.ChatAdapter
 import com.knowway.data.model.ChatMessage
 import com.knowway.data.model.SendMessage
@@ -25,7 +26,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
     private var storeId: Long = 1
-    private var memberId: Long = 1
+    private var memberId: Long = 21
     private lateinit var webSocketClient: WebSocketClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +34,7 @@ class ChatActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat)
 
         storeId = intent.getLongExtra("storeId", 1)
+        memberId = intent.getLongExtra("memberId", 21)
 
         recyclerView = findViewById(R.id.chat_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -44,7 +46,7 @@ class ChatActivity : AppCompatActivity() {
 
         viewModel.messages.observe(this) { messages ->
             adapter.submitList(messages)
-            recyclerView.scrollToPosition(messages.size - 1) // Scroll to the latest message
+            recyclerView.scrollToPosition(messages.size - 1)
         }
 
         sendButton.setOnClickListener {
@@ -52,7 +54,7 @@ class ChatActivity : AppCompatActivity() {
             if (messageContent.isNotEmpty()) {
                 val sendMessage = SendMessage(memberId, storeId, messageContent, "UserNickname")
                 viewModel.sendMessage(sendMessage)
-                webSocketClient.send(messageContent)  // WebSocket을 통해 메시지 전송
+                webSocketClient.send(messageContent)
                 messageInput.text.clear()
             }
         }
@@ -63,7 +65,7 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun initializeWebSocket() {
-        val uri = URI("ws://ip/ws/chat")
+        val uri = URI("ws://${BuildConfig.WEBSOCKET_IP}:8080/ws/chat")
         webSocketClient = object : WebSocketClient(uri) {
             override fun onOpen(handshakedata: ServerHandshake?) {
                 // 연결이 열렸을 때
@@ -79,6 +81,7 @@ class ChatActivity : AppCompatActivity() {
                         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
                     )
                     viewModel.addMessage(chatMessage)
+                    recyclerView.scrollToPosition(adapter.itemCount - 1)
                 }
             }
 

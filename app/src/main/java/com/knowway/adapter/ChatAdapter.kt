@@ -7,15 +7,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.knowway.R
+import com.knowway.R
 import com.knowway.data.model.ChatMessage
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 class ChatAdapter(private val currentUserId: Long) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(ChatDiffCallback()) {
 
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position).memberId != currentUserId) R.layout.item_message_sent else R.layout.item_message_received
+        return if (getItem(position).memberId == currentUserId) R.layout.item_message_sent else R.layout.item_message_received
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -43,10 +43,15 @@ class ChatAdapter(private val currentUserId: Long) : ListAdapter<ChatMessage, Re
             timeTextView.text = formatTime(message.createdAt)
         }
 
-        private fun formatTime(timestamp: String): String {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-            return inputFormat.parse(timestamp)?.let { outputFormat.format(it) } ?: ""
+        private fun formatTime(createdAt: String): String {
+            return try {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault())
+                val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val date: Date = inputFormat.parse(createdAt) ?: Date()
+                outputFormat.format(date)
+            } catch (e: Exception) {
+                ""
+            }
         }
     }
 
@@ -61,10 +66,15 @@ class ChatAdapter(private val currentUserId: Long) : ListAdapter<ChatMessage, Re
             timeTextView.text = formatTime(message.createdAt)
         }
 
-        private fun formatTime(timestamp: String): String {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-            return inputFormat.parse(timestamp)?.let { outputFormat.format(it) } ?: ""
+        private fun formatTime(createdAt: String): String {
+            return try {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault())
+                val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val date: Date = inputFormat.parse(createdAt) ?: Date()
+                outputFormat.format(date)
+            } catch (e: Exception) {
+                ""
+            }
         }
     }
 

@@ -2,7 +2,7 @@ package com.knowway.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.knowway.R
+import com.knowway.R
 
 class DeptInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
