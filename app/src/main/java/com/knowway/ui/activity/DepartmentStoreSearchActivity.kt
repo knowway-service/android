@@ -17,7 +17,7 @@ import com.knowway.ui.viewmodel.department.DepartmentStoreViewModelFactory
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class DepartmentStoreSearch : AppCompatActivity() {
+class DepartmentStoreSearchActivity : AppCompatActivity() {
     private val viewModel: DepartmentStoreViewModel by viewModels {
         DepartmentStoreViewModelFactory(DepartmentStoreRemoteDataSource("http://${BuildConfig.BASE_IP_ADDRESS}:8080"))
     }

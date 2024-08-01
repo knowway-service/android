@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.MainPageActivity">
+
+
+    <TextView
+        android:id="@+id/main_floor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3층"
+        android:textColor="@color/black"
+        android:textFontWeight="800"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/footer_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.133"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.071" />
+
+    <ImageView
+        android:id="@+id/main_up_down"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/main_floor"
+        app:layout_constraintStart_toEndOf="@+id/main_floor"
+        app:layout_constraintTop_toTopOf="@+id/main_floor"
+        app:srcCompat="@drawable/up_down" />
+
+    <TextView
+        android:id="@+id/main_dept_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="더 현대 서울"
+        android:textColor="@color/black"
+        android:textFontWeight="600"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.149"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.138" />
+
+    <TextView
+        android:id="@+id/main_dept_branch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="여의도점"
+        android:textColor="@color/black"
+        android:textFontWeight="600"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/main_dept_title"
+        app:layout_constraintTop_toBottomOf="@+id/main_dept_title"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/location_map"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        app:layout_constraintBottom_toTopOf="@+id/footer_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.848"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.073"
+        app:srcCompat="@drawable/location" />
+
+    <TextView
+        android:id="@+id/main_map_click"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="지도 보기"
+        android:textColor="@color/black"
+        android:textFontWeight="600"
+        android:textSize="15dp"
+        app:layout_constraintEnd_toEndOf="@+id/location_map"
+        app:layout_constraintStart_toStartOf="@+id/location_map"
+        app:layout_constraintTop_toBottomOf="@+id/location_map" />
+
+    <!-- FragmentContainerView for the footer -->
+    <androidx.fragment.app.FragmentContainerView
+    android:id="@+id/footer_container"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="311dp"
+        android:layout_height="506dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.636">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/boder_background">
+
+            <ImageView
+                android:id="@+id/main_arena"
+                android:layout_width="227dp"
+                android:layout_height="134dp"
+                android:layout_marginTop="120dp"
+                android:src="@drawable/arena"
+                app:layout_constraintEnd_toEndOf="@+id/walking_person"
+                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintStart_toStartOf="@+id/walking_person"
+                app:layout_constraintTop_toTopOf="@+id/walking_person" />
+
+            <ImageView
+                android:id="@+id/main_question"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.495"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/walking_person"
+                android:layout_width="170dp"
+                android:layout_height="221dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.496"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/main_question"
+                app:layout_constraintVertical_bias="0.36" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
