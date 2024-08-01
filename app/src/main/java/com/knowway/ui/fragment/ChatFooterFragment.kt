@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.knowway.R
-import com.knowway.ui.activity.DepartmentStoreSearch
+import com.knowway.ui.activity.DepartmentStoreSearchActivity
 import com.knowway.ui.activity.MypageActivity
 
 class ChatFooterFragment : Fragment() {
@@ -23,7 +23,7 @@ class ChatFooterFragment : Fragment() {
         val myPageIcon = view.findViewById<ImageView>(R.id.ic_footer_mypage)
 
         mapIcon.setOnClickListener {
-            val intent = Intent(requireContext(), DepartmentStoreSearch::class.java)
+            val intent = Intent(requireContext(), DepartmentStoreSearchActivity::class.java)
             startActivity(intent)
         }
 
