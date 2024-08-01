@@ -23,7 +23,7 @@ import java.text.SimpleDateFormat
 import kotlin.random.Random
 import java.util.*
 
-class ChatActivity : AppCompatActivity() {
+class  ChatActivity : AppCompatActivity() {
     private val viewModel: ChatViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ChatAdapter
