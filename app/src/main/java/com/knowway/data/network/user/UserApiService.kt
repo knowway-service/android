@@ -30,5 +30,4 @@ interface UserApiService {
     @DELETE("/users/record/{recordId}")
     fun deleteUserRecord(@Path("recordId") recordId: Long): Call<Boolean>
 
-
 }
