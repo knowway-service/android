@@ -20,11 +20,11 @@
         <activity
             android:name="com.knowway.ui.activity.DepartmentStoreSearch"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
             android:name="com.knowway.ui.activity.MypageActivity"
@@ -37,6 +37,7 @@
             android:name="com.knowway.ui.activity.MainActivity"
             android:exported="true">
         </activity>
+
     </application>
 
 </manifest>
