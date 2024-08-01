@@ -32,8 +32,8 @@ class SelectMenuActivity : AppCompatActivity() {
     }
 
     private fun navigateToDepartmentStoreSearch(value: Int) {
-        val intent = Intent(this, DepartmentStoreSearch::class.java).apply {
-            putExtra("selected_value", value)
+        val intent = Intent(this, DepartmentStoreSearchActivity::class.java).apply {
+            putExtra("key", value)
         }
         startActivity(intent)
     }

@@ -11,7 +11,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.knowway.R
-import com.knowway.ui.activity.ChatActivity
+import com.knowway.ui.activity.DepartmentStoreSearchActivity
 import com.knowway.ui.activity.MypageActivity
 import com.knowway.util.Utils
 
@@ -36,13 +36,13 @@ class MapFooterFragment : Fragment() {
         }
 
         chatIcon.setOnClickListener {
-            Log.d("MapFooterFragment", "Chat icon clicked")
-            val intent = Intent(requireContext(), ChatActivity::class.java)
+            val intent = Intent(requireContext(), DepartmentStoreSearchActivity::class.java).apply {
+                putExtra("key", 1)
+            }
             startActivity(intent)
         }
 
         myPageIcon.setOnClickListener {
-            Log.d("MapFooterFragment", "MyPage icon clicked")
             val intent = Intent(requireContext(), MypageActivity::class.java)
             startActivity(intent)
         }

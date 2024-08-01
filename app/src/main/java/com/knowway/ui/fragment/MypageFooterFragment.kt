@@ -10,19 +10,18 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.knowway.R
 import com.knowway.ui.activity.DepartmentStoreSearchActivity
-import com.knowway.ui.activity.MypageActivity
 import com.knowway.util.Utils
 
-class ChatFooterFragment : Fragment() {
+class MypageFooterFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_chat_footer, container, false)
+        val view = inflater.inflate(R.layout.fragment_mypage_footer, container, false)
 
         val mapIcon = view.findViewById<ImageView>(R.id.ic_footer_map)
-        val myPageIcon = view.findViewById<ImageView>(R.id.ic_footer_mypage)
+        val chatIcon = view.findViewById<ImageView>(R.id.ic_footer_chat)
 
         mapIcon.setOnClickListener {
             val intent = Intent(requireContext(), DepartmentStoreSearchActivity::class.java).apply {
@@ -31,8 +30,10 @@ class ChatFooterFragment : Fragment() {
             startActivity(intent)
         }
 
-        myPageIcon.setOnClickListener {
-            val intent = Intent(requireContext(), MypageActivity::class.java)
+        chatIcon.setOnClickListener {
+            val intent = Intent(requireContext(), DepartmentStoreSearchActivity::class.java).apply {
+                putExtra("key", 1)
+            }
             startActivity(intent)
         }
 
