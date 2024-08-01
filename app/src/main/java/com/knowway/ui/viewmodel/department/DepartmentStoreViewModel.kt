@@ -1,7 +1,6 @@
 package com.knowway.ui.viewmodel.department
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.knowway.data.model.department.DepartmentStore
@@ -15,13 +14,18 @@ class DepartmentStoreViewModel(private val dataSource: DepartmentStoreRemoteData
     private val _departmentStores = MutableStateFlow<List<DepartmentStore>>(emptyList())
     val departmentStores: StateFlow<List<DepartmentStore>> get() = _departmentStores
 
-    fun getDepartmentStores() {
+    fun getDepartmentStores(size: Int, page: Int) {
         viewModelScope.launch {
             try {
-                val stores = dataSource.getDepartmentStores()
-                _departmentStores.value = stores
+                val response = dataSource.getDepartmentStores(size, page)
+                if (response.isSuccessful && response.body() != null) {
+                    val resp = response.body()!!
+                    _departmentStores.value = resp.content
+                } else {
+                    Log.d("DepartmentStoreViewModel", "Response not successful: ${response.message()}")
+                }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("DepartmentStoreViewModel", "Exception occurred", e)
             }
         }
     }
