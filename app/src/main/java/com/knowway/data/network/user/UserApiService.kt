@@ -12,7 +12,7 @@ interface UserApiService {
     fun checkEmail(@Body request: EmailDuplicationRequest): Call<Boolean>
 
     @POST("/login")
-    fun login(@Body request: LoginRequest): Call<Boolean>
+    fun login(@Body request: LoginRequest): Call<LoginResponse>
 
     @POST("/logout")
     fun logout(): Call<Boolean>
