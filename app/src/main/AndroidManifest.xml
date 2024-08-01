@@ -36,20 +36,9 @@
             <!-- </intent-filter> -->
         </activity>
         <activity
-            android:name=".ui.activity.DepartmentStoreSearch"
+            android:name=".ui.activity.DepartmentStoreSearchActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan|adjustUnspecified">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
-        <activity
-            android:name=".ui.activity.DepartmentStoreSearchActivity"
-            android:exported="true">
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
