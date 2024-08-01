@@ -1,7 +1,5 @@
 package com.knowway.data.model.department
 
-import com.google.gson.annotations.SerializedName
-
 data class DepartmentStoreResponse(
     val totalPages: Int,
     val totalElements: Int,
