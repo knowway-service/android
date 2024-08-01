@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.knowway.R
 import com.knowway.ui.activity.ChatActivity
 import com.knowway.ui.activity.MypageActivity
+import com.knowway.util.Utils
 
 class MapFooterFragment : Fragment() {
 
@@ -46,6 +47,8 @@ class MapFooterFragment : Fragment() {
             startActivity(intent)
         }
 
+        adjustFooterMargin(view)
+
         return view
     }
 
@@ -67,5 +70,13 @@ class MapFooterFragment : Fragment() {
 
     fun setOnToggleChangeListener(listener: OnToggleChangeListener) {
         this.listener = listener
+    }
+
+    private fun adjustFooterMargin(view: View) {
+        val navigationBarHeight = Utils.getNavigationBarHeight(requireContext())
+        val footerLayout = view.findViewById<RelativeLayout>(R.id.footer_layout)
+        val layoutParams = footerLayout.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParams.bottomMargin = navigationBarHeight
+        footerLayout.layoutParams = layoutParams
     }
 }

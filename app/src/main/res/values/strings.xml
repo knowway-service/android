@@ -9,6 +9,6 @@
     <string name="play">자동 재생</string>
     <string name="send">전송</string>
     <string name="placeholder">채팅을 입력해주세요.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="top_tip_message">백화점 내 위치마다\n팁을 들을 수 있어요.\n나만의 팁이 있다면\n직접 등록해보세요!</string>
+    <string name="bottom_tip_message">같은 백화점 내의 사람들과\n실시간으로 정보를\n주고 받을 수 있어요!</string>
 </resources>
