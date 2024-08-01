@@ -18,7 +18,7 @@ class MainPageActivity : AppCompatActivity() {
         questionImageView.setImageDrawable(questionGif)
 
         val walkingPersonGif = GifDrawable(resources, R.drawable.walking_person)
-        val walkingPersonImageView = findViewById<ImageView>(R.id.walking_person)
+        val walkingPersonImageView = findViewById<ImageView>(R.id.main_walking_person)
         walkingPersonImageView.setImageDrawable(walkingPersonGif)
 
         if (savedInstanceState == null) {

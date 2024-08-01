@@ -83,17 +83,8 @@
         app:layout_constraintStart_toStartOf="@+id/location_map"
         app:layout_constraintTop_toBottomOf="@+id/location_map" />
 
-    <!-- FragmentContainerView for the footer -->
-    <androidx.fragment.app.FragmentContainerView
-    android:id="@+id/footer_container"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
-
-
     <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
         android:layout_width="311dp"
         android:layout_height="506dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -114,10 +105,10 @@
                 android:layout_height="134dp"
                 android:layout_marginTop="120dp"
                 android:src="@drawable/arena"
-                app:layout_constraintEnd_toEndOf="@+id/walking_person"
+                app:layout_constraintEnd_toEndOf="@+id/main_walking_person"
                 app:layout_constraintHorizontal_bias="0.491"
-                app:layout_constraintStart_toStartOf="@+id/walking_person"
-                app:layout_constraintTop_toTopOf="@+id/walking_person" />
+                app:layout_constraintStart_toStartOf="@+id/main_walking_person"
+                app:layout_constraintTop_toTopOf="@+id/main_walking_person" />
 
             <ImageView
                 android:id="@+id/main_question"
@@ -127,10 +118,10 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.495"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/walking_person"
+                android:id="@+id/main_walking_person"
                 android:layout_width="170dp"
                 android:layout_height="221dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -139,7 +130,29 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/main_question"
                 app:layout_constraintVertical_bias="0.36" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
+    <!-- FragmentContainerView for the footer -->
+
+    <ImageView
+        android:id="@+id/main_record"
+        android:layout_width="49dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="492dp"
+        android:src="@drawable/record"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/card_view"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/footer_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
