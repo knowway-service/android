@@ -13,13 +13,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowWay">
         <activity
+            android:name=".ui.activity.AdminDepartmentStoreSearchActivity"
+            android:exported="true" >
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity
             android:name=".ui.activity.SelectMenuActivity"
             android:exported="true">
-<!--        <intent-filter>-->
-<!--            <action android:name="android.intent.action.MAIN" />-->
 
-<!--            <category android:name="android.intent.category.LAUNCHER" />-->
-<!--        </intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".ui.activity.ChatActivity"
@@ -28,6 +39,7 @@
         <activity
             android:name=".ui.activity.MainPageActivity"
             android:exported="true">
+
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
 
@@ -52,7 +64,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.activity.OnboardingActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".ui.activity.MainActivity"
             android:exported="true">
