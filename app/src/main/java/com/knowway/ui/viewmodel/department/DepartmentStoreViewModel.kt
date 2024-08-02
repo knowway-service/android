@@ -20,7 +20,7 @@ class DepartmentStoreViewModel(private val dataSource: DepartmentStoreRepository
                 val response = dataSource.getDepartmentStoreByLocation(latitude, longtitude)
                 if (response.isSuccessful && response.body() != null) {
                     val resp = response.body()!!
-                    _departmentStores.value = resp.content
+                    _departmentStores.value = resp
                 } else {
                     Log.d("DepartmentStoreViewModel", "Response not successful: ${response.message()}")
                 }

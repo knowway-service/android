@@ -20,5 +20,5 @@ interface DepartmentStoreApiService {
     @GET("/depts/loc")
     suspend fun getDepartmentStoreByLocation(
         @Query("latitude") latitude: String,
-        @Query("longtitude") longtitude: String) : Response<DepartmentStoreResponse>
+        @Query("longtitude") longtitude: String) : Response<List<DepartmentStore>>
 }
