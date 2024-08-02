@@ -32,7 +32,7 @@ class DepartmentStoreRepository(private val baseUrl: String) : DepartmentStoreAp
     override suspend fun getDepartmentStoreByLocation(
         latitude: String,
         longtitude: String
-    ): Response<DepartmentStoreResponse> {
+    ): Response<List<DepartmentStore>> {
         return apiService.getDepartmentStoreByLocation(latitude, longtitude)
     }
 
