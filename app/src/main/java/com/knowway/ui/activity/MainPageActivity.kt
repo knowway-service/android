@@ -2,10 +2,14 @@ package com.knowway.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import com.knowway.R
+import com.knowway.ui.fragment.MainBackFragment
+import com.knowway.ui.fragment.MainFloorSelectFragment
+import com.knowway.ui.fragment.MainMapFragment
 import com.knowway.ui.fragment.MapFooterFragment
-import pl.droidsonroids.gif.GifDrawable
 
 
 class MainPageActivity : AppCompatActivity() {
@@ -13,18 +17,17 @@ class MainPageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
 
-        val questionGif = GifDrawable(resources, R.drawable.question)
-        val questionImageView = findViewById<ImageView>(R.id.main_question)
-        questionImageView.setImageDrawable(questionGif)
-
-        val walkingPersonGif = GifDrawable(resources, R.drawable.walking_person)
-        val walkingPersonImageView = findViewById<ImageView>(R.id.main_walking_person)
-        walkingPersonImageView.setImageDrawable(walkingPersonGif)
+        val floorSelectButton: ImageButton = findViewById(R.id.main_up_down)
+        floorSelectButton.setOnClickListener {
+            val floorSelectModal = MainFloorSelectFragment()
+            floorSelectModal.show(supportFragmentManager, "층 선택 모달창")
+        }
 
         if (savedInstanceState == null) {
-            val footerFragment = MapFooterFragment()
             supportFragmentManager.beginTransaction()
-                .replace(R.id.footer_container, footerFragment)
+                .replace(R.id.button_fragment_container, MainBackFragment())
+                .replace(R.id.card_fragment_container, MainMapFragment())
+                .replace(R.id.footer_container, MapFooterFragment())
                 .commit()
         }
     }
