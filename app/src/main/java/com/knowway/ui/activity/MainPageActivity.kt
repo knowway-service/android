@@ -2,14 +2,12 @@ package com.knowway.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageView
 import com.knowway.R
-import com.knowway.ui.fragment.MainBackFragment
-import com.knowway.ui.fragment.MainFloorSelectFragment
-import com.knowway.ui.fragment.MainMapFragment
-import com.knowway.ui.fragment.MapFooterFragment
+import com.knowway.ui.fragment.*
+import com.knowway.ui.fragment.mainpage.MainBackFragment
+import com.knowway.ui.fragment.mainpage.MainFloorSelectFragment
+import com.knowway.ui.fragment.mainpage.MainPersonFragment
 
 
 class MainPageActivity : AppCompatActivity() {
@@ -26,7 +24,7 @@ class MainPageActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.button_fragment_container, MainBackFragment())
-                .replace(R.id.card_fragment_container, MainMapFragment())
+                .replace(R.id.card_fragment_container, MainPersonFragment())
                 .replace(R.id.footer_container, MapFooterFragment())
                 .commit()
         }

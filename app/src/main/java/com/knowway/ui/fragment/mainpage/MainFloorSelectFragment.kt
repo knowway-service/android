@@ -1,5 +1,6 @@
-package com.knowway.ui.fragment
+package com.knowway.ui.fragment.mainpage
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,11 @@ import androidx.fragment.app.DialogFragment
 import com.knowway.R
 
 class MainFloorSelectFragment : DialogFragment() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_TITLE, R.style.CustomDialog)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,5 +39,11 @@ class MainFloorSelectFragment : DialogFragment() {
         confirButton.setOnClickListener {
             dismiss()
         }
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.window?.setBackgroundDrawableResource(R.drawable.border_background)
+        return dialog
     }
 }
