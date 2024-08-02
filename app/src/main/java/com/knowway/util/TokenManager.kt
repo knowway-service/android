@@ -7,7 +7,7 @@ object TokenManager {
     private lateinit var sharedPreferences: SharedPreferences
 
     fun init(context: Context) {
-        sharedPreferences = context.getSharedPreferences("knowway", Context.MODE_PRIVATE)
+        sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
     }
 
     fun saveToken(token: String) {

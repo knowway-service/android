@@ -20,6 +20,10 @@ interface UserApiService {
     @GET("/users")
     fun getProfile(@Query("email") email: String): Call<UserProfileResponse>
 
+    @GET("/users/chat-id")
+    fun getUserChatId(): Call<UserChatMemberIdResponse>
+
+
     @GET("/users/userRecords")
     fun getProfile(
         @Query("page") page: Int,

@@ -1,5 +1,6 @@
 package com.knowway.ui.activity.user
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.knowway.R
 import com.knowway.data.model.user.LoginRequest
 import com.knowway.data.model.user.LoginResponse
+import com.knowway.data.model.user.UserChatMemberIdResponse
 import com.knowway.data.model.user.UserRole
 import com.knowway.data.network.ApiClient
 import com.knowway.data.network.user.UserApiService
@@ -64,16 +66,8 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
                     if (loginResponse != null) {
-                        when (loginResponse.role) {
-                            UserRole.ADMIN -> {
-                                startActivity(Intent(this@LoginActivity, AdminDepartmentStoreSearchActivity::class.java))
-                                finish()
-                            }
-                            else -> {
-                                startActivity(Intent(this@LoginActivity, SelectMenuActivity::class.java))
-                                finish()
-                            }
-                        }
+                        // After a successful login, get the user chat ID
+                        getUserChatId(loginResponse.role)
                     } else {
                         showError("로그인 실패. 서버 응답이 잘못되었습니다.")
                     }
@@ -86,6 +80,52 @@ class LoginActivity : AppCompatActivity() {
                 showError("네트워크 오류: ${t.localizedMessage}")
             }
         })
+    }
+
+    fun getUserChatId(userRole: UserRole) {
+        val apiService = ApiClient.getClient().create(UserApiService::class.java)
+        val call = apiService.getUserChatId()
+
+        call.enqueue(object : Callback<UserChatMemberIdResponse> {
+            override fun onResponse(
+                call: Call<UserChatMemberIdResponse>,
+                response: Response<UserChatMemberIdResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val userChatIdResponse = response.body()
+                    if (userChatIdResponse != null) {
+                        val memberChatId = userChatIdResponse.memberChatId
+                        navigateToNextActivity(userRole, memberChatId)
+                    } else {
+                        showError("유저의 고유 Chat number가 존재하지 않습니다.")
+                    }
+                } else {
+                    showError("유저 Chat ID 조회 실패.")
+                }
+            }
+
+            override fun onFailure(call: Call<UserChatMemberIdResponse>, t: Throwable) {
+                showError("네트워크 오류: ${t.localizedMessage}")
+            }
+        })
+    }
+
+    private fun navigateToNextActivity(userRole: UserRole, memberChatId: Long) {
+        val intent = when (userRole) {
+            UserRole.ADMIN -> Intent(this, AdminDepartmentStoreSearchActivity::class.java).apply {
+            }
+            else -> {
+                Intent(this, SelectMenuActivity::class.java).apply {
+                    val sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putLong("memberChatId", memberChatId)
+                    editor.apply()
+                }
+            }
+        }
+
+        startActivity(intent)
+        finish()
     }
 
     fun showError(message: String) {
