@@ -14,10 +14,10 @@ class DepartmentStoreViewModel(private val dataSource: DepartmentStoreRepository
     private val _departmentStores = MutableStateFlow<List<DepartmentStore>>(emptyList())
     val departmentStores: StateFlow<List<DepartmentStore>> get() = _departmentStores
 
-    fun getDepartmentStoresByLocation(size: Int, page: Int, latitude: String, longtitude: String) {
+    fun getDepartmentStoresByLocation(latitude: String, longtitude: String) {
         viewModelScope.launch {
             try {
-                val response = dataSource.getDepartmentStoreByLocation(size, page, latitude, longtitude)
+                val response = dataSource.getDepartmentStoreByLocation(latitude, longtitude)
                 if (response.isSuccessful && response.body() != null) {
                     val resp = response.body()!!
                     _departmentStores.value = resp.content

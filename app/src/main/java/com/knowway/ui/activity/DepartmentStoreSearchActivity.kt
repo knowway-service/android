@@ -67,7 +67,7 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
             locationViewModel.location.collect { locationResponse ->
                 locationResponse?.let {
                     Log.d("위치 정보", "Location received: Latitude=${locationResponse.latitude}, Longitude=${locationResponse.longtitude}")
-                    deptViewModel.getDepartmentStoresByLocation(5, 0, it.latitude, it.longtitude)
+                    deptViewModel.getDepartmentStoresByLocation(it.latitude, it.longtitude)
                     deptViewModel.departmentStores.collect { departmentStores ->
                         adapter.update(departmentStores)
                         Log.d("위치 정보 업데이트됨", "Department stores updated: ${departmentStores.size} items")

@@ -30,12 +30,10 @@ class DepartmentStoreRepository(private val baseUrl: String) : DepartmentStoreAp
     }
 
     override suspend fun getDepartmentStoreByLocation(
-        size: Int,
-        page: Int,
         latitude: String,
         longtitude: String
     ): Response<DepartmentStoreResponse> {
-        return apiService.getDepartmentStoreByLocation(size, page, latitude, longtitude)
+        return apiService.getDepartmentStoreByLocation(latitude, longtitude)
     }
 
 }
