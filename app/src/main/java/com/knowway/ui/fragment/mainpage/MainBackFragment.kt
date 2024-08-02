@@ -1,4 +1,4 @@
-package com.knowway.ui.fragment
+package com.knowway.ui.fragment.mainpage
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +7,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.knowway.R
 
-class MainMapFragment : Fragment() {
+class MainBackFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_main_map, container, false)
+        return inflater.inflate(R.layout.fragment_main_back, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
     }
 }
