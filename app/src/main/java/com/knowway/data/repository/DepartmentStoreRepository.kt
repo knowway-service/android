@@ -7,7 +7,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class DepartmentStoreRemoteDataSource(private val baseUrl: String) : DepartmentStoreApiService {
+class DepartmentStoreRepository(private val baseUrl: String) : DepartmentStoreApiService {
     private val apiService: DepartmentStoreApiService
 
     init {
@@ -27,6 +27,13 @@ class DepartmentStoreRemoteDataSource(private val baseUrl: String) : DepartmentS
 
     override suspend fun getDepartmentStoreByBranch(departmentStoreBranch: String): DepartmentStore {
         return apiService.getDepartmentStoreByBranch(departmentStoreBranch)
+    }
+
+    override suspend fun getDepartmentStoreByLocation(
+        latitude: String,
+        longtitude: String
+    ): Response<DepartmentStoreResponse> {
+        return apiService.getDepartmentStoreByLocation(latitude, longtitude)
     }
 
 }
