@@ -16,4 +16,11 @@ interface DepartmentStoreApiService {
 
     @GET("/depts/branch")
     suspend fun getDepartmentStoreByBranch(@Path("branch") branch: String): DepartmentStore
+
+    @GET("/depts/loc")
+    suspend fun getDepartmentStoreByLocation(
+        @Query("size") size: Int,
+        @Query("page") page: Int,
+        @Query("latitude") latitude: String,
+        @Query("longtitude") longtitude: String) : Response<DepartmentStoreResponse>
 }
