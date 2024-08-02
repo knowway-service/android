@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class DepartmentStoreSearch : AppCompatActivity() {
     private val viewModel: DepartmentStoreViewModel by viewModels {
-        DepartmentStoreViewModelFactory(DepartmentStoreRemoteDataSource("http://192.168.0.34:8080"))
+        DepartmentStoreViewModelFactory(DepartmentStoreRemoteDataSource("http://localhost:8080"))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
