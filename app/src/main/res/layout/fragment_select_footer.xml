@@ -1,0 +1,20 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/dark_blue"
+    android:padding="10dp"
+    android:gravity="center_vertical"
+    android:id="@+id/footer_layout">
+
+    <ImageView
+        android:id="@+id/ic_footer_mypage"
+        android:layout_width="34dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/ic_footer_mypage"
+        android:clickable="true"
+        android:focusable="true"/>
+
+</RelativeLayout>

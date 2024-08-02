@@ -22,5 +22,5 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:translationX="-1dp"
-        android:translationY="-1dp"/>
+        android:translationY="-1dp" />
 </RelativeLayout>

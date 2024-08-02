@@ -3,7 +3,8 @@
     android:layout_height="wrap_content"
     android:background="@color/dark_blue"
     android:padding="10dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:id="@+id/footer_layout">
 
     <ImageView
         android:id="@+id/ic_footer_chat"
