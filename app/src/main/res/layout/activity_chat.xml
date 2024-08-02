@@ -30,7 +30,7 @@
 
             <TextView
                 android:id="@+id/dept_name"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="더 현대 서울"
                 android:textSize="18sp"
@@ -38,8 +38,22 @@
                 android:textColor="@android:color/black"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/ic_leave"
+                app:layout_constraintEnd_toStartOf="@id/chatroom_user_count"
                 app:layout_constraintBottom_toTopOf="@id/dept_branch"/>
+
+            <TextView
+                android:id="@+id/chatroom_user_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/dark_blue"
+                android:layout_marginStart="10dp"
+                android:paddingTop="2dp"
+                app:layout_constraintTop_toTopOf="@id/dept_name"
+                app:layout_constraintStart_toEndOf="@id/dept_name"
+                app:layout_constraintBottom_toBottomOf="@id/dept_name"/>
 
             <TextView
                 android:id="@+id/dept_branch"

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,9 +52,15 @@ class  ChatActivity : AppCompatActivity() {
         messageInput = findViewById(R.id.chat_input)
         sendButton = findViewById(R.id.send_button)
 
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                recyclerView.scrollToPosition(adapter.itemCount - 1)
+            }
+        })
+
         viewModel.messages.observe(this) { messages ->
             adapter.submitList(messages)
-            recyclerView.scrollToPosition(messages.size - 1)
         }
 
         sendButton.setOnClickListener {
@@ -63,13 +70,13 @@ class  ChatActivity : AppCompatActivity() {
                 viewModel.sendMessage(sendMessage)
                 val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault()).format(Date())
                 val jsonMessage = JSONObject().apply {
+                    put("type", "chatMessage")
                     put("memberId", memberId)
                     put("messageContent", messageContent)
                     put("userNickname", userNickname)
                     put("timestamp", timestamp)
                 }
                 webSocketClient.send(jsonMessage.toString())
-
                 messageInput.text.clear()
             }
         }
@@ -97,21 +104,32 @@ class  ChatActivity : AppCompatActivity() {
                     message?.let {
                         try {
                             val jsonObject = JSONObject(it)
-                            val senderId = jsonObject.getLong("memberId")
-                            val messageContent = jsonObject.getString("messageContent")
-                            val senderNickname = jsonObject.getString("userNickname")
-                            val timestamp = jsonObject.getString("timestamp")
+                            if (jsonObject.has("type")) {
+                                when (jsonObject.getString("type")) {
+                                    "userCount" -> {
+                                        val userCount = jsonObject.getInt("count")
+                                        findViewById<TextView>(R.id.chatroom_user_count).text = userCount.toString()
+                                    }
+                                    "chatMessage" -> {
+                                        val senderId = jsonObject.getLong("memberId")
+                                        val messageContent = jsonObject.getString("messageContent")
+                                        val senderNickname = jsonObject.getString("userNickname")
+                                        val timestamp = jsonObject.getString("timestamp")
 
-                            val chatMessage = ChatMessage(
-                                0,
-                                senderId,
-                                messageContent,
-                                senderNickname,
-                                timestamp
-                            )
+                                        val chatMessage = ChatMessage(
+                                            0,
+                                            senderId,
+                                            messageContent,
+                                            senderNickname,
+                                            timestamp
+                                        )
 
-                            viewModel.addMessage(chatMessage)
-                            recyclerView.scrollToPosition(adapter.itemCount - 1)
+                                        viewModel.addMessage(chatMessage)
+                                    }
+                                }
+                            } else {
+                                Log.w("WebSocket", "Message received with no type: $it")
+                            }
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
