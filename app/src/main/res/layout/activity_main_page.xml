@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.MainPageActivity">
 
-
     <TextView
         android:id="@+id/main_floor"
         android:layout_width="wrap_content"
@@ -98,7 +97,9 @@
         android:id="@+id/footer_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
