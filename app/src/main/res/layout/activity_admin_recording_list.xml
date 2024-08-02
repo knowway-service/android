@@ -27,10 +27,11 @@
         app:layout_constraintTop_toBottomOf="@id/titleTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="48dp"/>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
+        style="@style/CustomTabLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/divider"
