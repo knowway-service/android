@@ -13,10 +13,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowWay">
         <activity
-            android:name=".ui.activity.AdminAreaSelectionActivity"
-            android:exported="false" />
+            android:name=".ui.activity.AdminRecordingListActivity"
+            android:exported="true" >
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
+
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+        </activity>
         <activity
-            android:name=".ui.activity.AdminDepartmentStoreSearchActivity"
+            android:name=".ui.activity.AdminAreaSelectionActivity"
             android:exported="true">
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->
@@ -25,15 +31,7 @@
 <!--            </intent-filter>-->
         </activity>
         <activity
-            android:name=".ui.activity.SelectMenuActivity"
-            android:exported="true">
-        </activity>
-        <activity
-            android:name=".ui.activity.ChatActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustPan|adjustUnspecified" />
-        <activity
-            android:name=".ui.activity.MainPageActivity"
+            android:name=".ui.activity.AdminDepartmentStoreSearchActivity"
             android:exported="true">
 
 <!--             <intent-filter>-->
@@ -42,6 +40,24 @@
 
 <!--             <category android:name="android.intent.category.LAUNCHER" />-->
 <!--             </intent-filter>-->
+        </activity>
+        <activity
+            android:name=".ui.activity.SelectMenuActivity"
+            android:exported="true"></activity>
+        <activity
+            android:name=".ui.activity.ChatActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan|adjustUnspecified" />
+        <activity
+            android:name=".ui.activity.MainPageActivity"
+            android:exported="true">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".ui.activity.DepartmentStoreSearchActivity"

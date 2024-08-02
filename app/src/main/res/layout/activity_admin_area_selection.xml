@@ -4,6 +4,132 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.activity.AdminAreaSelectionActivity">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="구역 선택"
+        android:textSize="36sp"
+        android:textColor="#000000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="48dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.25">
+
+        <ImageView
+            android:id="@+id/ic_floor_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_floor_select"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackground"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="층 선택"
+            android:textColor="#000000"
+            android:textSize="28sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/layout_img_border"
+        android:padding="2dp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_background"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/img_part_dialog"
+            android:layout_width="300dp"
+            android:layout_height="500dp"
+            android:background="@drawable/border_background"
+            android:scaleType="centerCrop"
+            android:src="@drawable/map_1" />
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:rowCount="3"
+            android:columnCount="2"
+            android:layout_gravity="center">
+
+            <View
+                android:id="@+id/area1"
+                android:layout_width="150dp"
+                android:layout_height="166dp"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:background="@drawable/ripple_effect_area1"
+                android:clickable="true" />
+
+            <View
+                android:id="@+id/area2"
+                android:layout_width="150dp"
+                android:layout_height="166dp"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:background="@drawable/ripple_effect_area2"
+                android:clickable="true" />
+
+            <View
+                android:id="@+id/area3"
+                android:layout_width="150dp"
+                android:layout_height="166dp"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:background="@drawable/ripple_effect_area3"
+                android:clickable="true" />
+
+            <View
+                android:id="@+id/area4"
+                android:layout_width="150dp"
+                android:layout_height="166dp"
+                android:layout_row="1"
+                android:layout_column="1"
+                android:background="@drawable/ripple_effect_area4"
+                android:clickable="true" />
+
+            <View
+                android:id="@+id/area5"
+                android:layout_width="150dp"
+                android:layout_height="166dp"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:background="@drawable/ripple_effect_area5"
+                android:clickable="true" />
+
+            <View
+                android:id="@+id/area6"
+                android:layout_width="150dp"
+                android:layout_height="166dp"
+                android:layout_row="2"
+                android:layout_column="1"
+                android:background="@drawable/ripple_effect_area6"
+                android:clickable="true" />
+        </GridLayout>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
