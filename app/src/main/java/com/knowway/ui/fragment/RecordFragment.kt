@@ -22,7 +22,6 @@ import com.knowway.data.model.Record
 import com.knowway.data.network.RecordApiService
 import com.knowway.databinding.FragmentRecordModalBinding
 import com.knowway.ui.activity.RecordActivity
-import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -60,9 +59,6 @@ class RecordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        val slidePanel = binding.mainFrame
-//        slidePanel.addPanelSlideListener(PanelEventListener())
-
         Glide.with(this)
             .asGif()
             .load(R.drawable.recording_wave_gif)
@@ -83,10 +79,20 @@ class RecordFragment : Fragment() {
         }
 
         binding.saveButtonInclude.recordingSaveButton.setOnClickListener {
+            setConfirmUI(true, true, true)
+            setButtonVisibility(false, false, false, false)
+        }
+
+        binding.confirmButtonInclude.confirmButton.setOnClickListener {
             saveRecording()
         }
-    }
 
+        binding.titleText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.titleText.text.clear()
+            }
+        }
+    }
 
     private fun checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -106,22 +112,29 @@ class RecordFragment : Fragment() {
         binding.retryButtonInclude.root.visibility = if (retryVisible) View.VISIBLE else View.GONE
     }
 
+    private fun setConfirmUI(confirmVisible: Boolean, textVisible: Boolean, underlineVisible : Boolean) {
+        binding.confirmButtonInclude.root.visibility = if (confirmVisible) View.VISIBLE else View.GONE
+        binding.titleText.visibility = if (textVisible) View.VISIBLE else View.GONE
+        binding.titleText.setHint("타이틀을 입력해주세요.");
+        binding.underline.visibility = if (underlineVisible) View.VISIBLE else View.GONE
+    }
+
     private fun handleRecordingStart() {
-        setButtonVisibility(startVisible = false, stopVisible = true, saveVisible = false, retryVisible = false)
+        setButtonVisibility(false, true, false, false)
         binding.recordingWave.visibility = View.GONE
         binding.recordingWaveGif.visibility = View.VISIBLE
         startRecording()
     }
 
     private fun handleRecordingStop() {
-        setButtonVisibility(startVisible = false, stopVisible = false, saveVisible = true, retryVisible = true)
+        setButtonVisibility(false, false, true, true)
         binding.recordingWave.visibility = View.VISIBLE
         binding.recordingWaveGif.visibility = View.GONE
         stopRecording()
     }
 
     private fun handleRecordingRetry() {
-        setButtonVisibility(startVisible = false, stopVisible = true, saveVisible = false, retryVisible = false)
+        setButtonVisibility(false, true, false, false)
         binding.recordingWave.visibility = View.GONE
         binding.recordingWaveGif.visibility = View.VISIBLE
         startRecording()
@@ -154,6 +167,11 @@ class RecordFragment : Fragment() {
     }
 
     private fun saveRecording() {
+        val recordTitle = binding.titleText.text.toString()
+        if (recordTitle.isBlank()) {
+            Toast.makeText(requireContext(), "Title cannot be empty", Toast.LENGTH_SHORT).show()
+            return
+        }
         output?.let { filePath ->
             val file = File(filePath)
             if (file.exists()) {
@@ -173,13 +191,13 @@ class RecordFragment : Fragment() {
                 }
 
                 val requestFile = RequestBody.create("audio/mp4".toMediaTypeOrNull(), file)
-                val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+                val body = MultipartBody.Part.createFormData("file", "$recordTitle.mp4", requestFile)
 
                 val recordRequest = Record(
                     memberId = 1,
                     departmentStoreFloorId = 2,
                     departmentStoreId = 3,
-                    recordTitle = "Sample Title",
+                    recordTitle = recordTitle,
                     recordLatitude = "37.5665",
                     recordLongitude = "126.9780"
                 )
@@ -200,17 +218,10 @@ class RecordFragment : Fragment() {
                         Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
+                onDestroyView()
             }
         }
     }
-
-//    inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
-//        override fun onPanelSlide(panel: View?, slideOffset: Float) {
-//        }
-//
-//        override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
-//        }
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

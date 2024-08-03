@@ -20,7 +20,7 @@ interface RecordApiService {
     ): Call<String>
 
     companion object {
-        private const val BASE_URL = "http://localhost:8080"
+        private const val BASE_URL = "http://192.168.0.61:8080"
 
         fun create(): RecordApiService {
             val logger = HttpLoggingInterceptor().apply {
