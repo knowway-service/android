@@ -1,0 +1,214 @@
+package com.knowway.ui.activity.mainpage
+
+import android.Manifest
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Bundle
+import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.*
+import com.knowway.Constants.url
+import com.knowway.R
+import com.knowway.data.model.department.Floor
+import com.knowway.data.repository.MainPageRepository
+import com.knowway.databinding.ActivityMainPageBinding
+import com.knowway.ui.fragment.MapFooterFragment
+import com.knowway.ui.fragment.mainpage.*
+import com.knowway.ui.viewmodel.mainpage.MainPageViewModel
+import com.knowway.ui.viewmodel.mainpage.MainPageViewModelFactory
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+
+
+class MainPageActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainPageBinding
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
+    private lateinit var sharedPreferences: SharedPreferences
+    private var currentFloor: Floor? = null
+    private val viewModel: MainPageViewModel by viewModels {
+        MainPageViewModelFactory(MainPageRepository(url))
+    }
+
+    private var displayFlag = false
+    private val range = 5.0
+
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            startUpdatingLocation()
+        } else {
+            Log.e("위치 권한 오류", "위치에 대한 권한이 없습니다.")
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainPageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        sharedPreferences = getSharedPreferences("DeptPref", MODE_PRIVATE)
+
+        updateDeptInfo()
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        setupLocationCallback()
+
+        val deptId = sharedPreferences.getLong("dept_id", -1)
+        val floorId = sharedPreferences.getLong("selected_floor_id", -1)
+
+        if (deptId != -1L && floorId != -1L) {
+            viewModel.getRecordsByDeptAndFloor(deptId, floorId)
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        } else {
+            startUpdatingLocation()
+        }
+
+        binding.mainUpDown.setOnClickListener {
+            val floorSelectModal = MainFloorSelectFragment()
+            floorSelectModal.show(supportFragmentManager, "층 선택 모달창")
+        }
+
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.button_fragment_container, MainLocationFragment())
+                .replace(R.id.card_fragment_container, MainPersonFragment())
+                .replace(R.id.footer_container, MapFooterFragment())
+                .commit()
+        }
+
+        binding.buttonFragmentContainer.setOnClickListener {
+            if (displayFlag) {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.button_fragment_container, MainLocationFragment())
+                    .replace(R.id.card_fragment_container, MainPersonFragment())
+                    .commit()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.button_fragment_container, MainBackFragment())
+                    .replace(R.id.card_fragment_container, MainMapFragment())
+                    .commit()
+            }
+            displayFlag = !displayFlag
+        }
+    }
+
+    private fun setupLocationCallback() {
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                result.lastLocation?.let { location ->
+                    lifecycleScope.launch {
+                        viewModel.recordsResponse.collect { records ->
+                            records.forEach { record ->
+                                val latitude = record.recordLatitude.toDouble()
+                                val longitude = record.recordLongitude.toDouble()
+                                checkProximity(location.latitude, location.longitude, latitude, longitude)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun startUpdatingLocation() {
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000)
+            .setMinUpdateIntervalMillis(1500)
+            .build()
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        }
+    }
+
+    private fun stopUpdatingLocation() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopUpdatingLocation()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+            startUpdatingLocation()
+        }
+    }
+
+    private fun checkProximity(curLat: Double, curLnt: Double, targetLat: Double, targetLnt: Double) {
+        val currentLocation = Location("current").apply {
+            latitude = curLat
+            longitude = curLnt
+        }
+
+        var targetLocation = Location("target").apply {
+            latitude = targetLat
+            longitude = targetLnt
+        }
+
+        val distance = currentLocation.distanceTo(targetLocation)
+        val fragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainPersonFragment
+        fragment?.let {
+            if (distance <= range) {
+                it.showQuestionButton()
+            } else {
+                it.hideQuestionButton()
+            }
+        }
+    }
+
+    private fun updateDeptInfo() {
+        val deptName = sharedPreferences.getString("dept_name", "백화점")
+        val deptBranch = sharedPreferences.getString("dept_branch", "지점")
+
+        val floorIds = sharedPreferences.getString("dept_floor_ids", "")
+        val floorNames = sharedPreferences.getString("dept_floor_names", "")
+        val floorMapPaths = sharedPreferences.getString("dept_floor_map_paths", "")
+
+        val floorIdList = floorIds?.split(",")?.mapNotNull { it.toLongOrNull() } ?: emptyList()
+        val floorNameList = floorNames?.split(",") ?: emptyList()
+        val floorMapPathList = floorMapPaths?.split(",") ?: emptyList()
+
+        val floorList = floorIdList.zip(floorNameList).zip(floorMapPathList) { (id, name), mapPath ->
+            Floor(id, name, mapPath)
+        }
+
+        binding.mainDeptTitle.text = deptName
+        binding.mainDeptBranch.text = deptBranch
+
+        // 현재 층 정보를 기본값으로 설정 (예: 첫 번째 층)
+        currentFloor = floorList.firstOrNull()
+        binding.mainFloor.text = currentFloor?.departmentStoreFloor ?: "정보 없음"
+    }
+
+    fun updateCurrentFloor(floor: Floor) {
+        currentFloor = floor
+        binding.mainFloor.text = floor.departmentStoreFloor
+    }
+
+    fun showMapFragment(mapPath: String) {
+        val fragment = MainMapFragment().apply {
+            arguments = Bundle().apply {
+                putString("map_path", mapPath)
+            }
+        }
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.card_fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+}

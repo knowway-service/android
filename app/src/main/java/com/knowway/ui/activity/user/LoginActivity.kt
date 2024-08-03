@@ -12,6 +12,8 @@ import com.knowway.data.model.user.LoginRequest
 import com.knowway.data.model.user.UserChatMemberIdResponse
 import com.knowway.data.network.ApiClient
 import com.knowway.data.network.user.UserApiService
+import com.knowway.ui.activity.AdminDepartmentStoreSearchActivity
+import com.knowway.ui.activity.SelectMenuActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
