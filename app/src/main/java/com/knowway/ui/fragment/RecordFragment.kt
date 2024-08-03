@@ -1,0 +1,219 @@
+package com.knowway.ui.fragment
+
+import android.Manifest
+import android.content.ContentValues
+import android.content.pm.PackageManager
+import android.media.MediaRecorder
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.google.gson.Gson
+import com.knowway.R
+import com.knowway.data.model.Record
+import com.knowway.data.network.RecordApiService
+import com.knowway.databinding.FragmentRecordModalBinding
+import com.knowway.ui.activity.RecordActivity
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.File
+import java.io.IOException
+
+class RecordFragment : Fragment() {
+    private var _binding: FragmentRecordModalBinding? = null
+    private val binding get() = _binding!!
+
+    private var mediaRecorder: MediaRecorder? = null
+    private var output: String? = null
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val recordAudioGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: false
+        val writeStorageGranted = permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
+        if (!recordAudioGranted || !writeStorageGranted) {
+            Toast.makeText(context, "Permissions not granted.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentRecordModalBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+//        val slidePanel = binding.mainFrame
+//        slidePanel.addPanelSlideListener(PanelEventListener())
+
+        Glide.with(this)
+            .asGif()
+            .load(R.drawable.recording_wave_gif)
+            .into(binding.recordingWaveGif)
+
+        checkPermissions()
+
+        binding.startButtonInclude.recordingStartButton.setOnClickListener {
+            handleRecordingStart()
+        }
+
+        binding.stopButtonInclude.recordingStopButton.setOnClickListener {
+            handleRecordingStop()
+        }
+
+        binding.retryButtonInclude.recordingRetryButton.setOnClickListener {
+            handleRecordingRetry()
+        }
+
+        binding.saveButtonInclude.recordingSaveButton.setOnClickListener {
+            saveRecording()
+        }
+    }
+
+
+    private fun checkPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            when {
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                        ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED -> {
+                    requestPermissionLauncher.launch(arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                }
+            }
+        }
+    }
+
+    private fun setButtonVisibility(startVisible: Boolean, stopVisible: Boolean, saveVisible: Boolean, retryVisible: Boolean) {
+        binding.startButtonInclude.root.visibility = if (startVisible) View.VISIBLE else View.GONE
+        binding.stopButtonInclude.root.visibility = if (stopVisible) View.VISIBLE else View.GONE
+        binding.saveButtonInclude.root.visibility = if (saveVisible) View.VISIBLE else View.GONE
+        binding.retryButtonInclude.root.visibility = if (retryVisible) View.VISIBLE else View.GONE
+    }
+
+    private fun handleRecordingStart() {
+        setButtonVisibility(startVisible = false, stopVisible = true, saveVisible = false, retryVisible = false)
+        binding.recordingWave.visibility = View.GONE
+        binding.recordingWaveGif.visibility = View.VISIBLE
+        startRecording()
+    }
+
+    private fun handleRecordingStop() {
+        setButtonVisibility(startVisible = false, stopVisible = false, saveVisible = true, retryVisible = true)
+        binding.recordingWave.visibility = View.VISIBLE
+        binding.recordingWaveGif.visibility = View.GONE
+        stopRecording()
+    }
+
+    private fun handleRecordingRetry() {
+        setButtonVisibility(startVisible = false, stopVisible = true, saveVisible = false, retryVisible = false)
+        binding.recordingWave.visibility = View.GONE
+        binding.recordingWaveGif.visibility = View.VISIBLE
+        startRecording()
+    }
+
+    private fun startRecording() {
+        output = "${requireContext().externalCacheDir?.absolutePath}/recording.mp4"
+        mediaRecorder = MediaRecorder().apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            setOutputFile(output)
+            try {
+                prepare()
+                start()
+                Toast.makeText(requireContext(), "Recording started", Toast.LENGTH_SHORT).show()
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Toast.makeText(requireContext(), "Recording failed to start", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun stopRecording() {
+        mediaRecorder?.apply {
+            stop()
+            release()
+        }
+        mediaRecorder = null
+    }
+
+    private fun saveRecording() {
+        output?.let { filePath ->
+            val file = File(filePath)
+            if (file.exists()) {
+                val values = ContentValues().apply {
+                    put(MediaStore.Audio.Media.DISPLAY_NAME, "Recording_${System.currentTimeMillis()}")
+                    put(MediaStore.Audio.Media.MIME_TYPE, "audio/mp4")
+                    put(MediaStore.Audio.Media.RELATIVE_PATH, Environment.DIRECTORY_MUSIC)
+                }
+                val contentResolver = requireContext().contentResolver
+                val uri = contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values)
+                uri?.let {
+                    contentResolver.openOutputStream(it).use { outputStream ->
+                        file.inputStream().use { inputStream ->
+                            inputStream.copyTo(outputStream!!)
+                        }
+                    }
+                }
+
+                val requestFile = RequestBody.create("audio/mp4".toMediaTypeOrNull(), file)
+                val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+                val recordRequest = Record(
+                    memberId = 1,
+                    departmentStoreFloorId = 2,
+                    departmentStoreId = 3,
+                    recordTitle = "Sample Title",
+                    recordLatitude = "37.5665",
+                    recordLongitude = "126.9780"
+                )
+                val recordJson = Gson().toJson(recordRequest)
+                val recordBody = RequestBody.create("application/json".toMediaTypeOrNull(), recordJson)
+                // Upload file using Retrofit
+                val call = RecordApiService.create().uploadRecord(body, recordBody)
+                call.enqueue(object : Callback<String> {
+                    override fun onResponse(call: Call<String>, response: Response<String>) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(requireContext(), "File uploaded successfully", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(requireContext(), "File upload failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<String>, t: Throwable) {
+                        Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+        }
+    }
+
+//    inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
+//        override fun onPanelSlide(panel: View?, slideOffset: Float) {
+//        }
+//
+//        override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
+//        }
+//    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
