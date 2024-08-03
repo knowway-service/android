@@ -12,13 +12,20 @@ interface UserApiService {
     fun checkEmail(@Body request: EmailDuplicationRequest): Call<Boolean>
 
     @POST("/login")
-    fun login(@Body request: LoginRequest): Call<Boolean>
+    fun login(@Body request: LoginRequest): Call<Void>
 
     @POST("/logout")
     fun logout(): Call<Boolean>
 
+    @GET("/admin")
+    fun isAUserAdmin(): Call<Boolean>
+
     @GET("/users")
     fun getProfile(@Query("email") email: String): Call<UserProfileResponse>
+
+    @GET("/users/chat-id")
+    fun getUserChatId(): Call<UserChatMemberIdResponse>
+
 
     @GET("/users/userRecords")
     fun getProfile(

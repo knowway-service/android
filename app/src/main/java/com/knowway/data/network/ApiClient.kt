@@ -6,50 +6,36 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.knowway.BuildConfig
 import com.knowway.data.network.auth.AuthInterceptor
+import com.knowway.data.network.auth.TokenInterceptor
 import com.knowway.util.TokenManager
 
 object ApiClient {
-    private var retrofitWithToken: Retrofit? = null
-    private var retrofitWithoutToken: Retrofit? = null
+
+    private lateinit var tokenManager: TokenManager
 
     fun init(context: Context) {
-        TokenManager.init(context)
+        tokenManager = com.knowway.util.TokenManager(context)
+        tokenManager.clearToken()
+
     }
 
-    fun getClient(): Retrofit {
-        val token = TokenManager.getToken()
-        return if (token != null && token.isNotEmpty()) {
-            getRetrofitWithToken(token)
-        } else {
-            getRetrofitWithoutToken()
+    fun getClient(): Retrofit = createRetrofit()
+
+    private fun createRetrofit(): Retrofit {
+        val okHttpClientBuilder = OkHttpClient.Builder()
+
+        okHttpClientBuilder.addInterceptor(TokenInterceptor(tokenManager))
+
+        tokenManager.getToken()?.let { token ->
+            okHttpClientBuilder.addInterceptor(AuthInterceptor(token))
         }
-    }
 
-    private fun getRetrofitWithToken(token: String): Retrofit {
-        if (retrofitWithToken == null) {
-            val okHttpClient = OkHttpClient.Builder()
-                .addInterceptor(AuthInterceptor(token))
-                .build()
+        val okHttpClient = okHttpClientBuilder.build()
 
-            retrofitWithToken = Retrofit.Builder()
-                .baseUrl(BuildConfig.BASE_IP_ADDRESS)
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-        }
-        return retrofitWithToken!!
-    }
-
-    private fun getRetrofitWithoutToken(): Retrofit {
-        if (retrofitWithoutToken == null) {
-            val okHttpClient = OkHttpClient.Builder().build()
-
-            retrofitWithoutToken = Retrofit.Builder()
-                .baseUrl(BuildConfig.BASE_IP_ADDRESS)
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-        }
-        return retrofitWithoutToken!!
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_IP_ADDRESS)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
 }
