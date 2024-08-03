@@ -6,5 +6,5 @@ data class Record(
     val departmentStoreId: Long,
     val recordTitle: String,
     val recordLatitude: String,
-    val recordLongitude: String
+    val recordLongitude: String,
 )
