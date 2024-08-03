@@ -1,4 +1,4 @@
-package com.knowway.ui.fragment
+package com.knowway.ui.fragment.mainpage
 
 import android.os.Bundle
 import android.view.LayoutInflater

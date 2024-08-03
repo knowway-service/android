@@ -1,6 +1,7 @@
 package com.knowway.data.network
 
 import com.knowway.BuildConfig
+import com.knowway.data.model.department.DepartmentStore
 import com.knowway.data.model.department.DepartmentStoreResponse
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -14,6 +15,11 @@ interface AdminDepartmentService {
         @Query("size") size: Int,
         @Query("page") page: Int
     ): Response<DepartmentStoreResponse>
+
+    @GET("/depts/branch")
+    suspend fun getDepartmentStoreByBranch(
+        @Query("departmentStoreBranch") departmentStoreBranch: String
+    ): Response<DepartmentStore>
 
     companion object {
         fun create(): AdminDepartmentService {

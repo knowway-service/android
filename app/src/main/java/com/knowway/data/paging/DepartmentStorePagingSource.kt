@@ -16,10 +16,17 @@ class DepartmentStorePagingSource(
         return try {
             val response = service.getDepartmentStores(params.loadSize, page)
             val departmentStores = response.body()?.content ?: emptyList()
+
+            val nextKey = if (departmentStores.size < params.loadSize) {
+                null
+            } else {
+                page + 1
+            }
+
             LoadResult.Page(
                 data = departmentStores,
                 prevKey = if (page == 0) null else page - 1,
-                nextKey = if (departmentStores.isEmpty()) null else page + 1
+                nextKey = nextKey
             )
         } catch (exception: IOException) {
             LoadResult.Error(exception)
