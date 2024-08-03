@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.knowway.R
 import com.knowway.data.model.department.DepartmentStore
 
-class DepartmentStoreAdapter(private val departmentStores: List<DepartmentStore>):
+class DepartmentStoreAdapter(private var departmentStores: List<DepartmentStore>):
     RecyclerView.Adapter<DepartmentStoreAdapter.DepartmentViewHolder>() {
 
     inner class DepartmentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -16,8 +16,8 @@ class DepartmentStoreAdapter(private val departmentStores: List<DepartmentStore>
         private val branch = itemView.findViewById<TextView>(R.id.dept_search_branch)
 
         fun bind(departmentStore: DepartmentStore) {
-            title.text = departmentStore.name
-            branch.text = departmentStore.branch
+            title.text = departmentStore.departmentStoreName
+            branch.text = departmentStore.departmentStoreBranch
         }
     }
 
@@ -36,4 +36,9 @@ class DepartmentStoreAdapter(private val departmentStores: List<DepartmentStore>
     }
 
     override fun getItemCount(): Int = departmentStores.size
+
+    fun update(newDepartmentStore: List<DepartmentStore>) {
+        departmentStores = newDepartmentStore
+        notifyDataSetChanged()
+    }
 }
