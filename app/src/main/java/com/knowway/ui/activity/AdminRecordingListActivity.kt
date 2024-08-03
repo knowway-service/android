@@ -10,13 +10,19 @@ import com.knowway.databinding.ActivityAdminRecordingListBinding
 class AdminRecordingListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminRecordingListBinding
+    private var departmentStoreFloorId: Long = -1L
+    private var areaNumber: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminRecordingListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val areaNumber = intent.getIntExtra("areaNumber", -1)
+        // Retrieve departmentStoreFloorId and areaNumber from the Intent
+        departmentStoreFloorId = intent.getLongExtra("departmentStoreFloorId", -1L)
+        areaNumber = intent.getIntExtra("areaNumber", -1)
+
+        Log.d("ReceivedData", "Department Store Floor ID: $departmentStoreFloorId")
         Log.d("ReceivedData", "Selected Area Number: $areaNumber")
 
         val viewPagerAdapter = ViewPagerAdapter(this, ViewPagerAdapter.TabType.ADMIN)

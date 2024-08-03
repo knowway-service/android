@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.knowway.data.model.department.DepartmentStore
-import com.knowway.data.network.AdminDepartmentService
+import com.knowway.data.network.AdminApiService
 import com.knowway.data.paging.DepartmentStorePagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class AdminDepartmentStoreViewModel : ViewModel() {
 
-    private val service = AdminDepartmentService.create()
+    private val service = AdminApiService.create()
 
     val departmentStores: Flow<PagingData<DepartmentStore>> = Pager(
         config = PagingConfig(

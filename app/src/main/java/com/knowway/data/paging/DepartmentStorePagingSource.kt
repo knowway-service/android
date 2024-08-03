@@ -3,12 +3,12 @@ package com.knowway.data.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.knowway.data.model.department.DepartmentStore
-import com.knowway.data.network.AdminDepartmentService
+import com.knowway.data.network.AdminApiService
 import retrofit2.HttpException
 import java.io.IOException
 
 class DepartmentStorePagingSource(
-    private val service: AdminDepartmentService
+    private val service: AdminApiService
 ) : PagingSource<Int, DepartmentStore>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DepartmentStore> {
