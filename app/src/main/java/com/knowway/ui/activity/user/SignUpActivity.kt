@@ -1,5 +1,7 @@
 package com.knowway.ui.activity.user
 
+import android.content.Intent
+import android.content.SharedPreferences
 import com.knowway.R
 import com.knowway.data.network.ApiClient
 
@@ -13,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.knowway.data.model.user.EmailDuplicationRequest
 import com.knowway.data.model.user.RegisterRequest
 import com.knowway.data.network.user.UserApiService
+import com.knowway.util.TokenManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,6 +38,8 @@ class SignupActivity : AppCompatActivity() {
     private var isEmailAvailable = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        ApiClient.init(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
@@ -45,7 +50,7 @@ class SignupActivity : AppCompatActivity() {
         emailDuplicateError = findViewById(R.id.email_duplicate_error)
         passwordErrorMessage = findViewById(R.id.password_error_message)
         passwordMismatchError = findViewById(R.id.password_mismatch_error)
-        signupButton = findViewById(R.id.confirmButton)
+        signupButton = findViewById(R.id.sign_up_button)
         checkEmailButton = findViewById(R.id.duplication_check_button)
 
         checkEmailButton.setOnClickListener {
@@ -72,6 +77,9 @@ class SignupActivity : AppCompatActivity() {
                 }
                 if (!isValidPassword(password)) {
                     showError("적어도 한 개의 대문자, 소문자, 숫자를 포함해주세요.")
+                }
+                if (!isEmailAvailable) {
+                    showError("중복 체크를 해주세요")
                 }
                 if (password != confirmPassword) {
                     passwordMismatchError.visibility = View.VISIBLE
@@ -137,6 +145,9 @@ class SignupActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful) {
                     showSuccess("회원가입에 성공했습니다!")
+                    val intent = Intent(this@SignupActivity, LoginActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 } else {
                     showError("회원가입에 실패했습니다.")
                 }

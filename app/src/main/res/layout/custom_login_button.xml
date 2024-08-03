@@ -13,6 +13,7 @@
         android:padding="10dp" />
 
     <TextView
+
         android:id="@+id/confirmText"
         android:layout_width="66dp"
         android:layout_height="wrap_content"

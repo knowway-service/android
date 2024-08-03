@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.activity.user.SignupActivity">
 
     <ImageView
@@ -176,12 +177,12 @@
         app:layout_constraintTop_toBottomOf="@id/input_password_confirm" />
 
     <ImageButton
-        android:id="@+id/confirmButton"
+        android:id="@+id/sign_up_button"
         android:layout_width="118dp"
         android:layout_height="46dp"
         android:layout_marginTop="40dp"
         android:background="@drawable/blue_btn"
-        android:contentDescription="@string/confirm"
+        android:contentDescription="회원가입"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

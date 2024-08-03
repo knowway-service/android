@@ -3,22 +3,34 @@ package com.knowway.util
 import android.content.Context
 import android.content.SharedPreferences
 
-object TokenManager {
-    private lateinit var sharedPreferences: SharedPreferences
 
-    fun init(context: Context) {
-        sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-    }
+class TokenManager(context: Context) {
 
-    fun saveToken(token: String) {
-        sharedPreferences.edit().putString("auth_token", token).apply()
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE)
+
+    companion object {
+        private const val TOKEN_KEY = "auth_token"
+
+        private var instance: TokenManager? = null
+
+        fun init(context: Context) {
+            instance = TokenManager(context)
+        }
+
+        fun getToken(): String? {
+            return instance?.getToken()
+        }
     }
 
     fun getToken(): String? {
-        return sharedPreferences.getString("auth_token", null)
+        return sharedPreferences.getString(TOKEN_KEY, null)
+    }
+
+    fun saveToken(token: String) {
+        sharedPreferences.edit().putString(TOKEN_KEY, token).apply()
     }
 
     fun clearToken() {
-        sharedPreferences.edit().remove("auth_token").apply()
+        sharedPreferences.edit().remove(TOKEN_KEY).apply()
     }
 }
