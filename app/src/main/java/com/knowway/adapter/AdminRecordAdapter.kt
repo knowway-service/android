@@ -77,11 +77,11 @@ class AdminRecordAdapter(
             binding.actionText.setOnClickListener {
                 val record = records[adapterPosition]
                 if (isInSelectionTab) {
-                    Toast.makeText(context, "선정: ${record.title}", Toast.LENGTH_SHORT).show()
-                    Log.d("Action", "선정: ${record.title}")
-                } else {
                     Toast.makeText(context, "선정 취소: ${record.title}", Toast.LENGTH_SHORT).show()
                     Log.d("Action", "선정 취소: ${record.title}")
+                } else {
+                    Toast.makeText(context, "선정: ${record.title}", Toast.LENGTH_SHORT).show()
+                    Log.d("Action", "선정: ${record.title}")
                 }
             }
         }
@@ -100,10 +100,10 @@ class AdminRecordAdapter(
 
             // 텍스트 변경
             if (isInSelectionTab) {
-                binding.actionText.text = "선정"
+                binding.actionText.text = "선정 취소"
                 binding.actionText.setTextColor(ContextCompat.getColor(context, R.color.dark_blue))
             } else {
-                binding.actionText.text = "선정 취소"
+                binding.actionText.text = "선정"
                 binding.actionText.setTextColor(ContextCompat.getColor(context, R.color.red))
             }
             binding.actionText.visibility = View.VISIBLE

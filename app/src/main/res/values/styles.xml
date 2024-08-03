@@ -10,6 +10,7 @@
         <item name="tabIndicatorHeight">4dp</item>
         <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
         <item name="tabSelectedTextColor">@color/dark_blue</item>
+        <item name="tabTextColor">@color/grey</item>
     </style>
 
     <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
