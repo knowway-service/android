@@ -7,11 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import com.knowway.R
 
-class RegisteredTipsFragment : Fragment() {
+class MypageRecordingListFragment(private val isInSelectionTab: Boolean) : Fragment() {
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_registered_tips, container, false)
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_mypage_recording_list, container, false)
     }
 }

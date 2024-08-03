@@ -1,0 +1,24 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+        <shape>
+            <size android:height="3dp"/>
+            <solid android:color="@color/dark_blue"/> <!-- 배경 색상 -->
+        </shape>
+    </item>
+    <item android:id="@android:id/secondaryProgress">
+        <clip>
+            <shape>
+                <size android:height="3dp"/>
+                <solid android:color="@color/dark_blue"/> <!-- secondary progress 색상 -->
+            </shape>
+        </clip>
+    </item>
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <size android:height="3dp"/>
+                <solid android:color="#000000"/> <!-- progress 색상 -->
+            </shape>
+        </clip>
+    </item>
+</layer-list>

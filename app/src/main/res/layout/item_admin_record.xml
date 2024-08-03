@@ -1,0 +1,89 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/record_item_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/record_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:padding="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Record Title" />
+
+        <TextView
+            android:id="@+id/action_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/red"
+            android:padding="16dp"
+            android:text="선정 취소"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/music_control_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingTop="6dp">
+
+        <SeekBar
+            android:id="@+id/music_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/CustomSeekBar"
+            android:padding="0dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:weightSum="7"
+            android:layout_marginTop="4dp"
+            android:paddingBottom="4dp">
+            <ImageButton
+                android:id="@+id/btn_previous"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:src="@drawable/ic_record_previous"
+                android:contentDescription="Previous"
+                android:background="@null"/>
+
+            <ImageButton
+                android:id="@+id/btn_play_pause"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_record_play"
+                android:contentDescription="Play/Pause"
+                android:background="@null"/>
+
+            <ImageButton
+                android:id="@+id/btn_next"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:src="@drawable/ic_record_next"
+                android:contentDescription="Next"
+                android:background="@null"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

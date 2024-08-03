@@ -3,11 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.RegisteredTipsFragment">
+    tools:context=".ui.fragment.AdminRecordingListFragment">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="등록된 팁 프레그먼트!" />
+        android:padding="16dp" />
 
 </FrameLayout>

@@ -19,7 +19,7 @@ class AdminRecordingListActivity : AppCompatActivity() {
         val areaNumber = intent.getIntExtra("areaNumber", -1)
         Log.d("ReceivedData", "Selected Area Number: $areaNumber")
 
-        val viewPagerAdapter = ViewPagerAdapter(this)
+        val viewPagerAdapter = ViewPagerAdapter(this, ViewPagerAdapter.TabType.ADMIN)
         binding.viewPager.adapter = viewPagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
