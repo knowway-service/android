@@ -24,4 +24,10 @@ class DepartmentStoreRepository(private val baseUrl: String) : DepartmentStoreAp
         return apiService.getDepartmentStoreByLocation(latitude, longitude)
     }
 
+    override suspend fun getDepartmentStoreByBranch(
+        departmentStoreBranch: String
+    ): Response<List<DepartmentStoreResponse>> {
+        return apiService.getDepartmentStoreByBranch(departmentStoreBranch)
+    }
+
 }

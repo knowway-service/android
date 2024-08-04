@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -14,11 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.knowway.Constants.url
+import com.knowway.R
 import com.knowway.adapter.DepartmentStoreAdapter
 import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.data.repository.DepartmentStoreRepository
 import com.knowway.databinding.ActivityDepartmentStoreSearchBinding
 import com.knowway.ui.activity.mainpage.MainPageActivity
+import com.knowway.ui.fragment.SelectFooterFragment
 import com.knowway.ui.viewmodel.department.DepartmentStoreViewModel
 import com.knowway.ui.viewmodel.department.DepartmentStoreViewModelFactory
 import com.knowway.ui.viewmodel.department.LocationViewModel
@@ -38,6 +42,8 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
     }
 
     private lateinit var adapter: DepartmentStoreAdapter
+    private var selectedStore: DepartmentStoreResponse? = null
+    private var destination: Int = 0
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
@@ -54,6 +60,8 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        destination = intent.getIntExtra("key", 0)
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -63,10 +71,37 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
 
         binding.searchRv.layoutManager = LinearLayoutManager(this)
         adapter = DepartmentStoreAdapter(emptyList()) { selectedStore ->
-            saveSelectedStore(selectedStore)
-            navigateToMainPageActivity()
+            this.selectedStore = selectedStore
         }
         binding.searchRv.adapter = adapter
+
+        binding.searchImageView.setOnClickListener {
+            val query = binding.inputEditText.text.toString()
+            if (query.isNotEmpty()) {
+                deptViewModel.getDepartmentStoreByBranch(query)
+            }
+        }
+
+        binding.nextBtn.setOnClickListener {
+            if (selectedStore == null) {
+                binding.errorText.visibility = View.VISIBLE
+            } else {
+                binding.errorText.visibility = View.GONE
+                saveSelectedStore(selectedStore!!)
+                if (destination == 0) {
+                    navigateToMainPageActivity()
+                } else {
+                    navigateToChatActivity()
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            deptViewModel.departmentStoresResponse.collect { departmentStores ->
+                adapter.update(departmentStores)
+                Log.d("검색 결과 업데이트됨", "Department stores updated: ${departmentStores.size} items")
+            }
+        }
 
         lifecycleScope.launch {
             locationViewModel.location.collect { locationResponse ->
@@ -79,6 +114,11 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.footer_fragment_container, SelectFooterFragment())
+                .commit()
         }
     }
 
@@ -106,6 +146,14 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
 
     private fun navigateToMainPageActivity() {
         val intent = Intent(this, MainPageActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToChatActivity() {
+        val intent = Intent(this, ChatActivity::class.java)
+        val sharedPreferences = getSharedPreferences("DeptPref", MODE_PRIVATE)
+        val storeId = sharedPreferences.getLong("dept_id", 1)
+        intent.putExtra("storeId", storeId)
         startActivity(intent)
     }
 }

@@ -24,5 +24,4 @@
         android:translationX="-1dp"
         android:translationY="-1dp" />
 
-
 </RelativeLayout>

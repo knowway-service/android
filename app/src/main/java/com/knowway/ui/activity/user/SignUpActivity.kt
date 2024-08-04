@@ -6,6 +6,7 @@ import com.knowway.R
 import com.knowway.data.network.ApiClient
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
@@ -84,7 +85,8 @@ class SignupActivity : AppCompatActivity() {
                     performSignup(email, password)
                 }
             } else {
-                showError("모든 필드를 입력해주세요.")
+                passwordMismatchError.text = "모든 필드를 입력해주세요."
+                passwordMismatchError.visibility = View.VISIBLE
             }
         }
     }
@@ -126,7 +128,7 @@ class SignupActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                showError("네트워크 오류: ${t.localizedMessage}")
+                Log.e("SignupActivity", "네트워크 오류: ${t.localizedMessage}")
             }
         })
     }
@@ -141,26 +143,23 @@ class SignupActivity : AppCompatActivity() {
                 response: Response<Boolean>
             ) {
                 if (response.isSuccessful) {
-                    showSuccess("회원가입에 성공했습니다!")
                     val intent = Intent(this@SignupActivity, LoginActivity::class.java)
                     startActivity(intent)
                     finish()
                 } else {
-                    showError("회원가입에 실패했습니다.")
+                    passwordMismatchError.text = "회원가입에 실패했습니다."
+                    passwordMismatchError.visibility = View.VISIBLE
                 }
             }
 
             override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                showError("네트워크 오류: ${t.localizedMessage}")
+                Log.e("SignupActivity", "네트워크 오류: ${t.localizedMessage}")
             }
         })
     }
 
     private fun showError(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun showSuccess(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        emailDuplicateError.text = message
+        emailDuplicateError.visibility = View.VISIBLE
     }
 }

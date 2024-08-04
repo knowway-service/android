@@ -29,4 +29,19 @@ class DepartmentStoreViewModel(private val dataSource: DepartmentStoreRepository
             }
         }
     }
+
+    fun getDepartmentStoreByBranch(branch: String) {
+        viewModelScope.launch {
+            try {
+                val response = dataSource.getDepartmentStoreByBranch(branch)
+                if (response.isSuccessful && response.body() != null) {
+                    _departmentStores.value = response.body()!!
+                } else {
+                    Log.d("DepartmentStoreViewModel", "Response not successful: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("DepartmentStoreViewModel", "Exception occurred", e)
+            }
+        }
+    }
 }
