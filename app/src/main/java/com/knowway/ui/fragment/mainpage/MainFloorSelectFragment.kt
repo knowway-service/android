@@ -18,6 +18,13 @@ class MainFloorSelectFragment : DialogFragment() {
     private val binding get() = _binding!!
     private val adapter: FloorAdapter by lazy {
         FloorAdapter { floor ->
+            val sharedPreferences = requireContext().getSharedPreferences("FloorPref", MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                putLong("selected_floor_id", floor.departmentStoreFloorId)
+                putString("selected_floor_name", floor.departmentStoreFloor)
+                putString("selected_floor_map_path", floor.departmentStoreMapPath)
+                apply()
+            }
             (activity as? MainPageActivity)?.updateCurrentFloor(floor)
             dismiss()
         }

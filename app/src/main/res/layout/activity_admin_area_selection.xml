@@ -69,6 +69,16 @@
             android:scaleType="centerCrop"
             android:src="@drawable/map_1" />
 
+        <TextView
+            android:id="@+id/floor_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="1F"
+            android:textColor="@color/black"
+            android:textSize="36sp"
+            android:background="@android:color/transparent"/>
+
         <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
