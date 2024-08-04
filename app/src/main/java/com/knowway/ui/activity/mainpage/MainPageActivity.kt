@@ -278,6 +278,7 @@ class MainPageActivity : AppCompatActivity() {
         slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
     }
 
+
     inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
         override fun onPanelSlide(panel: View?, slideOffset: Float) {
             // Do something when the panel is sliding
