@@ -8,8 +8,6 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -24,8 +22,6 @@ import com.knowway.data.repository.MainPageRepository
 import com.knowway.databinding.ActivityMainPageBinding
 import com.knowway.ui.fragment.MapFooterFragment
 import com.knowway.ui.fragment.RecordFragment
-import com.knowway.ui.fragment.mainpage.MainBackFragment
-import com.knowway.ui.fragment.mainpage.MainLocationFragment
 import com.knowway.ui.fragment.mainpage.MainMapFragment
 import com.knowway.ui.fragment.mainpage.MainPersonFragment
 import com.knowway.ui.viewmodel.mainpage.MainPageViewModel
@@ -68,6 +64,7 @@ class MainPageActivity : AppCompatActivity() {
         slidingUpPanelLayout = findViewById(R.id.main_frame)
         slidingUpPanelLayout.addPanelSlideListener(PanelEventListener())
 
+
         val recordingBtn: ImageView = findViewById(R.id.main_record)
         recordingBtn.setOnClickListener {
             slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
@@ -103,18 +100,17 @@ class MainPageActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.button_fragment_container, MainLocationFragment())
                 .replace(R.id.card_fragment_container, MainPersonFragment())
                 .replace(R.id.footer_container, MapFooterFragment())
                 .replace(R.id.fragment_container, RecordFragment())
                 .commit()
         }
 
-        binding.buttonFragmentContainer.setOnClickListener {
-            val transaction = supportFragmentManager.beginTransaction()
-
+        val clickListener = View.OnClickListener {
             if (displayFlag) {
-                transaction.replace(R.id.button_fragment_container, MainLocationFragment())
+                binding.buttonIcon.setBackgroundResource(R.drawable.location)
+                binding.buttonText.text = "지도 보기"
+                supportFragmentManager.beginTransaction()
                     .replace(R.id.card_fragment_container, MainPersonFragment())
                     .setCustomAnimations(
                         R.anim.fade_in,
@@ -122,27 +118,21 @@ class MainPageActivity : AppCompatActivity() {
                         R.anim.fade_in,
                         R.anim.fade_out
                     )
-                    .addToBackStack(null)
+                    .commit()
             } else {
-                transaction.replace(R.id.button_fragment_container, MainBackFragment())
-                    .replace(R.id.card_fragment_container, MainMapFragment())
-                    .addToBackStack(null)
-                    .setCustomAnimations(
-                        R.anim.fade_in,
-                        R.anim.fade_out,
-                        R.anim.fade_in,
-                        R.anim.fade_out
-                    )
+                binding.buttonIcon.setBackgroundResource(R.drawable.back)
+                binding.buttonText.text = "돌아가기"
+                val mapPath = sharedPreferences.getString("selected_floor_map_path", "")
+                if (!mapPath.isNullOrEmpty()) {
+                    showMapFragment(mapPath)
+                }
             }
-
-            try {
-                transaction.commit()
-            } catch (e: Exception) {
-                Log.e("MainPageActivity", "Fragment transaction failed", e)
-            }
-
             displayFlag = !displayFlag
         }
+
+        binding.buttonContainer.setOnClickListener(clickListener)
+        binding.buttonIcon.setOnClickListener(clickListener)
+        binding.buttonText.setOnClickListener(clickListener)
     }
 
     private fun setupLocationCallback() {
