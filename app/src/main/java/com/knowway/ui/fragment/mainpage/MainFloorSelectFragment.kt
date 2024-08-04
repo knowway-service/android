@@ -1,49 +1,58 @@
 package com.knowway.ui.fragment.mainpage
 
-import android.app.Dialog
+import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import androidx.fragment.app.DialogFragment
-import com.knowway.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.knowway.adapter.FloorAdapter
+import com.knowway.data.model.department.Floor
+import com.knowway.databinding.FragmentFloorSelectBinding
+import com.knowway.ui.activity.mainpage.MainPageActivity
 
-class MainFloorSelectFragment : DialogFragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.CustomDialog)
+class MainFloorSelectFragment : BottomSheetDialogFragment() {
+    private lateinit var binding: FragmentFloorSelectBinding
+    private val adapter: FloorAdapter by lazy {
+        FloorAdapter { floor ->
+            // 층 선택 시 처리
+            (activity as? MainPageActivity)?.updateCurrentFloor(floor)
+            dismiss()
+        }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_floor_select, container, false)
+        binding = FragmentFloorSelectBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val confirmButtonContainer = view.findViewById<FrameLayout>(R.id.confirm_button_container)
-        val confirmButtonView = LayoutInflater.from(requireContext())
-            .inflate(R.layout.custom_confirm_button, confirmButtonContainer, false)
+        binding.floorRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.floorRecyclerView.adapter = adapter
 
-        // 레이아웃에 버튼 추가
-        confirmButtonContainer.addView(confirmButtonView)
-
-        // 버튼 클릭 리스너 설정
-        val confirButton = confirmButtonView.findViewById<ImageButton>(R.id.confirmButton)
-        confirButton.setOnClickListener {
-            dismiss()
-        }
+        loadAndDisplayFloorData()
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.window?.setBackgroundDrawableResource(R.drawable.border_background)
-        return dialog
+    private fun loadAndDisplayFloorData() {
+        val sharedPreferences = requireContext().getSharedPreferences("DeptPref", MODE_PRIVATE)
+        val floorIds = sharedPreferences.getString("dept_floor_ids", "")
+        val floorNames = sharedPreferences.getString("dept_floor_names", "")
+        val floorMapPaths = sharedPreferences.getString("dept_floor_map_paths", "")
+
+        val floorIdList = floorIds?.split(",")?.mapNotNull { it.toLongOrNull() } ?: emptyList()
+        val floorNameList = floorNames?.split(",") ?: emptyList()
+        val floorMapPathList = floorMapPaths?.split(",") ?: emptyList()
+
+        val floorList = floorIdList.zip(floorNameList).zip(floorMapPathList) { (id, name), mapPath ->
+            Floor(id, name, mapPath)
+        }
+
+        adapter.submitList(floorList)
     }
 }

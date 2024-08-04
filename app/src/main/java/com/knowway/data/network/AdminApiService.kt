@@ -1,9 +1,9 @@
 package com.knowway.data.network
 
 import com.knowway.BuildConfig
-import com.knowway.data.model.department.DepartmentStore
-import com.knowway.data.model.department.DepartmentStoreFloorMapResponse
 import com.knowway.data.model.department.DepartmentStoreResponse
+import com.knowway.data.model.department.DepartmentStoreFloorMapResponse
+import com.knowway.data.model.department.DepartmentStorePageResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,12 +16,12 @@ interface AdminApiService {
     suspend fun getDepartmentStores(
         @Query("size") size: Int,
         @Query("page") page: Int
-    ): Response<DepartmentStoreResponse>
+    ): Response<DepartmentStorePageResponse>
 
     @GET("/depts/branch")
     suspend fun getDepartmentStoreByBranch(
         @Query("departmentStoreBranch") departmentStoreBranch: String
-    ): Response<DepartmentStore>
+    ): Response<DepartmentStoreResponse>
 
     @GET("/depts/{deptId}/floors")
     suspend fun getDepartmentStoreFloorMap(

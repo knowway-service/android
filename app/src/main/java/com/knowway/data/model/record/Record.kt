@@ -1,4 +1,4 @@
-package com.knowway.data.model
+package com.knowway.data.model.record
 
 data class Record(
     val memberId: Long,

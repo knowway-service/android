@@ -18,10 +18,9 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.knowway.R
-import com.knowway.data.model.Record
+import com.knowway.data.model.record.Record
 import com.knowway.data.network.RecordApiService
 import com.knowway.databinding.FragmentRecordModalBinding
-import com.knowway.ui.activity.RecordActivity
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

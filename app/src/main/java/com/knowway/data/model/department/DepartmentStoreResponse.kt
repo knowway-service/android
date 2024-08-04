@@ -1,5 +1,8 @@
 package com.knowway.data.model.department
 
 data class DepartmentStoreResponse(
-    val content: List<DepartmentStore>
+    val departmentStoreId: Long,
+    val departmentStoreName: String,
+    val departmentStoreBranch: String,
+    val departmentStoreFloorResponseList: List<DepartmentStoreFloorResponse>
 )

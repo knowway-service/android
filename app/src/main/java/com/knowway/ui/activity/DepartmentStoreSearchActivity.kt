@@ -1,21 +1,24 @@
 package com.knowway.ui.activity
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.knowway.BuildConfig
+import com.knowway.Constants.url
 import com.knowway.adapter.DepartmentStoreAdapter
+import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.data.repository.DepartmentStoreRepository
 import com.knowway.databinding.ActivityDepartmentStoreSearchBinding
+import com.knowway.ui.activity.mainpage.MainPageActivity
 import com.knowway.ui.viewmodel.department.DepartmentStoreViewModel
 import com.knowway.ui.viewmodel.department.DepartmentStoreViewModelFactory
 import com.knowway.ui.viewmodel.department.LocationViewModel
@@ -26,7 +29,6 @@ import kotlinx.coroutines.launch
 class DepartmentStoreSearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDepartmentStoreSearchBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val url = "http://${BuildConfig.BASE_IP_ADDRESS}:8080"
     private val deptViewModel: DepartmentStoreViewModel by viewModels {
         DepartmentStoreViewModelFactory(DepartmentStoreRepository(url))
     }
@@ -60,20 +62,47 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
         }
 
         binding.searchRv.layoutManager = LinearLayoutManager(this)
-        adapter = DepartmentStoreAdapter(emptyList())
+        adapter = DepartmentStoreAdapter(emptyList()) { selectedStore ->
+            saveSelectedStore(selectedStore)
+            navigateToMainPageActivity()
+        }
         binding.searchRv.adapter = adapter
 
         lifecycleScope.launch {
             locationViewModel.location.collect { locationResponse ->
                 locationResponse?.let {
-                    Log.d("위치 정보", "Location received: Latitude=${locationResponse.latitude}, Longitude=${locationResponse.longtitude}")
-                    deptViewModel.getDepartmentStoresByLocation(it.latitude, it.longtitude)
-                    deptViewModel.departmentStores.collect { departmentStores ->
+                    Log.d("위치 정보", "Location received: Latitude=${locationResponse.latitude}, Longitude=${locationResponse.longitude}")
+                    deptViewModel.getDepartmentStoresByLocation(it.latitude, it.longitude)
+                    deptViewModel.departmentStoresResponse.collect { departmentStores ->
                         adapter.update(departmentStores)
                         Log.d("위치 정보 업데이트됨", "Department stores updated: ${departmentStores.size} items")
                     }
                 }
             }
         }
+    }
+
+    private fun saveSelectedStore(dept: DepartmentStoreResponse) {
+        val sharedPreferences = getSharedPreferences("DeptPref", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putLong("dept_id", dept.departmentStoreId)
+        editor.putString("dept_name", dept.departmentStoreName)
+        editor.putString("dept_branch", dept.departmentStoreBranch)
+
+        val floorIds = dept.departmentStoreFloorResponseList.joinToString(",") { it.departmentStoreFloorId.toString() }
+        editor.putString("dept_floor_ids", floorIds)
+
+        val floorNames = dept.departmentStoreFloorResponseList.joinToString { it.departmentStoreFloor }
+        editor.putString("dept_floor_names", floorNames)
+
+        val floorMapPaths = dept.departmentStoreFloorResponseList.joinToString(",") { it.departmentStoreFloorMapPath }
+        editor.putString("dept_floor_map_paths", floorMapPaths)
+
+        editor.apply()
+    }
+
+    private fun navigateToMainPageActivity() {
+        val intent = Intent(this, MainPageActivity::class.java)
+        startActivity(intent)
     }
 }

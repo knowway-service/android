@@ -1,6 +1,5 @@
 package com.knowway.data.repository
 
-import com.knowway.data.model.department.DepartmentStore
 import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.data.network.DepartmentStoreApiService
 import retrofit2.Response
@@ -18,22 +17,11 @@ class DepartmentStoreRepository(private val baseUrl: String) : DepartmentStoreAp
         apiService = retrofit.create(DepartmentStoreApiService::class.java)
     }
 
-    override suspend fun getDepartmentStores(
-        size: Int,
-        page: Int
-    ): Response<DepartmentStoreResponse> {
-        return apiService.getDepartmentStores(size, page)
-    }
-
-    override suspend fun getDepartmentStoreByBranch(departmentStoreBranch: String): DepartmentStore {
-        return apiService.getDepartmentStoreByBranch(departmentStoreBranch)
-    }
-
     override suspend fun getDepartmentStoreByLocation(
         latitude: String,
-        longtitude: String
-    ): Response<List<DepartmentStore>> {
-        return apiService.getDepartmentStoreByLocation(latitude, longtitude)
+        longitude: String
+    ): Response<List<DepartmentStoreResponse>> {
+        return apiService.getDepartmentStoreByLocation(latitude, longitude)
     }
 
 }

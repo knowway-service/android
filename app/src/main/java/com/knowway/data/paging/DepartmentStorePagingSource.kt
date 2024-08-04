@@ -2,16 +2,16 @@ package com.knowway.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.knowway.data.model.department.DepartmentStore
+import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.data.network.AdminApiService
 import retrofit2.HttpException
 import java.io.IOException
 
 class DepartmentStorePagingSource(
     private val service: AdminApiService
-) : PagingSource<Int, DepartmentStore>() {
+) : PagingSource<Int, DepartmentStoreResponse>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DepartmentStore> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DepartmentStoreResponse> {
         val page = params.key ?: 0
         return try {
             val response = service.getDepartmentStores(params.loadSize, page)
@@ -35,7 +35,7 @@ class DepartmentStorePagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, DepartmentStore>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, DepartmentStoreResponse>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)

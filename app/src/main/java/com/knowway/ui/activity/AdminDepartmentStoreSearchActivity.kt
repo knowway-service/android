@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.knowway.adapter.AdminDepartmentStoreAdapter
-import com.knowway.data.model.department.DepartmentStore
+import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.databinding.ActivityAdminDepartmentStoreSearchBinding
 import com.knowway.databinding.CustomConfirmButtonBinding
 import com.knowway.ui.viewmodel.AdminDepartmentStoreViewModel
@@ -45,7 +45,7 @@ class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
 
     private fun observeData() {
         lifecycleScope.launch {
-            viewModel.departmentStores.collectLatest { pagingData ->
+            viewModel.departmentStoresResponse.collectLatest { pagingData ->
                 adapter.submitData(pagingData)
             }
         }
@@ -56,7 +56,7 @@ class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
                     adapter.submitSearchResults(searchResults)
                 } else {
                     adapter.clearSearchResults()
-                    viewModel.departmentStores.collectLatest { pagingData ->
+                    viewModel.departmentStoresResponse.collectLatest { pagingData ->
                         adapter.submitData(pagingData)
                     }
                 }
@@ -94,7 +94,7 @@ class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun logSelectedDepartmentStore(departmentStore: DepartmentStore) {
-        Log.d("SelectedDepartmentStore", "Selected: $departmentStore")
+    private fun logSelectedDepartmentStore(departmentStoreResponse: DepartmentStoreResponse) {
+        Log.d("SelectedDepartmentStore", "Selected: $departmentStoreResponse")
     }
 }
