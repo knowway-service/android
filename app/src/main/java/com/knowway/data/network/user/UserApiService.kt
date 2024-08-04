@@ -21,14 +21,14 @@ interface UserApiService {
     fun isAUserAdmin(): Call<Boolean>
 
     @GET("/users")
-    fun getProfile(@Query("email") email: String): Call<UserProfileResponse>
+    fun getProfile(): Call<UserProfileResponse>
 
     @GET("/users/chat-id")
     fun getUserChatId(): Call<UserChatMemberIdResponse>
 
 
     @GET("/users/userRecords")
-    fun getProfile(
+    fun getRecord(
         @Query("page") page: Int,
         @Query("size") size: Int,
         @Query("isSelectedByAdmin") isSelectedByAdmin: Boolean

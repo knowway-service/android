@@ -10,7 +10,6 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.knowway.R
 import com.knowway.ui.activity.DepartmentStoreSearchActivity
-import com.knowway.ui.activity.MypageActivity
 import com.knowway.util.Utils
 
 class ChatFooterFragment : Fragment() {

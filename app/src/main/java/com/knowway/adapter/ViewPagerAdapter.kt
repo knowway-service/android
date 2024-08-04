@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.knowway.ui.fragment.AdminRecordingListFragment
-import com.knowway.ui.fragment.MypageRecordingListFragment
 
 class ViewPagerAdapter(
     activity: AppCompatActivity,

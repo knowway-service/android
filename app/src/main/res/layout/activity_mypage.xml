@@ -7,24 +7,59 @@
     tools:context=".ui.activity.MypageActivity"
     android:background="@color/white">
 
-    <TextView
-        android:id="@+id/titleTextView"
+    <ImageView
+        android:id="@+id/emailIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:text="..."
-        android:textSize="36sp"
+        android:layout_marginEnd="12dp"
+        android:contentDescription="이메일 아이콘"
+        android:src="@drawable/email_open"
+        app:layout_constraintEnd_toStartOf="@id/emailTextView"
+        app:layout_constraintTop_toTopOf="@id/emailTextView" />
+
+    <TextView
+        android:id="@+id/emailTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="이메일"
         android:textColor="#000000"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.222"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/pointIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/coin"
+        android:contentDescription="포인트 아이콘"
+        app:layout_constraintEnd_toStartOf="@id/pointTextView"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toTopOf="@id/pointTextView"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
+        android:id="@+id/pointTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
+        android:text="포인트"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.222"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@color/light_grey"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        app:layout_constraintTop_toBottomOf="@id/pointTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="48dp"/>
