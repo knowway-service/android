@@ -34,8 +34,8 @@ class AdminDepartmentStoreViewModel : ViewModel() {
         viewModelScope.launch {
             val response = service.getDepartmentStoreByBranch(branch)
             if (response.isSuccessful) {
-                response.body()?.let { store ->
-                    _searchResults.value = listOf(store)
+                response.body()?.let { stores ->
+                    _searchResults.value = stores
                 } ?: run {
                     _searchResults.value = emptyList()
                 }
