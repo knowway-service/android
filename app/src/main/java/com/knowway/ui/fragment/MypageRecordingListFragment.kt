@@ -19,7 +19,7 @@ class MypageRecordingListFragment(private val isInSelectionTab: Boolean) : Fragm
 
     private lateinit var binding: FragmentMypageRecordingListBinding
     private lateinit var apiService: UserApiService
-    private lateinit var adapter: MypageAd
+    private lateinit var adapter: UserRecordAdapter
     private val records = mutableListOf<UserRecord>()
 
     override fun onCreateView(
@@ -43,7 +43,7 @@ class MypageRecordingListFragment(private val isInSelectionTab: Boolean) : Fragm
     }
 
     private fun fetchUserRecords() {
-        apiService.getProfile(0, 20, isInSelectionTab).enqueue(object :
+        apiService.getRecord(0, 20, isInSelectionTab).enqueue(object :
             Callback<UserRecordResponse> {
             override fun onResponse(call: Call<UserRecordResponse>, response: Response<UserRecordResponse>) {
                 if (response.isSuccessful) {
