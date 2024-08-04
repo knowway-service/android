@@ -56,4 +56,5 @@ class RecordActivity : AppCompatActivity() {
             // Do something when the panel state changes
         }
     }
+
 }
