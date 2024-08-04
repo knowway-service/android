@@ -7,15 +7,17 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.knowway.adapter.ViewPagerAdapter
 import com.knowway.data.model.user.UserProfileResponse
 import com.knowway.data.network.ApiClient
+import com.knowway.data.network.user.UserApiService
 import com.knowway.databinding.ActivityMypageBinding
 import retrofit2.*
 
 class MypageActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMypageBinding
-    private lateinit var apiService: ApiClient
+    private lateinit var apiService: UserApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        apiService = ApiClient.getClient().create(UserApiService::class.java)
         super.onCreate(savedInstanceState)
         binding = ActivityMypageBinding.inflate(layoutInflater)
         setContentView(binding.root)
