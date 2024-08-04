@@ -237,6 +237,9 @@ class MainPageActivity : AppCompatActivity() {
 
         sharedPreferences.edit().putLong("selected_floor_id", floor.departmentStoreFloorId).apply()
         sharedPreferences.edit().putString("selected_floor_map_path", floor.departmentStoreMapPath).apply()
+
+        val fragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainMapFragment
+        fragment?.loadMapImage(floor.departmentStoreMapPath)
     }
 
     fun showMapFragment(mapPath: String) {

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.knowway.R
 import com.knowway.adapter.FloorAdapter
@@ -39,7 +40,7 @@ class MainFloorSelectFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.floorRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.floorRecyclerView.layoutManager = GridLayoutManager(context, 3)
         binding.floorRecyclerView.adapter = adapter
 
         loadAndDisplayFloorData()
@@ -48,6 +49,7 @@ class MainFloorSelectFragment : DialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
     }
 
     private fun loadAndDisplayFloorData() {

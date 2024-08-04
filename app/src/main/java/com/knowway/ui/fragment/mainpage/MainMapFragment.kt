@@ -25,10 +25,25 @@ class MainMapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadMapImage(arguments?.getString("map_path") ?: "")
 
         binding.imageView.setImageDrawable(null)
         val mapPath = arguments?.getString("map_path") ?: return
 
+        if (mapPath.isNotEmpty()) {
+            binding.imageView.post {
+                Glide.with(this)
+                    .load(mapPath)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.picachu)
+                    .error(R.drawable.record)
+                    .into(binding.imageView)
+            }
+        }
+    }
+
+    fun loadMapImage(mapPath: String) {
         if (mapPath.isNotEmpty()) {
             binding.imageView.post {
                 Glide.with(this)
