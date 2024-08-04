@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.activity.user.LoginActivity">
 
     <ImageView
@@ -11,35 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/signup_header"
+        android:src="@drawable/login_header"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-
-    <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="164dp"
-        android:src="@drawable/locker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.271"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/login_subtitle" />
-
-    <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="104dp"
-        android:src="@drawable/email"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.271"
-        app:layout_constraintStart_toStartOf="parent"
-
-        app:layout_constraintTop_toBottomOf="@id/login_subtitle" />
 
     <TextView
         android:id="@+id/login_service_name"
@@ -48,7 +24,7 @@
         android:layout_marginTop="52dp"
         android:gravity="center"
         android:text="KNOW WAY"
-        android:textColor="@color/light_blue"
+        android:textColor="@color/medium_blue"
         android:textSize="60sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,83 +43,153 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/login_service_name" />
 
+    <ImageView
+        android:id="@+id/email_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/email"
+        android:layout_marginTop="5dp"
+        app:layout_constraintStart_toEndOf="@id/input_email"
+        app:layout_constraintTop_toTopOf="@id/input_email"
+        app:layout_constraintBottom_toBottomOf="@id/input_email"
+        app:layout_constraintEnd_toStartOf="@id/input_email" />
+
     <EditText
         android:id="@+id/input_email"
-        android:layout_width="200dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="32dp"
         android:background="@drawable/edittext_bottom_dotted_line"
+        android:ellipsize="end"
         android:hint="이메일"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:textAlignment="center"
+        android:padding="10dp"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:textAlignment="textStart"
         android:textColor="@color/black"
-        android:textColorHint="@color/black"
+        android:textColorHint="@color/dark_grey"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/email_icon"
         app:layout_constraintTop_toBottomOf="@id/login_subtitle" />
+
+    <ImageView
+        android:id="@+id/locker_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="5dp"
+        android:src="@drawable/locker"
+        app:layout_constraintStart_toEndOf="@id/input_password"
+        app:layout_constraintTop_toTopOf="@id/input_password"
+        app:layout_constraintBottom_toBottomOf="@id/input_password"
+        app:layout_constraintEnd_toStartOf="@id/input_password" />
 
     <EditText
         android:id="@+id/input_password"
-        android:layout_width="200dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="32dp"
         android:background="@drawable/edittext_bottom_dotted_line"
+        android:ellipsize="end"
         android:hint="비밀번호"
         android:inputType="textPassword"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
+        android:padding="10dp"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:textAlignment="textStart"
         android:textColor="@color/black"
-        android:textColorHint="@color/black"
+        android:textColorHint="@color/dark_grey"
         android:textSize="20sp"
-        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/locker_icon"
         app:layout_constraintTop_toBottomOf="@id/input_email" />
 
     <TextView
         android:id="@+id/login_failed_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="이메일과 패스워드를 다시 확인해주세요"
         android:textColor="@color/red"
         android:textSize="14sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_email" />
-
-    <ImageButton
-        android:id="@+id/login_button"
-        android:layout_width="118dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="80dp"
-        android:background="@drawable/blue_btn"
-        android:contentDescription="로그인"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/input_password" />
 
-
-    <TextView
-        android:id="@+id/sign_up_text"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/login_button_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="92dp"
-        android:clickable="true"
-        android:text="로그인"
-        android:textColor="@color/white"
-        android:textSize="17sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/sign_up_button_container"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_password"/>
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login_btn"
+            android:contentDescription="로그인"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/login_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="로그인"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/login_button"
+            app:layout_constraintEnd_toEndOf="@id/login_button"
+            app:layout_constraintStart_toStartOf="@id/login_button"
+            app:layout_constraintTop_toTopOf="@id/login_button" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sign_up_button_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="110dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/sign_up_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/signup_btn"
+            android:contentDescription="회원가입"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/sign_up_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="회원가입"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/sign_up_button"
+            app:layout_constraintEnd_toEndOf="@id/sign_up_button"
+            app:layout_constraintStart_toStartOf="@id/sign_up_button"
+            app:layout_constraintTop_toTopOf="@id/sign_up_button" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

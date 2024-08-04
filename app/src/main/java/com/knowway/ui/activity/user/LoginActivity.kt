@@ -3,6 +3,7 @@ package com.knowway.ui.activity.user
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
@@ -23,6 +24,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var emailInput: EditText
     private lateinit var passwordInput: EditText
     private lateinit var loginButton: ImageButton
+    private lateinit var signUpButton: ImageButton
     private lateinit var loginErrorMessage: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +35,7 @@ class LoginActivity : AppCompatActivity() {
         emailInput = findViewById(R.id.input_email)
         passwordInput = findViewById(R.id.input_password)
         loginButton = findViewById(R.id.login_button)
+        signUpButton = findViewById(R.id.sign_up_button)
         loginErrorMessage = findViewById(R.id.login_failed_txt)
 
         loginButton.setOnClickListener {
@@ -45,6 +48,11 @@ class LoginActivity : AppCompatActivity() {
                 showError("이메일과 패스워드를 모두 입력해주세요.")
             }
         }
+
+        signUpButton.setOnClickListener {
+            val intent = Intent(this, SignupActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun performLogin(email: String, password: String) {
@@ -56,12 +64,12 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     checkUserRole()
                 } else {
-                    showError("로그인 실패. 이메일 또는 비밀번호를 확인하세요.")
+                    showError("이메일 또는 비밀번호를 확인해주세요.")
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                showError("네트워크 오류: ${t.localizedMessage}")
+                Log.d("error", "네트워크 오류: ${t.localizedMessage}")
             }
         })
     }
@@ -104,12 +112,12 @@ private fun getUserChatId() {
                     navigateToSelectMenu(it.memberChatId)
                 } ?: showError("유저의 고유 Chat number가 존재하지 않습니다.")
             } else {
-                showError("유저 Chat ID 조회 실패.")
+                Log.d("error", "유저 Chat ID 조회 실패.")
             }
         }
 
         override fun onFailure(call: Call<UserChatMemberIdResponse>, t: Throwable) {
-            showError("네트워크 오류: ${t.localizedMessage}")
+            Log.d("error", "네트워크 오류: ${t.localizedMessage}")
         }
     })
 }
