@@ -99,6 +99,9 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
         editor.putString("dept_floor_map_paths", floorMapPaths)
 
         editor.apply()
+
+        // 디버깅 포인트 추가
+        Log.d("DepartmentStoreSearchActivity", "Saved department store data: id=${dept.departmentStoreId}, name=${dept.departmentStoreName}, branch=${dept.departmentStoreBranch}, floorIds=$floorIds, floorNames=$floorNames, floorMapPaths=$floorMapPaths")
     }
 
     private fun navigateToMainPageActivity() {

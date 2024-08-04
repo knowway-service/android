@@ -1,5 +1,6 @@
 package com.knowway.ui.activity.mainpage
 
+import MainFloorSelectFragment
 import android.Manifest
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -18,7 +19,10 @@ import com.knowway.data.model.department.Floor
 import com.knowway.data.repository.MainPageRepository
 import com.knowway.databinding.ActivityMainPageBinding
 import com.knowway.ui.fragment.MapFooterFragment
-import com.knowway.ui.fragment.mainpage.*
+import com.knowway.ui.fragment.mainpage.MainBackFragment
+import com.knowway.ui.fragment.mainpage.MainLocationFragment
+import com.knowway.ui.fragment.mainpage.MainMapFragment
+import com.knowway.ui.fragment.mainpage.MainPersonFragment
 import com.knowway.ui.viewmodel.mainpage.MainPageViewModel
 import com.knowway.ui.viewmodel.mainpage.MainPageViewModelFactory
 import kotlinx.coroutines.flow.collect
@@ -87,17 +91,36 @@ class MainPageActivity : AppCompatActivity() {
         }
 
         binding.buttonFragmentContainer.setOnClickListener {
+            val transaction = supportFragmentManager.beginTransaction()
+
             if (displayFlag) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.button_fragment_container, MainLocationFragment())
+                transaction.replace(R.id.button_fragment_container, MainLocationFragment())
                     .replace(R.id.card_fragment_container, MainPersonFragment())
-                    .commit()
+                    .setCustomAnimations(
+                        R.anim.fade_in,
+                        R.anim.fade_out,
+                        R.anim.fade_in,
+                        R.anim.fade_out
+                    )
+                    .addToBackStack(null)
             } else {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.button_fragment_container, MainBackFragment())
+                transaction.replace(R.id.button_fragment_container, MainBackFragment())
                     .replace(R.id.card_fragment_container, MainMapFragment())
-                    .commit()
+                    .addToBackStack(null)
+                    .setCustomAnimations(
+                        R.anim.fade_in,
+                        R.anim.fade_out,
+                        R.anim.fade_in,
+                        R.anim.fade_out
+                    )
             }
+
+            try {
+                transaction.commit()
+            } catch (e: Exception) {
+                Log.e("MainPageActivity", "Fragment transaction failed", e)
+            }
+
             displayFlag = !displayFlag
         }
     }
@@ -189,7 +212,6 @@ class MainPageActivity : AppCompatActivity() {
         binding.mainDeptTitle.text = deptName
         binding.mainDeptBranch.text = deptBranch
 
-        // 현재 층 정보를 기본값으로 설정 (예: 첫 번째 층)
         currentFloor = floorList.firstOrNull()
         binding.mainFloor.text = currentFloor?.departmentStoreFloor ?: "정보 없음"
     }
@@ -197,6 +219,9 @@ class MainPageActivity : AppCompatActivity() {
     fun updateCurrentFloor(floor: Floor) {
         currentFloor = floor
         binding.mainFloor.text = floor.departmentStoreFloor
+
+        sharedPreferences.edit().putLong("selected_floor_id", floor.departmentStoreFloorId).apply()
+        sharedPreferences.edit().putString("selected_floor_map_path", floor.departmentStoreMapPath).apply()
     }
 
     fun showMapFragment(mapPath: String) {
@@ -209,6 +234,17 @@ class MainPageActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.card_fragment_container, fragment)
             .addToBackStack(null)
+            .setCustomAnimations(
+                R.anim.fade_in,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.fade_out
+            )
             .commit()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        Log.d("MainPageActivity", "Back pressed")
     }
 }

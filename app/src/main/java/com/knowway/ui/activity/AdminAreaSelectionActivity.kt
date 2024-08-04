@@ -1,5 +1,6 @@
 package com.knowway.ui.activity
 
+import MainFloorSelectFragment
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.knowway.data.network.AdminApiService
 import com.knowway.databinding.ActivityAdminAreaSelectionBinding
-import com.knowway.ui.fragment.mainpage.MainFloorSelectFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

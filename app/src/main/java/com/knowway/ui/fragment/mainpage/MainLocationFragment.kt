@@ -2,6 +2,7 @@ package com.knowway.ui.fragment.mainpage
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,18 +28,13 @@ class MainLocationFragment : Fragment() {
 
         binding.locationMap.setOnClickListener {
             val sharedPreferences = requireActivity().getSharedPreferences("DeptPref", Context.MODE_PRIVATE)
-            val selectedFloorName = sharedPreferences.getString("selected_floor", "")
+            val mapPath = sharedPreferences.getString("selected_floor_map_path", "")
 
-            val floorIds = sharedPreferences.getString("dept_floor_ids", "")
-            val floorNames = sharedPreferences.getString("dept_floor_names", "")
-            val floorMapPaths = sharedPreferences.getString("dept_floor_map_paths", "")
-
-            val floorNameList = floorNames?.split(",") ?: emptyList()
-            val floorMapPathList = floorMapPaths?.split(",") ?: emptyList()
-
-            val floorMapPath = floorNameList.zip(floorMapPathList).find { it.first == selectedFloorName }?.second
-
-            (requireActivity() as? MainPageActivity)?.showMapFragment(floorMapPath ?: "")
+            if (!mapPath.isNullOrEmpty()) {
+                (requireActivity() as? MainPageActivity)?.showMapFragment(mapPath)
+            } else {
+                Log.e("MainLocationFragment", "Map path is empty or null")
+            }
         }
     }
 
