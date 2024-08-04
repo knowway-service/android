@@ -30,8 +30,8 @@ class  ChatActivity : AppCompatActivity() {
     private lateinit var adapter: ChatAdapter
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
-    private var storeId: Long = 2
-    private var memberId: Long = 3
+    private var storeId: Long = 1
+    private var memberId: Long = 1
     private lateinit var webSocketClient: WebSocketClient
     private lateinit var userNickname: String
 
@@ -39,8 +39,8 @@ class  ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        storeId = intent.getLongExtra("storeId", 2)
-        memberId = intent.getLongExtra("memberId", 3)
+        storeId = intent.getLongExtra("storeId", 1)
+        memberId = intent.getLongExtra("memberId", 1)
 
         userNickname = generateRandomNickname()
 
