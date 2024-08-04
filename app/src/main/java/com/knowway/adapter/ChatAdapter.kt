@@ -8,14 +8,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.knowway.R
-import com.knowway.data.model.ChatMessage
+import com.knowway.data.model.chat.ChatMessage
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ChatAdapter(private val currentUserId: Long) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(ChatDiffCallback()) {
 
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position).memberId == currentUserId) R.layout.item_message_sent else R.layout.item_message_received
+        return if (getItem(position).chatMessageId == currentUserId) R.layout.item_message_sent else R.layout.item_message_received
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

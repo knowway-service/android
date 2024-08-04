@@ -151,9 +151,6 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
 
     private fun navigateToChatActivity() {
         val intent = Intent(this, ChatActivity::class.java)
-        val sharedPreferences = getSharedPreferences("DeptPref", MODE_PRIVATE)
-        val storeId = sharedPreferences.getLong("dept_id", 1)
-        intent.putExtra("storeId", storeId)
         startActivity(intent)
     }
 }

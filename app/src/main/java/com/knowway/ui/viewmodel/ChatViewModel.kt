@@ -6,8 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.knowway.data.model.ChatMessage
-import com.knowway.data.model.SendMessage
+import com.knowway.data.model.chat.ChatMessage
+import com.knowway.data.model.chat.SendMessage
 import com.knowway.data.repository.ChatRepository
 import com.knowway.data.network.ChatApiService
 import kotlinx.coroutines.launch
@@ -18,9 +18,35 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     private val chatRepository = ChatRepository(ChatApiService.create())
 
-    fun loadMessages(storeId: Long) {
+    private var currentPage = 0
+    private var isLastPage = false
+
+    fun loadInitialMessages(storeId: Long) {
+        currentPage = 0
+        isLastPage = false
+        loadMessages(storeId, true)
+    }
+
+    fun loadPreviousMessages(storeId: Long) {
+        if (isLastPage) return
+        loadMessages(storeId, false)
+    }
+
+    private fun loadMessages(storeId: Long, isInitialLoad: Boolean) {
         viewModelScope.launch {
-            _messages.value = chatRepository.getMessages(storeId)
+            val response = chatRepository.getMessages(storeId, currentPage)
+            val newMessages = response.content
+            if (newMessages.size < 20) {
+                isLastPage = true
+            }
+            currentPage++
+
+            _messages.value = if (isInitialLoad) {
+                newMessages
+            } else {
+                // 이전 메시지를 기존 메시지 리스트의 앞에 추가
+                newMessages + (_messages.value ?: emptyList())
+            }
         }
     }
 
@@ -28,11 +54,6 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 val response = chatRepository.postMessage(message)
-                if (response.isSuccessful) {
-                    loadMessages(message.departmentStoreId)
-                } else {
-                    Log.e("ChatViewModel", "Failed to send message: ${response.errorBody()?.string()}")
-                }
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Exception while sending message", e)
             }
