@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.knowway.R
 import com.knowway.databinding.FragmentMainMapBinding
 
 class MainMapFragment : Fragment() {
@@ -24,12 +26,19 @@ class MainMapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.imageView.setImageDrawable(null)
         val mapPath = arguments?.getString("map_path") ?: return
 
         if (mapPath.isNotEmpty()) {
-            Glide.with(this)
-                .load(mapPath)  // S3 경로 또는 URL
-                .into(binding.imageView)
+            binding.imageView.post {
+                Glide.with(this)
+                    .load(mapPath)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.picachu)
+                    .error(R.drawable.record)
+                    .into(binding.imageView)
+            }
         }
     }
 

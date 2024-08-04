@@ -1,32 +1,38 @@
-package com.knowway.ui.fragment.mainpage
-
+import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.knowway.R
 import com.knowway.adapter.FloorAdapter
 import com.knowway.data.model.department.Floor
 import com.knowway.databinding.FragmentFloorSelectBinding
 import com.knowway.ui.activity.mainpage.MainPageActivity
 
-class MainFloorSelectFragment : BottomSheetDialogFragment() {
-    private lateinit var binding: FragmentFloorSelectBinding
+class MainFloorSelectFragment : DialogFragment() {
+    private var _binding: FragmentFloorSelectBinding? = null
+    private val binding get() = _binding!!
     private val adapter: FloorAdapter by lazy {
         FloorAdapter { floor ->
-            // 층 선택 시 처리
             (activity as? MainPageActivity)?.updateCurrentFloor(floor)
             dismiss()
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NO_TITLE, R.style.CustomDialog)
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentFloorSelectBinding.inflate(inflater, container, false)
+        _binding = FragmentFloorSelectBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -37,6 +43,11 @@ class MainFloorSelectFragment : BottomSheetDialogFragment() {
         binding.floorRecyclerView.adapter = adapter
 
         loadAndDisplayFloorData()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun loadAndDisplayFloorData() {
@@ -54,5 +65,15 @@ class MainFloorSelectFragment : BottomSheetDialogFragment() {
         }
 
         adapter.submitList(floorList)
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.window?.apply {
+            setBackgroundDrawableResource(R.drawable.border_background)
+            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            attributes?.height = (resources.displayMetrics.heightPixels * 0.6).toInt()
+        }
+        return dialog
     }
 }
