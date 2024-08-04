@@ -13,8 +13,8 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="15dp"
-        android:src="@drawable/ic_footer_mypage"
         android:clickable="true"
-        android:focusable="true"/>
+        android:focusable="true"
+        android:src="@drawable/ic_footer_mypage" />
 
 </RelativeLayout>
