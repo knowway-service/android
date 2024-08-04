@@ -8,6 +8,8 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -47,7 +49,7 @@ class MainPageActivity : AppCompatActivity() {
     }
 
     private var displayFlag = false
-    private val range = 5.0
+    private val range = 20.0
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
@@ -232,6 +234,11 @@ class MainPageActivity : AppCompatActivity() {
 
         currentFloor = floorList.firstOrNull()
         binding.mainFloor.text = currentFloor?.departmentStoreFloor ?: "정보 없음"
+
+        currentFloor?.let { sharedPreferences.edit().putLong("selected_floor_id", it.departmentStoreFloorId).apply() }
+        sharedPreferences.edit().putString("selected_floor_map_path",
+            currentFloor?.departmentStoreMapPath
+        ).apply()
     }
 
     fun updateCurrentFloor(floor: Floor) {
