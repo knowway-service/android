@@ -33,7 +33,7 @@ object ApiClient {
         val okHttpClient = okHttpClientBuilder.build()
 
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_IP_ADDRESS)
+            .baseUrl("http://${BuildConfig.BASE_IP_ADDRESS}:8080")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

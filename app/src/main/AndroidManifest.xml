@@ -26,11 +26,11 @@
         <activity
             android:name=".ui.activity.RecordActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".ui.activity.AdminAreaSelectionActivity"
@@ -53,6 +53,12 @@
         </activity>
         <activity
             android:name=".ui.activity.SelectMenuActivity"
+            android:exported="true"></activity>
+        <activity
+            android:name=".ui.activity.user.LoginActivity"
+            android:exported="true"></activity>
+        <activity
+            android:name=".ui.activity.user.SignupActivity"
             android:exported="true"></activity>
         <activity
             android:name=".ui.activity.ChatActivity"
