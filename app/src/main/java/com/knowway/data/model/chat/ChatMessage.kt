@@ -1,15 +1,15 @@
-package com.knowway.data.model
+package com.knowway.data.model.chat
 
 data class ChatMessage(
     val messageId: Long,
-    val memberId: Long,
+    val chatMessageId: Long,
     val messageContent: String,
     val messageNickname: String,
     val createdAt: String
 )
 
 data class SendMessage(
-    val memberId: Long,
+    val chatMessageId: Long,
     val departmentStoreId: Long,
     val messageContent: String,
     val messageNickname: String

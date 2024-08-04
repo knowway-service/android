@@ -1,4 +1,4 @@
-package com.knowway.data.model
+package com.knowway.data.model.admin
 
 data class AdminRecord(
     val title: String,

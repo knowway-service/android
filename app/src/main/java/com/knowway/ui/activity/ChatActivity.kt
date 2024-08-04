@@ -1,9 +1,11 @@
 package com.knowway.ui.activity
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,8 +15,8 @@ import com.knowway.BuildConfig
 import com.knowway.Constants
 import com.knowway.R
 import com.knowway.adapter.ChatAdapter
-import com.knowway.data.model.ChatMessage
-import com.knowway.data.model.SendMessage
+import com.knowway.data.model.chat.ChatMessage
+import com.knowway.data.model.chat.SendMessage
 import com.knowway.ui.viewmodel.ChatViewModel
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
@@ -24,54 +26,87 @@ import java.text.SimpleDateFormat
 import kotlin.random.Random
 import java.util.*
 
-class  ChatActivity : AppCompatActivity() {
+class ChatActivity : AppCompatActivity() {
     private val viewModel: ChatViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ChatAdapter
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
     private var storeId: Long = 1
-    private var memberId: Long = 1
+    private var memberChatId: Long = 44
     private lateinit var webSocketClient: WebSocketClient
     private lateinit var userNickname: String
+    private var isLoadingMessages = false
+    private lateinit var leaveButton: ImageView
+    private lateinit var deptNameTextView: TextView
+    private lateinit var deptBranchTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        storeId = intent.getLongExtra("storeId", 1)
-        memberId = intent.getLongExtra("memberId", 1)
+        val sharedPreferences = getSharedPreferences("DeptPref", Context.MODE_PRIVATE)
+        storeId = sharedPreferences.getLong("dept_id", 1)
+        val deptName = sharedPreferences.getString("dept_name", "현대백화점")
+        val deptBranch = sharedPreferences.getString("dept_branch", "더현대 서울")
+
+        val appPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        memberChatId = appPreferences.getLong("memberChatId", 44)
 
         userNickname = generateRandomNickname()
 
         recyclerView = findViewById(R.id.chat_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = ChatAdapter(memberId)
+        adapter = ChatAdapter(memberChatId)
         recyclerView.adapter = adapter
 
         messageInput = findViewById(R.id.chat_input)
         sendButton = findViewById(R.id.send_button)
 
+        deptNameTextView = findViewById(R.id.dept_name)
+        deptBranchTextView = findViewById(R.id.dept_branch)
+        deptNameTextView.text = deptName
+        deptBranchTextView.text = deptBranch
+
+        leaveButton = findViewById(R.id.ic_leave)
+        leaveButton.setOnClickListener {
+            finish()
+        }
+
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
-                recyclerView.scrollToPosition(adapter.itemCount - 1)
+                if (!recyclerView.canScrollVertically(-1)) {
+                    recyclerView.scrollToPosition(0)
+                }
             }
         })
 
         viewModel.messages.observe(this) { messages ->
-            adapter.submitList(messages)
+            val previousItemCount = adapter.itemCount
+            val previousScrollPosition = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+            val previousTopView = recyclerView.getChildAt(0)
+            val previousTopOffset = previousTopView?.top ?: 0
+
+            adapter.submitList(messages) {
+                if (previousItemCount == 0) {
+                    recyclerView.scrollToPosition(adapter.itemCount - 1)
+                } else {
+                    (recyclerView.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(previousScrollPosition + messages.size - previousItemCount, previousTopOffset)
+                }
+            }
+            isLoadingMessages = false
         }
 
         sendButton.setOnClickListener {
             val messageContent = messageInput.text.toString()
             if (messageContent.isNotEmpty()) {
-                val sendMessage = SendMessage(memberId, storeId, messageContent, userNickname)
+                val sendMessage = SendMessage(memberChatId, storeId, messageContent, userNickname)
                 viewModel.sendMessage(sendMessage)
                 val timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault()).format(Date())
                 val jsonMessage = JSONObject().apply {
                     put("type", "chatMessage")
-                    put("memberId", memberId)
+                    put("chatMessageId", memberChatId)
                     put("messageContent", messageContent)
                     put("userNickname", userNickname)
                     put("timestamp", timestamp)
@@ -81,8 +116,17 @@ class  ChatActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.loadMessages(storeId)
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy < 0 && !recyclerView.canScrollVertically(-1) && !isLoadingMessages) {
+                    isLoadingMessages = true
+                    viewModel.loadPreviousMessages(storeId)
+                }
+            }
+        })
 
+        viewModel.loadInitialMessages(storeId)
         initializeWebSocket()
     }
 
@@ -96,7 +140,6 @@ class  ChatActivity : AppCompatActivity() {
         val uri = URI("ws://${BuildConfig.BASE_IP_ADDRESS}:8080/ws/chat/$storeId")
         webSocketClient = object : WebSocketClient(uri) {
             override fun onOpen(handshakedata: ServerHandshake?) {
-                // 연결이 열렸을 때
             }
 
             override fun onMessage(message: String?) {
@@ -111,7 +154,7 @@ class  ChatActivity : AppCompatActivity() {
                                         findViewById<TextView>(R.id.chatroom_user_count).text = userCount.toString()
                                     }
                                     "chatMessage" -> {
-                                        val senderId = jsonObject.getLong("memberId")
+                                        val senderId = jsonObject.getLong("chatMessageId")
                                         val messageContent = jsonObject.getString("messageContent")
                                         val senderNickname = jsonObject.getString("userNickname")
                                         val timestamp = jsonObject.getString("timestamp")
@@ -138,7 +181,6 @@ class  ChatActivity : AppCompatActivity() {
             }
 
             override fun onClose(code: Int, reason: String?, remote: Boolean) {
-                // 연결이 닫혔을 때
             }
 
             override fun onError(ex: Exception?) {
