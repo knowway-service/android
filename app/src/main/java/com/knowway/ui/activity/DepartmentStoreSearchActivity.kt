@@ -22,6 +22,7 @@ import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.data.repository.DepartmentStoreRepository
 import com.knowway.databinding.ActivityDepartmentStoreSearchBinding
 import com.knowway.ui.activity.mainpage.MainPageActivity
+import com.knowway.ui.fragment.SelectFooterFragment
 import com.knowway.ui.viewmodel.department.DepartmentStoreViewModel
 import com.knowway.ui.viewmodel.department.DepartmentStoreViewModelFactory
 import com.knowway.ui.viewmodel.department.LocationViewModel
@@ -113,6 +114,11 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.footer_fragment_container, SelectFooterFragment())
+                .commit()
         }
     }
 

@@ -94,36 +94,41 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
 
-    <RelativeLayout
+    <ImageButton
+        android:id="@+id/next_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="48dp"
-        android:clickable="true"
-        android:enabled="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/blue_btn"
+        android:padding="10dp"
+        android:contentDescription="@string/confirm"
+        app:layout_constraintBottom_toTopOf="@id/footer_fragment_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"/>
 
-        <ImageButton
-            android:id="@+id/next_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/blue_btn"
-            android:padding="10dp"
-            android:contentDescription="@string/confirm" />
+    <TextView
+        android:id="@+id/confirmText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/confirm"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:translationX="-1dp"
+        android:translationY="-1dp"
+        app:layout_constraintTop_toTopOf="@id/next_btn"
+        app:layout_constraintBottom_toBottomOf="@id/next_btn"
+        app:layout_constraintStart_toStartOf="@id/next_btn"
+        app:layout_constraintEnd_toEndOf="@id/next_btn" />
 
-        <TextView
-            android:id="@+id/confirmText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:text="@string/confirm"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:translationX="-1dp"
-            android:translationY="-1dp" />
-    </RelativeLayout>
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/footer_fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
