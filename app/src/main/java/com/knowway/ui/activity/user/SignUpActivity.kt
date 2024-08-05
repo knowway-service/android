@@ -74,7 +74,7 @@ class SignupActivity : AppCompatActivity() {
                     showError("이메일 형식이 올바르지 않습니다.")
                 }
                 if (!isValidPassword(password)) {
-                    showError("적어도 한 개의 대문자, 소문자, 숫자를 포함해주세요.")
+                    showPasswordError("한 개의 대문자, 소문자, 숫자를 포함해주세요.")
                 }
                 if (!isEmailAvailable) {
                     showError("중복 체크를 해주세요")
@@ -162,4 +162,9 @@ class SignupActivity : AppCompatActivity() {
         emailDuplicateError.text = message
         emailDuplicateError.visibility = View.VISIBLE
     }
+    private fun showPasswordError(message: String) {
+        passwordErrorMessage.text = message
+        passwordErrorMessage.visibility = View.VISIBLE
+    }
+
 }

@@ -9,9 +9,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.SeekBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.knowway.data.model.user.UserRecord
 import com.knowway.databinding.ItemAdminRecordBinding
@@ -19,7 +19,6 @@ import com.knowway.R
 import com.knowway.data.network.ApiClient
 import com.knowway.data.network.user.UserApiService
 import com.knowway.ui.fragment.DeleteRecordFragment
-import com.knowway.ui.fragment.mainpage.MainRecordTipFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -185,40 +184,31 @@ class UserRecordAdapter(
                 setOnConfirmListener {
                     ApiClient.getClient().create(UserApiService::class.java)
                         .deleteUserRecord(record.recordId)
-                        .enqueue(object : Callback<Boolean> {
+                        .enqueue(object : Callback<Void> {
                             override fun onResponse(
-                                call: Call<Boolean>,
-                                response: Response<Boolean>
+                                call: Call<Void>,
+                                response: Response<Void>
                             ) {
-                                if (response.isSuccessful && response.body() == true) {
+                                if (response.isSuccessful) {
                                     records.removeAt(position)
                                     notifyItemRemoved(position)
-                                    Toast.makeText(
-                                        context,
-                                        "삭제 완료: ${record.recordTitle}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
                                 } else {
                                     Log.e("UserRecordAdapter", "Failed to delete user record")
                                 }
                             }
 
-                            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
                                 Log.e("UserRecordAdapter", "Error deleting user record", t)
                             }
                         })
                 }
             }
-
-            // Show the fragment
             fragment.show(
                 (context as AppCompatActivity).supportFragmentManager,
                 "DeleteConfirmationDialog"
             )
         }
     }
-
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordViewHolder {
         val binding = ItemAdminRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return RecordViewHolder(binding)
