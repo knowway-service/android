@@ -9,11 +9,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.knowway.databinding.FragmentAdminRecordingListBinding
 import com.knowway.data.model.admin.AdminRecord
 import com.knowway.adapter.AdminRecordAdapter
+import com.knowway.data.network.AdminApiService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class AdminRecordingListFragment(private val isInSelectionTab: Boolean) : Fragment() {
+class AdminRecordingListFragment(
+    private val departmentStoreFloorId: Long,
+    private val areaNumber: Int,
+    private val isInSelectionTab: Boolean,
+    private val refreshData: (() -> Unit)? = null
+) : Fragment() {
 
     private var _binding: FragmentAdminRecordingListBinding? = null
     private val binding get() = _binding!!
+    private val apiService: AdminApiService by lazy { AdminApiService.create() }
+    private lateinit var recordAdapter: AdminRecordAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,18 +37,32 @@ class AdminRecordingListFragment(private val isInSelectionTab: Boolean) : Fragme
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        loadRecords()
+    }
 
-        val records = listOf(
-            AdminRecord("영등포점 맛집 안내", "https://know-way-record.s3.ap-northeast-2.amazonaws.com/file_example_MP3_700KB.mp3"),
-            AdminRecord("목동점 엘리베이터", "https://know-way-record.s3.ap-northeast-2.amazonaws.com/file_example_MP3_700KB.mp3"),
-            AdminRecord("목동점 화장실 앞", "https://know-way-record.s3.ap-northeast-2.amazonaws.com/file_example_MP3_700KB.mp3"),
-            AdminRecord("목동점 엘리베이터", "https://know-way-record.s3.ap-northeast-2.amazonaws.com/file_example_MP3_700KB.mp3")
-        )
-
-        val recordAdapter = AdminRecordAdapter(records, requireContext(), isInSelectionTab)
+    private fun setupRecyclerView() {
+        recordAdapter = AdminRecordAdapter(emptyList(), requireContext(), isInSelectionTab) {
+            refreshData?.invoke()
+        }
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = recordAdapter
+        }
+    }
+
+    fun loadRecords() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = apiService.getRecordsByFloor(departmentStoreFloorId, areaNumber.toLong(), isInSelectionTab)
+            if (response.isSuccessful) {
+                val records = response.body()?.map {
+                    AdminRecord(it.recordId.toString(), it.recordTitle, it.recordPath)
+                } ?: emptyList()
+                withContext(Dispatchers.Main) {
+                    recordAdapter.updateRecords(records)
+                }
+            } else {
+            }
         }
     }
 

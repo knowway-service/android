@@ -4,11 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.knowway.R
 import com.knowway.adapter.AdminDepartmentStoreAdapter
 import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.databinding.ActivityAdminDepartmentStoreSearchBinding
@@ -71,23 +74,18 @@ class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
             if (query.isNotEmpty()) {
                 viewModel.searchDepartmentStores(query)
             } else {
-                Toast.makeText(this, "Please enter a search term", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun setupConfirmButton() {
-        val confirmBinding = CustomConfirmButtonBinding.bind(binding.confirmButtonContainer.root)
-        confirmBinding.confirmButton.setOnClickListener {
+        val confirmButton = findViewById<ImageButton>(R.id.confirmButton)
+        confirmButton.setOnClickListener {
             val selectedDepartmentStore = adapter.getSelectedDepartmentStore()
             if (selectedDepartmentStore != null) {
-                val intent = Intent(this, AdminAreaSelectionActivity::class.java).apply {
-                    putExtra("selectedDepartmentStoreId", selectedDepartmentStore.departmentStoreId)
-                    putExtra("selectedDepartmentStoreName", selectedDepartmentStore.departmentStoreName)
-                    putExtra("selectedDepartmentStoreBranch", selectedDepartmentStore.departmentStoreBranch)
-                }
+                saveSelectedStore(selectedDepartmentStore)
+                val intent = Intent(this, AdminAreaSelectionActivity::class.java)
                 startActivity(intent)
-                Log.d("SelectedDepartmentStore", "Selected: $selectedDepartmentStore")
             } else {
                 binding.errorTextView.visibility = View.VISIBLE
             }
@@ -96,5 +94,26 @@ class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
 
     private fun logSelectedDepartmentStore(departmentStoreResponse: DepartmentStoreResponse) {
         Log.d("SelectedDepartmentStore", "Selected: $departmentStoreResponse")
+    }
+
+    private fun saveSelectedStore(dept: DepartmentStoreResponse) {
+        val sharedPreferences = getSharedPreferences("DeptPref", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putLong("dept_id", dept.departmentStoreId)
+        editor.putString("dept_name", dept.departmentStoreName)
+        editor.putString("dept_branch", dept.departmentStoreBranch)
+
+        val floorIds = dept.departmentStoreFloorResponseList.joinToString(",") { it.departmentStoreFloorId.toString() }
+        editor.putString("dept_floor_ids", floorIds)
+
+        val floorNames = dept.departmentStoreFloorResponseList.joinToString { it.departmentStoreFloor }
+        editor.putString("dept_floor_names", floorNames)
+
+        val floorMapPaths = dept.departmentStoreFloorResponseList.joinToString(",") { it.departmentStoreFloorMapPath }
+        editor.putString("dept_floor_map_paths", floorMapPaths)
+
+        editor.apply()
+
+        Log.d("AdminDepartmentStoreSearchActivity", "Saved department store data: id=${dept.departmentStoreId}, name=${dept.departmentStoreName}, branch=${dept.departmentStoreBranch}, floorIds=$floorIds, floorNames=$floorNames, floorMapPaths=$floorMapPaths")
     }
 }
