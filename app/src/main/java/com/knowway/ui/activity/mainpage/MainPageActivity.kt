@@ -4,7 +4,6 @@ import MainFloorSelectFragment
 import android.Manifest
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -22,16 +21,19 @@ import com.knowway.data.model.department.Floor
 import com.knowway.data.repository.MainPageRepository
 import com.knowway.databinding.ActivityMainPageBinding
 import com.knowway.ui.fragment.MapFooterFragment
+import com.knowway.ui.fragment.OnAudioCompletionListener
+import com.knowway.ui.fragment.OnToggleChangeListener
 import com.knowway.ui.fragment.RecordFragment
 import com.knowway.ui.fragment.mainpage.MainMapFragment
 import com.knowway.ui.fragment.mainpage.MainPersonFragment
+import com.knowway.ui.fragment.mainpage.MainRecordTipFragment
 import com.knowway.ui.viewmodel.mainpage.MainPageViewModel
 import com.knowway.ui.viewmodel.mainpage.MainPageViewModelFactory
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class MainPageActivity : AppCompatActivity() {
+class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCompletionListener {
     private lateinit var binding: ActivityMainPageBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
@@ -46,7 +48,11 @@ class MainPageActivity : AppCompatActivity() {
     }
 
     private var displayFlag = false
-    private val range = 20.0
+    private val range = 10.0
+    private var isAutoPlayEnabled = false
+    private var currentRecordTipFragment: MainRecordTipFragment ?= null
+    private var isProximityCheckRunning = false
+    private var pendingCheckProximityData: ProximityData? = null
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
@@ -64,7 +70,6 @@ class MainPageActivity : AppCompatActivity() {
         slidingUpPanelLayout = findViewById(R.id.main_frame)
         slidingUpPanelLayout.addPanelSlideListener(PanelEventListener())
         backLayout = findViewById(R.id.back_layout)
-
 
         val recordingBtn: ImageView = findViewById(R.id.main_record)
         recordingBtn.setOnClickListener {
@@ -99,13 +104,15 @@ class MainPageActivity : AppCompatActivity() {
             floorSelectModal.show(supportFragmentManager, "층 선택 모달창")
         }
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.card_fragment_container, MainPersonFragment())
-                .replace(R.id.footer_container, MapFooterFragment())
-                .replace(R.id.fragment_container, RecordFragment())
-                .commit()
+        val mapFooterFragment = MapFooterFragment().apply {
+            setOnToggleChangeListener(this@MainPageActivity)
         }
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.card_fragment_container, MainPersonFragment())
+            .replace(R.id.footer_container, mapFooterFragment)
+            .replace(R.id.fragment_container, RecordFragment())
+            .commit()
 
         val clickListener = View.OnClickListener {
             if (displayFlag) {
@@ -145,7 +152,7 @@ class MainPageActivity : AppCompatActivity() {
                             records.forEach { record ->
                                 val latitude = record.recordLatitude.toDouble()
                                 val longitude = record.recordLongitude.toDouble()
-                                checkProximity(location.latitude, location.longitude, latitude, longitude)
+                                checkProximity(record.recordPath , location.latitude, location.longitude, latitude, longitude)
                             }
                         }
                     }
@@ -182,7 +189,18 @@ class MainPageActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkProximity(curLat: Double, curLnt: Double, targetLat: Double, targetLnt: Double) {
+    private fun checkProximity(
+        recordPath: String,
+        curLat: Double,
+        curLnt: Double,
+        targetLat: Double,
+        targetLnt: Double
+    ) {
+        if (isProximityCheckRunning) {
+            pendingCheckProximityData = ProximityData(recordPath, curLat, curLnt, targetLat, targetLnt)
+            return
+        }
+
         val currentLocation = Location("current").apply {
             latitude = curLat
             longitude = curLnt
@@ -195,14 +213,23 @@ class MainPageActivity : AppCompatActivity() {
 
         val distance = currentLocation.distanceTo(targetLocation)
         val fragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainPersonFragment
-        fragment?.let {
-            if (distance <= range) {
-                it.showQuestionButton()
-            } else {
-                it.hideQuestionButton()
+        if (distance <= range) {
+            fragment?.showQuestionButton(recordPath)
+            if (isAutoPlayEnabled) {
+                if (currentRecordTipFragment == null) {
+                    isProximityCheckRunning = true
+                    currentRecordTipFragment = MainRecordTipFragment().apply {
+                        setOnAudioCompletionListener(this@MainPageActivity)
+                        playAudio(recordPath)
+                    }
+                }
             }
+        } else {
+            fragment?.hideQuestionButton()
+            stopAndReleaseCurrentRecordTipFragment()
         }
     }
+
 
     private fun updateDeptInfo() {
         val deptName = sharedPreferences.getString("dept_name", "백화점")
@@ -243,7 +270,7 @@ class MainPageActivity : AppCompatActivity() {
         fragment?.loadMapImage(floor.departmentStoreMapPath)
     }
 
-    fun showMapFragment(mapPath: String) {
+    private fun showMapFragment(mapPath: String) {
         val fragment = MainMapFragment().apply {
             arguments = Bundle().apply {
                 putString("map_path", mapPath)
@@ -262,11 +289,6 @@ class MainPageActivity : AppCompatActivity() {
             .commit()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        Log.d("MainPageActivity", "Back pressed")
-    }
-
     private fun replaceFragment() {
         recordFragment = RecordFragment()
         supportFragmentManager.beginTransaction()
@@ -278,14 +300,59 @@ class MainPageActivity : AppCompatActivity() {
         slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
     }
 
+    override fun onToggleChanged(isToggled: Boolean) {
+        isAutoPlayEnabled = isToggled
+        if (!isToggled) {
+            stopAndReleaseCurrentRecordTipFragment()
+        } else {
+            pendingCheckProximityData?.let {
+                checkProximity(
+                    it.recordPath,
+                    it.curLat,
+                    it.curLnt,
+                    it.targetLat,
+                    it.targetLnt
+                )
+                pendingCheckProximityData = null
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
+        }
+    }
+
+    private fun stopAndReleaseCurrentRecordTipFragment() {
+        isProximityCheckRunning = false
+        currentRecordTipFragment?.stopAndReleaseMediaPlayer()
+        currentRecordTipFragment = null
+    }
+
+    override fun onAudioCompleted() {
+        isProximityCheckRunning = false
+        pendingCheckProximityData?.let {
+            checkProximity(
+                it.recordPath,
+                it.curLat,
+                it.curLnt,
+                it.targetLat,
+                it.targetLnt
+            )
+            pendingCheckProximityData = null
+        }
+    }
 
     inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
+
         override fun onPanelSlide(panel: View?, slideOffset: Float) {
             // Do something when the panel is sliding
         }
-
         override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
             // Do something when the panel state changes
         }
     }
+
+    data class ProximityData (
+        val recordPath: String,
+        val curLat: Double,
+        val curLnt: Double,
+        val targetLat: Double,
+        val targetLnt: Double
+    )
 }
