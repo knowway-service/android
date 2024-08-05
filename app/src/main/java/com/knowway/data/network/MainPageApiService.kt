@@ -10,5 +10,5 @@ interface MainPageApiService {
     @GET("/records/{deptId}/floors")
     suspend fun getRecordsByDeptFloor(
         @Path("deptId") deptId: Long,
-        @Query("deptFloorId") deptFloorId: Long) : Response<List<RecordResponse>>
+        @Query("floor") deptFloorId: Long) : Response<List<RecordResponse>>
 }

@@ -21,7 +21,7 @@ interface AdminApiService {
     @GET("/depts/branch")
     suspend fun getDepartmentStoreByBranch(
         @Query("departmentStoreBranch") departmentStoreBranch: String
-    ): Response<DepartmentStoreResponse>
+    ): Response<List<DepartmentStoreResponse>>
 
     @GET("/depts/{deptId}/floors")
     suspend fun getDepartmentStoreFloorMap(

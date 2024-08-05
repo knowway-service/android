@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.knowway.R
-import com.knowway.data.model.AdminRecord
+import com.knowway.data.model.admin.AdminRecord
 import com.knowway.databinding.ItemAdminRecordBinding
 
 class AdminRecordAdapter(

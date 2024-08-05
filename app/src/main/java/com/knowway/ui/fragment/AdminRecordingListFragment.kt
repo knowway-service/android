@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.knowway.databinding.FragmentAdminRecordingListBinding
-import com.knowway.data.model.AdminRecord
+import com.knowway.data.model.admin.AdminRecord
 import com.knowway.adapter.AdminRecordAdapter
 
 class AdminRecordingListFragment(private val isInSelectionTab: Boolean) : Fragment() {

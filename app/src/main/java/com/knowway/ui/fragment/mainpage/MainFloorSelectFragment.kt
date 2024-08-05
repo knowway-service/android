@@ -1,10 +1,12 @@
 import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.knowway.R
 import com.knowway.adapter.FloorAdapter
@@ -17,6 +19,13 @@ class MainFloorSelectFragment : DialogFragment() {
     private val binding get() = _binding!!
     private val adapter: FloorAdapter by lazy {
         FloorAdapter { floor ->
+            val sharedPreferences = requireContext().getSharedPreferences("FloorPref", MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                putLong("selected_floor_id", floor.departmentStoreFloorId)
+                putString("selected_floor_name", floor.departmentStoreFloor)
+                putString("selected_floor_map_path", floor.departmentStoreMapPath)
+                apply()
+            }
             (activity as? MainPageActivity)?.updateCurrentFloor(floor)
             dismiss()
         }
@@ -39,7 +48,7 @@ class MainFloorSelectFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.floorRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.floorRecyclerView.layoutManager = GridLayoutManager(context, 3)
         binding.floorRecyclerView.adapter = adapter
 
         loadAndDisplayFloorData()
@@ -48,6 +57,7 @@ class MainFloorSelectFragment : DialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
     }
 
     private fun loadAndDisplayFloorData() {
@@ -63,6 +73,16 @@ class MainFloorSelectFragment : DialogFragment() {
         val floorList = floorIdList.zip(floorNameList).zip(floorMapPathList) { (id, name), mapPath ->
             Floor(id, name, mapPath)
         }
+
+        Log.d("MainFloorSelectFragment", """
+        floorIds: $floorIds
+        floorNames: $floorNames
+        floorMapPaths: $floorMapPaths
+        floorIdList: $floorIdList
+        floorNameList: $floorNameList
+        floorMapPathList: $floorMapPathList
+        floorList: $floorList
+    """.trimIndent())
 
         adapter.submitList(floorList)
     }
