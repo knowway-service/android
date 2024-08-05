@@ -21,20 +21,20 @@ interface UserApiService {
     fun isAUserAdmin(): Call<Boolean>
 
     @GET("/users")
-    fun getProfile(@Query("email") email: String): Call<UserProfileResponse>
+    fun getProfile(): Call<UserProfileResponse>
 
     @GET("/users/chat-id")
     fun getUserChatId(): Call<UserChatMemberIdResponse>
 
 
-    @GET("/users/userRecords")
-    fun getProfile(
+    @GET("/users/records")
+    fun getRecord(
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("isSelectedByAdmin") isSelectedByAdmin: Boolean
-    ): Call<UserRecordResponse>
+        @Query("isSelectedByAdmin") isSelectedByAdmin: Boolean?
+    ): Call<List<UserRecord>>
 
-    @DELETE("/users/record/{recordId}")
+    @DELETE("/users/records/{recordId}")
     fun deleteUserRecord(@Path("recordId") recordId: Long): Call<Boolean>
 
 }

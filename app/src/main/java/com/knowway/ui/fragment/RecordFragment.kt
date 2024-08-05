@@ -2,12 +2,15 @@ package com.knowway.ui.fragment
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +24,7 @@ import com.knowway.R
 import com.knowway.data.model.record.Record
 import com.knowway.data.network.RecordApiService
 import com.knowway.databinding.FragmentRecordModalBinding
+import com.knowway.ui.activity.mainpage.MainPageActivity
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -29,6 +33,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import kotlin.math.log
 
 class RecordFragment : Fragment() {
     private var _binding: FragmentRecordModalBinding? = null
@@ -37,6 +42,8 @@ class RecordFragment : Fragment() {
     private var mediaRecorder: MediaRecorder? = null
     private var output: String? = null
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -44,6 +51,23 @@ class RecordFragment : Fragment() {
         val writeStorageGranted = permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
         if (!recordAudioGranted || !writeStorageGranted) {
             Toast.makeText(context, "Permissions not granted.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private var latitude: Double? = null
+    private var longitude: Double? = null
+
+    companion object {
+        private const val ARG_LATITUDE = "latitude"
+        private const val ARG_LONGITUDE = "longitude"
+
+        fun newInstance(latitude: Double?, longitude: Double?): RecordFragment {
+            val fragment = RecordFragment()
+            val args = Bundle()
+            args.putDouble(ARG_LATITUDE, latitude ?: 0.0)
+            args.putDouble(ARG_LONGITUDE, longitude ?: 0.0)
+            fragment.arguments = args
+            return fragment
         }
     }
 
@@ -57,6 +81,12 @@ class RecordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        arguments?.let {
+            latitude = it.getDouble(ARG_LATITUDE)
+            longitude = it.getDouble(ARG_LONGITUDE)
+        }
+
+        sharedPreferences = requireActivity().getSharedPreferences("DeptPref", Context.MODE_PRIVATE)
 
         Glide.with(this)
             .asGif()
@@ -78,7 +108,7 @@ class RecordFragment : Fragment() {
         }
 
         binding.saveButtonInclude.recordingSaveButton.setOnClickListener {
-            setConfirmUI(true, true, true)
+            setConfirmUI(true, true)
             setButtonVisibility(false, false, false, false)
         }
 
@@ -111,11 +141,9 @@ class RecordFragment : Fragment() {
         binding.retryButtonInclude.root.visibility = if (retryVisible) View.VISIBLE else View.GONE
     }
 
-    private fun setConfirmUI(confirmVisible: Boolean, textVisible: Boolean, underlineVisible : Boolean) {
+    private fun setConfirmUI(confirmVisible: Boolean, textVisible: Boolean) {
         binding.confirmButtonInclude.root.visibility = if (confirmVisible) View.VISIBLE else View.GONE
         binding.titleText.visibility = if (textVisible) View.VISIBLE else View.GONE
-        binding.titleText.setHint("타이틀을 입력해주세요.");
-        binding.underline.visibility = if (underlineVisible) View.VISIBLE else View.GONE
     }
 
     private fun handleRecordingStart() {
@@ -171,6 +199,8 @@ class RecordFragment : Fragment() {
             Toast.makeText(requireContext(), "Title cannot be empty", Toast.LENGTH_SHORT).show()
             return
         }
+        val departmentStoreId = sharedPreferences.getLong("dept_id", 1)
+        val departmentStoreFloorId = sharedPreferences.getLong("selected_floor_id", 1)
         output?.let { filePath ->
             val file = File(filePath)
             if (file.exists()) {
@@ -193,31 +223,37 @@ class RecordFragment : Fragment() {
                 val body = MultipartBody.Part.createFormData("file", "$recordTitle.mp4", requestFile)
 
                 val recordRequest = Record(
-                    memberId = 1,
-                    departmentStoreFloorId = 2,
-                    departmentStoreId = 3,
+                    departmentStoreFloorId = 1,
+                    departmentStoreId = 1,
                     recordTitle = recordTitle,
-                    recordLatitude = "37.5665",
-                    recordLongitude = "126.9780"
+                    recordLatitude = latitude.toString(),
+                    recordLongitude = longitude.toString()
                 )
+                Log.d("latitude", latitude.toString())
+                Log.d("longitude", longitude.toString())
                 val recordJson = Gson().toJson(recordRequest)
                 val recordBody = RequestBody.create("application/json".toMediaTypeOrNull(), recordJson)
                 // Upload file using Retrofit
                 val call = RecordApiService.create().uploadRecord(body, recordBody)
                 call.enqueue(object : Callback<String> {
                     override fun onResponse(call: Call<String>, response: Response<String>) {
+                        Log.d("response", response.toString())
                         if (response.isSuccessful) {
-                            Toast.makeText(requireContext(), "File uploaded successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "녹음 파일이 성공적으로 저장되었습니다!", Toast.LENGTH_SHORT).show()
+                            parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
+                            (activity as MainPageActivity).collapsePanel()
                         } else {
-                            Toast.makeText(requireContext(), "File upload failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "녹음 파일 저장에 실패했어요", Toast.LENGTH_SHORT).show()
+                            parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
+                            (activity as MainPageActivity).collapsePanel()
                         }
                     }
 
                     override fun onFailure(call: Call<String>, t: Throwable) {
+                        Log.d("Error", "${t.message}")
                         Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
-                onDestroyView()
             }
         }
     }
