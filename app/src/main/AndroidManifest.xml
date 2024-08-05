@@ -79,12 +79,14 @@
         <activity
             android:name=".ui.activity.MypageActivity"
             android:exported="true" >
-<!--        <intent-filter>-->
-<!--            <action android:name="android.intent.action.MAIN" />-->
-
-<!--            <category android:name="android.intent.category.LAUNCHER" />-->
-<!--        </intent-filter>-->
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
+<!--        <activity-->
+<!--            android:name=".ui.activity.OnboardingActivity"-->
+<!--            android:exported="true" >-->
         <activity
             android:name=".ui.activity.OnboardingActivity"
             android:exported="true" >
@@ -93,6 +95,7 @@
 
 <!--                <category android:name="android.intent.category.LAUNCHER" />-->
 <!--            </intent-filter>-->
+<!--        </activity>-->
         </activity>
     </application>
 
