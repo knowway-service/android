@@ -4,6 +4,7 @@ import MainFloorSelectFragment
 import android.Manifest
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -30,7 +31,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-
 class MainPageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainPageBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -38,6 +38,7 @@ class MainPageActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var recordFragment: RecordFragment
     private lateinit var slidingUpPanelLayout: SlidingUpPanelLayout
+    private lateinit var backLayout: View
 
     private var currentFloor: Floor? = null
     private val viewModel: MainPageViewModel by viewModels {
@@ -56,13 +57,13 @@ class MainPageActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         binding = ActivityMainPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         slidingUpPanelLayout = findViewById(R.id.main_frame)
         slidingUpPanelLayout.addPanelSlideListener(PanelEventListener())
+        backLayout = findViewById(R.id.back_layout)
 
 
         val recordingBtn: ImageView = findViewById(R.id.main_record)
@@ -272,6 +273,11 @@ class MainPageActivity : AppCompatActivity() {
             .replace(R.id.fragment_container, recordFragment)
             .commit()
     }
+
+    fun collapsePanel() {
+        slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+    }
+
 
     inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
         override fun onPanelSlide(panel: View?, slideOffset: Float) {

@@ -21,6 +21,7 @@ import com.knowway.R
 import com.knowway.data.model.record.Record
 import com.knowway.data.network.RecordApiService
 import com.knowway.databinding.FragmentRecordModalBinding
+import com.knowway.ui.activity.mainpage.MainPageActivity
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -207,9 +208,13 @@ class RecordFragment : Fragment() {
                 call.enqueue(object : Callback<String> {
                     override fun onResponse(call: Call<String>, response: Response<String>) {
                         if (response.isSuccessful) {
-                            Toast.makeText(requireContext(), "File uploaded successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "녹음 파일이 성공적으로 저장되었습니다!", Toast.LENGTH_SHORT).show()
+                            parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
+                            (activity as MainPageActivity).collapsePanel()
                         } else {
-                            Toast.makeText(requireContext(), "File upload failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "녹음 파일 저장에 실패했어요", Toast.LENGTH_SHORT).show()
+                            parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
+                            (activity as MainPageActivity).collapsePanel()
                         }
                     }
 
@@ -217,7 +222,6 @@ class RecordFragment : Fragment() {
                         Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
-                onDestroyView()
             }
         }
     }
