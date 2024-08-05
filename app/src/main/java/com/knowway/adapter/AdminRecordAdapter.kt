@@ -9,17 +9,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.knowway.R
 import com.knowway.data.model.admin.AdminRecord
+import com.knowway.data.network.AdminApiService
 import com.knowway.databinding.ItemAdminRecordBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AdminRecordAdapter(
-    private val records: List<AdminRecord>,
+    private var records: List<AdminRecord>,
     private val context: Context,
-    private val isInSelectionTab: Boolean
+    private val isInSelectionTab: Boolean,
+    private val refreshData: () -> Unit
 ) : RecyclerView.Adapter<AdminRecordAdapter.RecordViewHolder>() {
 
     private var mediaPlayer: MediaPlayer? = null
@@ -27,10 +32,11 @@ class AdminRecordAdapter(
     private val handler = Handler(Looper.getMainLooper())
     private var updateSeekBarTask: Runnable? = null
 
+    private val apiService: AdminApiService by lazy { AdminApiService.create() }
+
     inner class RecordViewHolder(val binding: ItemAdminRecordBinding) : RecyclerView.ViewHolder(binding.root) {
 
         init {
-            // 레코드 제목 클릭 시 확장/축소 토글
             binding.recordTitle.setOnClickListener {
                 val record = records[adapterPosition]
                 record.isExpanded = !record.isExpanded
@@ -43,12 +49,11 @@ class AdminRecordAdapter(
                     mediaPlayer?.pause()
                     binding.btnPlayPause.setImageResource(R.drawable.ic_record_play)
                 } else {
-                    playMp3(record.audioFileUrl)
+                    playMp3(record.recordPath)
                     binding.btnPlayPause.setImageResource(R.drawable.ic_record_pause)
                 }
             }
 
-            // SeekBar 변경 시 재생 위치 변경
             binding.musicSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     if (fromUser) {
@@ -76,18 +81,33 @@ class AdminRecordAdapter(
 
             binding.actionText.setOnClickListener {
                 val record = records[adapterPosition]
-                if (isInSelectionTab) {
-                    Toast.makeText(context, "선정 취소: ${record.title}", Toast.LENGTH_SHORT).show()
-                    Log.d("Action", "선정 취소: ${record.title}")
-                } else {
-                    Toast.makeText(context, "선정: ${record.title}", Toast.LENGTH_SHORT).show()
-                    Log.d("Action", "선정: ${record.title}")
+                val action = if (isInSelectionTab) "cancel" else "select"
+                CoroutineScope(Dispatchers.IO).launch {
+                    val response = apiService.selectRecord(record.recordId.toLong())
+                    if (response.isSuccessful) {
+                        withContext(Dispatchers.Main) {
+                            Log.d("Action", if (isInSelectionTab) "선정 취소: ${record.recordTitle}" else "선정: ${record.recordTitle}")
+                            if (!isInSelectionTab) {
+                                val pointsResponse = apiService.updatePoints(mapOf("recordId" to record.recordId.toLong()))
+                                if (pointsResponse.isSuccessful) {
+                                    Log.d("Points", "Points updated for record: ${record.recordTitle}")
+                                } else {
+                                    Log.e("Points", "Failed to update points for record: ${record.recordTitle}")
+                                }
+                            }
+                            refreshData()
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Log.e("Action", if (isInSelectionTab) "선정 취소 실패: ${record.recordTitle}" else "선정 실패: ${record.recordTitle}")
+                        }
+                    }
                 }
             }
         }
 
         fun bind(record: AdminRecord) {
-            binding.recordTitle.text = record.title
+            binding.recordTitle.text = record.recordTitle
             binding.musicControlLayout.visibility = if (record.isExpanded) View.VISIBLE else View.GONE
             binding.btnPlayPause.setImageResource(R.drawable.ic_record_play)
 
@@ -134,7 +154,7 @@ class AdminRecordAdapter(
                         setDataSource(audioFileUrl)
                         prepare()
                         start()
-                        setVolume(1.0f, 1.0f) // 최대 볼륨으로 설정
+                        setVolume(1.0f, 1.0f)
                         setOnCompletionListener {
                             binding.btnPlayPause.setImageResource(R.drawable.ic_record_play)
                             binding.musicSeekbar.progress = 0
@@ -149,7 +169,7 @@ class AdminRecordAdapter(
                 }
             } else {
                 mediaPlayer?.start()
-                mediaPlayer?.setVolume(1.0f, 1.0f) // 최대 볼륨으로 설정
+                mediaPlayer?.setVolume(1.0f, 1.0f)
                 startSeekBarUpdate()
             }
         }
@@ -191,5 +211,10 @@ class AdminRecordAdapter(
             currentPlayingPosition = -1
             holder.stopSeekBarUpdate()
         }
+    }
+
+    fun updateRecords(newRecords: List<AdminRecord>) {
+        records = newRecords
+        notifyDataSetChanged()
     }
 }

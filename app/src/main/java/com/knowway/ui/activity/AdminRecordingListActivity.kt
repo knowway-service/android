@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.knowway.adapter.ViewPagerAdapter
 import com.knowway.databinding.ActivityAdminRecordingListBinding
+import com.knowway.ui.fragment.AdminRecordingListFragment
 
 class AdminRecordingListActivity : AppCompatActivity() {
 
@@ -25,7 +26,11 @@ class AdminRecordingListActivity : AppCompatActivity() {
         Log.d("ReceivedData", "Department Store Floor ID: $departmentStoreFloorId")
         Log.d("ReceivedData", "Selected Area Number: $areaNumber")
 
-        val viewPagerAdapter = ViewPagerAdapter(this, ViewPagerAdapter.TabType.ADMIN)
+        setupViewPager()
+    }
+
+    private fun setupViewPager() {
+        val viewPagerAdapter = ViewPagerAdapter(this, ViewPagerAdapter.TabType.ADMIN, departmentStoreFloorId, areaNumber, ::refreshData)
         binding.viewPager.adapter = viewPagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
@@ -35,5 +40,10 @@ class AdminRecordingListActivity : AppCompatActivity() {
                 else -> throw IllegalStateException("Unexpected position $position")
             }
         }.attach()
+    }
+
+    private fun refreshData() {
+        (supportFragmentManager.findFragmentByTag("f0") as? AdminRecordingListFragment)?.loadRecords()
+        (supportFragmentManager.findFragmentByTag("f1") as? AdminRecordingListFragment)?.loadRecords()
     }
 }
