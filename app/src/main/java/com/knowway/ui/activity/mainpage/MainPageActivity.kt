@@ -54,6 +54,9 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
     private var isProximityCheckRunning = false
     private var pendingCheckProximityData: ProximityData? = null
 
+    private var currentLatitude: Double? = null
+    private var currentLongitude: Double? = null
+
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
             startUpdatingLocation()
@@ -147,12 +150,14 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 result.lastLocation?.let { location ->
+                    currentLatitude = location.latitude
+                    currentLongitude = location.longitude
                     lifecycleScope.launch {
                         viewModel.recordsResponse.collect { records ->
                             records.forEach { record ->
                                 val latitude = record.recordLatitude.toDouble()
                                 val longitude = record.recordLongitude.toDouble()
-                                checkProximity(record.recordPath , location.latitude, location.longitude, latitude, longitude)
+                                checkProximity(record.recordPath , currentLatitude!!, currentLongitude!!, latitude, longitude)
                             }
                         }
                     }
@@ -290,7 +295,7 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
     }
 
     private fun replaceFragment() {
-        recordFragment = RecordFragment()
+        val recordFragment = RecordFragment.newInstance(currentLatitude, currentLongitude)
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, recordFragment)
             .commit()
