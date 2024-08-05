@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.knowway.data.model.user.UserRecord
@@ -17,6 +18,8 @@ import com.knowway.databinding.ItemAdminRecordBinding
 import com.knowway.R
 import com.knowway.data.network.ApiClient
 import com.knowway.data.network.user.UserApiService
+import com.knowway.ui.fragment.DeleteRecordFragment
+import com.knowway.ui.fragment.mainpage.MainRecordTipFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -64,8 +67,13 @@ class UserRecordAdapter(
             }
 
             // Handle seekbar actions
-            binding.musicSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            binding.musicSeekbar.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
                     if (fromUser) {
                         mediaPlayer?.seekTo(progress)
                     }
@@ -94,7 +102,8 @@ class UserRecordAdapter(
 
         fun bind(record: UserRecord) {
             binding.recordTitle.text = record.recordTitle
-            binding.musicControlLayout.visibility = if (record.isExpanded) View.VISIBLE else View.GONE
+            binding.musicControlLayout.visibility =
+                if (record.isExpanded) View.VISIBLE else View.GONE
             binding.btnPlayPause.setImageResource(R.drawable.ic_record_play)
 
             binding.root.setBackgroundResource(
@@ -172,50 +181,45 @@ class UserRecordAdapter(
         }
 
         private fun showDeleteConfirmationDialog(record: UserRecord, position: Int) {
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_delete_confirmation, null)
-            val confirmationMessage = dialogView.findViewById<TextView>(R.id.confirmation_message)
-            val buttonCancel = dialogView.findViewById<Button>(R.id.button_cancel)
-            val buttonConfirm = dialogView.findViewById<Button>(R.id.button_confirm)
-
-            confirmationMessage.text = "해당 녹음을 삭제하시겠습니까?"
-
-            val builder = AlertDialog.Builder(context)
-                .setView(dialogView)
-                .setCancelable(true)
-
-            val dialog = builder.create()
-
-            buttonCancel.setOnClickListener {
-                dialog.dismiss()
-            }
-
-            buttonConfirm.setOnClickListener {
-                ApiClient.getClient().create(UserApiService::class.java)
-                    .deleteUserRecord(record.recordId)
-                    .enqueue(object : Callback<Boolean> {
-                        override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
-                            if (response.isSuccessful && response.body() == true) {
-                                records.removeAt(position)
-                                notifyItemRemoved(position)
-                                Toast.makeText(context, "삭제 완료: ${record.recordTitle}", Toast.LENGTH_SHORT).show()
-                            } else {
-                                Log.e("UserRecordAdapter", "Failed to delete user record")
+            val fragment = DeleteRecordFragment().apply {
+                setOnConfirmListener {
+                    ApiClient.getClient().create(UserApiService::class.java)
+                        .deleteUserRecord(record.recordId)
+                        .enqueue(object : Callback<Boolean> {
+                            override fun onResponse(
+                                call: Call<Boolean>,
+                                response: Response<Boolean>
+                            ) {
+                                if (response.isSuccessful && response.body() == true) {
+                                    records.removeAt(position)
+                                    notifyItemRemoved(position)
+                                    Toast.makeText(
+                                        context,
+                                        "삭제 완료: ${record.recordTitle}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    Log.e("UserRecordAdapter", "Failed to delete user record")
+                                }
                             }
-                        }
 
-                        override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                            Log.e("UserRecordAdapter", "Error deleting user record", t)
-                        }
-                    })
-
-                dialog.dismiss()
+                            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+                                Log.e("UserRecordAdapter", "Error deleting user record", t)
+                            }
+                        })
+                }
             }
 
-            dialog.show()
+            // Show the fragment
+            fragment.show(
+                (context as AppCompatActivity).supportFragmentManager,
+                "DeleteConfirmationDialog"
+            )
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordViewHolder {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordViewHolder {
         val binding = ItemAdminRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return RecordViewHolder(binding)
     }
