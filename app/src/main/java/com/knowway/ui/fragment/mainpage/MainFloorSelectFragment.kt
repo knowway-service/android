@@ -1,6 +1,7 @@
 import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,6 +73,16 @@ class MainFloorSelectFragment : DialogFragment() {
         val floorList = floorIdList.zip(floorNameList).zip(floorMapPathList) { (id, name), mapPath ->
             Floor(id, name, mapPath)
         }
+
+        Log.d("MainFloorSelectFragment", """
+        floorIds: $floorIds
+        floorNames: $floorNames
+        floorMapPaths: $floorMapPaths
+        floorIdList: $floorIdList
+        floorNameList: $floorNameList
+        floorMapPathList: $floorMapPathList
+        floorList: $floorList
+    """.trimIndent())
 
         adapter.submitList(floorList)
     }

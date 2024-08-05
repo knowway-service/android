@@ -1,7 +1,11 @@
 package com.knowway.ui.fragment.mainpage
 
 import android.app.Dialog
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +13,13 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.DialogFragment
 import com.knowway.R
+import com.knowway.ui.fragment.OnAudioCompletionListener
 
 class MainRecordTipFragment : DialogFragment() {
+    private var mediaPlayer: MediaPlayer? = null
+    private var audioFileUrl: String? = null
+    private var audioCompletionListener: OnAudioCompletionListener ?= null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.CustomDialog)
@@ -40,13 +49,14 @@ class MainRecordTipFragment : DialogFragment() {
 
         val confirmButton = confirmButtonView.findViewById<ImageButton>(R.id.confirmButton)
         confirmButton.setOnClickListener {
-            // 확인 버튼 클릭시 닫기
-            dismiss()
+            audioFileUrl?.let { url ->
+                playAudio(url)
+            }
         }
 
         val cancelButton = cancelButtonView.findViewById<ImageButton>(R.id.cancelButton)
         cancelButton.setOnClickListener {
-            // 취소 버튼 클릭시 닫기
+            stopAndReleaseMediaPlayer()
             dismiss()
         }
     }
@@ -55,5 +65,49 @@ class MainRecordTipFragment : DialogFragment() {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window?.setBackgroundDrawableResource(R.drawable.border_background)
         return dialog
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        stopAndReleaseMediaPlayer()
+    }
+
+    fun setAudioFileUrl(url: String) {
+        audioFileUrl = url
+    }
+
+    fun setOnAudioCompletionListener(listener: OnAudioCompletionListener) {
+        this.audioCompletionListener = listener
+    }
+
+    fun playAudio(url: String) {
+        if (audioFileUrl == url && mediaPlayer?.isPlaying == true) {
+            return
+        }
+
+        stopAndReleaseMediaPlayer()
+
+        mediaPlayer = MediaPlayer().apply {
+            try {
+                setDataSource(url)
+                prepare()
+                start()
+                setVolume(1.0f, 1.0f)
+                setOnCompletionListener {
+                    stopAndReleaseMediaPlayer()
+                    audioCompletionListener?.onAudioCompleted()
+                }
+            } catch (e: Exception) {
+                Log.e("MediaPlayer", "Error playing audio file: $audioFileUrl", e)
+            }
+        }
+    }
+
+    fun stopAndReleaseMediaPlayer() {
+        mediaPlayer?.apply {
+            stop()
+            release()
+        }
+        mediaPlayer = null
     }
 }

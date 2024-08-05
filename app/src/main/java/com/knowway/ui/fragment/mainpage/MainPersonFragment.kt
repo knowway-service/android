@@ -12,6 +12,7 @@ import pl.droidsonroids.gif.GifDrawable
 class MainPersonFragment : Fragment() {
     private var _binding: FragmentMainPersonBinding? = null
     private val binding get() = _binding!!
+    private var audioFileUrl: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +29,9 @@ class MainPersonFragment : Fragment() {
         val questionGif = GifDrawable(resources, R.drawable.question)
         binding.mainQuestion.setImageDrawable(questionGif)
         binding.mainQuestion.setOnClickListener {
-            val recordTipModal = MainRecordTipFragment()
+            val recordTipModal = MainRecordTipFragment().apply {
+                audioFileUrl?.let { it1 -> setAudioFileUrl(it1) }
+            }
             recordTipModal.show(parentFragmentManager, "Record Tip Modal")
         }
 
@@ -38,8 +41,9 @@ class MainPersonFragment : Fragment() {
         hideQuestionButton()
     }
 
-    fun showQuestionButton() {
+    fun showQuestionButton(recordPath: String) {
         binding.mainQuestion.visibility = View.VISIBLE
+        audioFileUrl = recordPath
     }
 
     fun hideQuestionButton() {
