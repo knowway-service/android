@@ -2,6 +2,8 @@ package com.knowway.ui.fragment
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Build
@@ -40,6 +42,8 @@ class RecordFragment : Fragment() {
     private var mediaRecorder: MediaRecorder? = null
     private var output: String? = null
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -47,6 +51,23 @@ class RecordFragment : Fragment() {
         val writeStorageGranted = permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
         if (!recordAudioGranted || !writeStorageGranted) {
             Toast.makeText(context, "Permissions not granted.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private var latitude: Double? = null
+    private var longitude: Double? = null
+
+    companion object {
+        private const val ARG_LATITUDE = "latitude"
+        private const val ARG_LONGITUDE = "longitude"
+
+        fun newInstance(latitude: Double?, longitude: Double?): RecordFragment {
+            val fragment = RecordFragment()
+            val args = Bundle()
+            args.putDouble(ARG_LATITUDE, latitude ?: 0.0)
+            args.putDouble(ARG_LONGITUDE, longitude ?: 0.0)
+            fragment.arguments = args
+            return fragment
         }
     }
 
@@ -60,6 +81,12 @@ class RecordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        arguments?.let {
+            latitude = it.getDouble(ARG_LATITUDE)
+            longitude = it.getDouble(ARG_LONGITUDE)
+        }
+
+        sharedPreferences = requireActivity().getSharedPreferences("DeptPref", Context.MODE_PRIVATE)
 
         Glide.with(this)
             .asGif()
@@ -172,6 +199,8 @@ class RecordFragment : Fragment() {
             Toast.makeText(requireContext(), "Title cannot be empty", Toast.LENGTH_SHORT).show()
             return
         }
+        val departmentStoreId = sharedPreferences.getLong("dept_id", 1)
+        val departmentStoreFloorId = sharedPreferences.getLong("selected_floor_id", 1)
         output?.let { filePath ->
             val file = File(filePath)
             if (file.exists()) {
@@ -197,9 +226,11 @@ class RecordFragment : Fragment() {
                     departmentStoreFloorId = 1,
                     departmentStoreId = 1,
                     recordTitle = recordTitle,
-                    recordLatitude = "37.583717",
-                    recordLongitude = "126.999937"
+                    recordLatitude = latitude.toString(),
+                    recordLongitude = longitude.toString()
                 )
+                Log.d("latitude", latitude.toString())
+                Log.d("longitude", longitude.toString())
                 val recordJson = Gson().toJson(recordRequest)
                 val recordBody = RequestBody.create("application/json".toMediaTypeOrNull(), recordJson)
                 // Upload file using Retrofit
