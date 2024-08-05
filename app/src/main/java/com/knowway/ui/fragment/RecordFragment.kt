@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import kotlin.math.log
 
 class RecordFragment : Fragment() {
     private var _binding: FragmentRecordModalBinding? = null
@@ -79,7 +81,7 @@ class RecordFragment : Fragment() {
         }
 
         binding.saveButtonInclude.recordingSaveButton.setOnClickListener {
-            setConfirmUI(true, true, true)
+            setConfirmUI(true, true)
             setButtonVisibility(false, false, false, false)
         }
 
@@ -112,11 +114,9 @@ class RecordFragment : Fragment() {
         binding.retryButtonInclude.root.visibility = if (retryVisible) View.VISIBLE else View.GONE
     }
 
-    private fun setConfirmUI(confirmVisible: Boolean, textVisible: Boolean, underlineVisible : Boolean) {
+    private fun setConfirmUI(confirmVisible: Boolean, textVisible: Boolean) {
         binding.confirmButtonInclude.root.visibility = if (confirmVisible) View.VISIBLE else View.GONE
         binding.titleText.visibility = if (textVisible) View.VISIBLE else View.GONE
-        binding.titleText.setHint("타이틀을 입력해주세요.");
-        binding.underline.visibility = if (underlineVisible) View.VISIBLE else View.GONE
     }
 
     private fun handleRecordingStart() {
@@ -194,12 +194,11 @@ class RecordFragment : Fragment() {
                 val body = MultipartBody.Part.createFormData("file", "$recordTitle.mp4", requestFile)
 
                 val recordRequest = Record(
-                    memberId = 1,
-                    departmentStoreFloorId = 2,
-                    departmentStoreId = 3,
+                    departmentStoreFloorId = 1,
+                    departmentStoreId = 1,
                     recordTitle = recordTitle,
-                    recordLatitude = "37.5665",
-                    recordLongitude = "126.9780"
+                    recordLatitude = "37.583717",
+                    recordLongitude = "126.999937"
                 )
                 val recordJson = Gson().toJson(recordRequest)
                 val recordBody = RequestBody.create("application/json".toMediaTypeOrNull(), recordJson)
@@ -207,6 +206,7 @@ class RecordFragment : Fragment() {
                 val call = RecordApiService.create().uploadRecord(body, recordBody)
                 call.enqueue(object : Callback<String> {
                     override fun onResponse(call: Call<String>, response: Response<String>) {
+                        Log.d("response", response.toString())
                         if (response.isSuccessful) {
                             Toast.makeText(requireContext(), "녹음 파일이 성공적으로 저장되었습니다!", Toast.LENGTH_SHORT).show()
                             parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
@@ -219,6 +219,7 @@ class RecordFragment : Fragment() {
                     }
 
                     override fun onFailure(call: Call<String>, t: Throwable) {
+                        Log.d("Error", "${t.message}")
                         Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
