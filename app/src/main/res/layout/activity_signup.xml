@@ -162,9 +162,10 @@
         android:textColor="@color/red"
         android:textSize="14sp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/input_password_confirm"
+        app:layout_constraintTop_toBottomOf="@+id/input_password"
         app:layout_constraintStart_toStartOf="@+id/input_password"
-        app:layout_constraintTop_toBottomOf="@+id/input_password" />
+        app:layout_constraintEnd_toEndOf="@+id/input_password" />
+
 
     <TextView
         android:id="@+id/password_mismatch_error"
