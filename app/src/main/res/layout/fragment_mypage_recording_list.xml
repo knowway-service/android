@@ -11,4 +11,15 @@
         android:layout_height="match_parent"
         android:padding="16dp" />
 
+    <TextView
+        android:id="@+id/empty_state_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="등록한 팁 내역이 없어요.\n나만의 꿀팁이 있다면\n팁을 등록해주세요!"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:visibility="gone" />
+
 </FrameLayout>

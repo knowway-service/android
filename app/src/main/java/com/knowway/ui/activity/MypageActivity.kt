@@ -3,13 +3,20 @@ package com.knowway.ui.activity
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
+import com.knowway.R
 import com.knowway.adapter.ViewPagerAdapter
 import com.knowway.data.model.user.UserProfileResponse
+import com.knowway.data.model.user.UserRecord
 import com.knowway.data.network.ApiClient
 import com.knowway.data.network.user.UserApiService
 import com.knowway.databinding.ActivityMypageBinding
+import com.knowway.ui.fragment.MypageFooterFragment
 import retrofit2.*
+
+
 
 class MypageActivity : AppCompatActivity() {
 
@@ -17,32 +24,39 @@ class MypageActivity : AppCompatActivity() {
     private lateinit var apiService: UserApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        apiService = ApiClient.getClient().create(UserApiService::class.java)
         super.onCreate(savedInstanceState)
         binding = ActivityMypageBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
 
-        setupViewPagerAndTabs()
+        apiService = ApiClient.getClient().create(UserApiService::class.java)
+
         fetchUserProfile()
+        setupViewPagerAndTabs()
+        setupFooterFragment()
     }
 
     private fun fetchUserProfile() {
-        apiService.getProfile().enqueue(object : Callback<UserProfileResponse> {
-            override fun onResponse(call: Call<UserProfileResponse>, response: Response<UserProfileResponse>) {
-                if (response.isSuccessful) {
-                    val userProfile = response.body()
-                    userProfile?.let {
-                        updateUIWithProfile(it)
+        apiService.getProfile()
+            .enqueue(object : Callback<UserProfileResponse> {
+                override fun onResponse(
+                    call: Call<UserProfileResponse>,
+                    response: Response<UserProfileResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val userProfile = response.body()
+                        userProfile?.let {
+                            updateUIWithProfile(it)
+                        }
+                    } else {
+                        Log.e("MypageActivity", "Failed to load user profile")
                     }
-                } else {
-                    Log.e("MypageActivity", "Failed to load user profile")
                 }
-            }
 
-            override fun onFailure(call: Call<UserProfileResponse>, t: Throwable) {
-                Log.e("MypageActivity", "Error fetching user profile", t)
-            }
-        })
+                override fun onFailure(call: Call<UserProfileResponse>, t: Throwable) {
+                    Log.e("MypageActivity", "Error fetching user profile", t)
+                }
+            })
     }
 
     private fun updateUIWithProfile(userProfile: UserProfileResponse) {
@@ -62,5 +76,10 @@ class MypageActivity : AppCompatActivity() {
             }
         }.attach()
     }
-}
 
+    private fun setupFooterFragment() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.footer_container, MypageFooterFragment())
+            .commit()
+    }
+}

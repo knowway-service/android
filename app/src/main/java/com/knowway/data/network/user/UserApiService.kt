@@ -27,14 +27,14 @@ interface UserApiService {
     fun getUserChatId(): Call<UserChatMemberIdResponse>
 
 
-    @GET("/users/userRecords")
+    @GET("/users/records")
     fun getRecord(
         @Query("page") page: Int,
         @Query("size") size: Int,
-        @Query("isSelectedByAdmin") isSelectedByAdmin: Boolean
-    ): Call<UserRecordResponse>
+        @Query("isSelectedByAdmin") isSelectedByAdmin: Boolean?
+    ): Call<List<UserRecord>>
 
-    @DELETE("/users/record/{recordId}")
+    @DELETE("/users/records/{recordId}")
     fun deleteUserRecord(@Path("recordId") recordId: Long): Call<Boolean>
 
 }

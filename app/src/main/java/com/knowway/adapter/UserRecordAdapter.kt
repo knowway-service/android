@@ -22,8 +22,9 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class UserRecordAdapter(
-    private val records: MutableList<UserRecord>, // Ensure this is a MutableList
-    private val context: Context
+    private val records: MutableList<UserRecord>,
+    private val context: Context,
+    private val showDeleteIcon: Boolean
 ) : RecyclerView.Adapter<UserRecordAdapter.RecordViewHolder>() {
 
     private var mediaPlayer: MediaPlayer? = null
@@ -35,14 +36,14 @@ class UserRecordAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         init {
-            // Toggle expand/collapse on record title click
+            // Handle clicking on the record title
             binding.recordTitle.setOnClickListener {
                 val record = records[adapterPosition]
                 record.isExpanded = !record.isExpanded
                 notifyItemChanged(adapterPosition)
             }
 
-            // Play/Pause button functionality
+            // Handle play/pause button click
             binding.btnPlayPause.setOnClickListener {
                 val record = records[adapterPosition]
                 if (mediaPlayer?.isPlaying == true) {
@@ -54,14 +55,17 @@ class UserRecordAdapter(
                 }
             }
 
-            // SeekBar listener for manual seek
-            binding.musicSeekbar.setOnSeekBarChangeListener(object :
-                SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
+            // Handle trash icon click to delete the record
+            binding.actionIcon.setOnClickListener {
+                val record = records[adapterPosition]
+                if (binding.actionIcon.visibility == View.VISIBLE) {
+                    showDeleteConfirmationDialog(record, adapterPosition)
+                }
+            }
+
+            // Handle seekbar actions
+            binding.musicSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     if (fromUser) {
                         mediaPlayer?.seekTo(progress)
                     }
@@ -71,7 +75,7 @@ class UserRecordAdapter(
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
 
-            // Previous/Next buttons functionality
+            // Handle previous button click
             binding.btnPrevious.setOnClickListener {
                 mediaPlayer?.let {
                     val newPosition = it.currentPosition - 15000
@@ -79,39 +83,31 @@ class UserRecordAdapter(
                 }
             }
 
+            // Handle next button click
             binding.btnNext.setOnClickListener {
                 mediaPlayer?.let {
                     val newPosition = it.currentPosition + 15000
                     it.seekTo(if (newPosition < it.duration) newPosition else it.duration)
                 }
             }
-
-            // Action button functionality for delete confirmation
-            binding.actionText.setOnClickListener {
-                val record = records[adapterPosition]
-                if (binding.actionText.text == "삭제") {
-                    showDeleteConfirmationDialog(record, adapterPosition)
-                }
-            }
         }
 
         fun bind(record: UserRecord) {
             binding.recordTitle.text = record.recordTitle
-            binding.musicControlLayout.visibility =
-                if (record.isExpanded) View.VISIBLE else View.GONE
+            binding.musicControlLayout.visibility = if (record.isExpanded) View.VISIBLE else View.GONE
             binding.btnPlayPause.setImageResource(R.drawable.ic_record_play)
 
-            // Background color based on expansion
-            if (record.isExpanded) {
-                binding.root.setBackgroundResource(R.drawable.record_item_background_expanded)
-            } else {
-                binding.root.setBackgroundResource(R.drawable.record_item_background)
-            }
+            binding.root.setBackgroundResource(
+                if (record.isExpanded) R.drawable.record_item_background_expanded
+                else R.drawable.record_item_background
+            )
 
-            // Set text for action button
-            binding.actionText.text = "삭제"
-            binding.actionText.setTextColor(ContextCompat.getColor(context, R.color.red))
-            binding.actionText.visibility = View.VISIBLE
+            if (record.isSelectedByAdmin) {
+                binding.actionIcon.visibility = View.GONE
+            } else {
+                binding.actionIcon.setImageResource(R.drawable.trash)
+                binding.actionIcon.visibility = View.VISIBLE
+            }
 
             if (mediaPlayer?.isPlaying == true && adapterPosition == currentPlayingPosition) {
                 binding.musicSeekbar.max = mediaPlayer!!.duration
@@ -154,7 +150,7 @@ class UserRecordAdapter(
                 }
             } else {
                 mediaPlayer?.start()
-                mediaPlayer?.setVolume(1.0f, 1.0f) // Set to max volume
+                mediaPlayer?.setVolume(1.0f, 1.0f)
                 startSeekBarUpdate()
             }
         }
@@ -176,8 +172,7 @@ class UserRecordAdapter(
         }
 
         private fun showDeleteConfirmationDialog(record: UserRecord, position: Int) {
-            val dialogView =
-                LayoutInflater.from(context).inflate(R.layout.dialog_delete_confirmation, null)
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_delete_confirmation, null)
             val confirmationMessage = dialogView.findViewById<TextView>(R.id.confirmation_message)
             val buttonCancel = dialogView.findViewById<Button>(R.id.button_cancel)
             val buttonConfirm = dialogView.findViewById<Button>(R.id.button_confirm)
@@ -202,11 +197,7 @@ class UserRecordAdapter(
                             if (response.isSuccessful && response.body() == true) {
                                 records.removeAt(position)
                                 notifyItemRemoved(position)
-                                Toast.makeText(
-                                    context,
-                                    "삭제 완료: ${record.recordTitle}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(context, "삭제 완료: ${record.recordTitle}", Toast.LENGTH_SHORT).show()
                             } else {
                                 Log.e("UserRecordAdapter", "Failed to delete user record")
                             }
@@ -224,7 +215,6 @@ class UserRecordAdapter(
         }
     }
 
-    // Correctly implement onCreateViewHolder here
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordViewHolder {
         val binding = ItemAdminRecordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return RecordViewHolder(binding)
