@@ -3,8 +3,6 @@ package com.knowway.ui.activity
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
 import com.knowway.R
 import com.knowway.adapter.ViewPagerAdapter
@@ -15,8 +13,6 @@ import com.knowway.data.network.user.UserApiService
 import com.knowway.databinding.ActivityMypageBinding
 import com.knowway.ui.fragment.MypageFooterFragment
 import retrofit2.*
-
-
 
 class MypageActivity : AppCompatActivity() {
 
