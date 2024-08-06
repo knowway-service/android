@@ -8,6 +8,7 @@ import com.knowway.BuildConfig
 import com.knowway.data.network.auth.AuthInterceptor
 import com.knowway.data.network.auth.TokenInterceptor
 import com.knowway.util.TokenManager
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object ApiClient {
 
@@ -35,6 +36,7 @@ object ApiClient {
         return Retrofit.Builder()
             .baseUrl("http://${BuildConfig.BASE_IP_ADDRESS}:8080")
             .client(okHttpClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

@@ -125,7 +125,7 @@
             android:background="@drawable/edittext_bottom_dotted_line"
             android:ellipsize="end"
             android:hint="타이틀을 입력해주세요"
-            android:maxLength="10"
+            android:maxLength="30"
             android:padding="10dp"
             android:scrollHorizontally="true"
             android:singleLine="true"

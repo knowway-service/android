@@ -223,8 +223,8 @@ class RecordFragment : Fragment() {
                 val body = MultipartBody.Part.createFormData("file", "$recordTitle.mp4", requestFile)
 
                 val recordRequest = Record(
-                    departmentStoreFloorId = 1,
-                    departmentStoreId = 1,
+                    departmentStoreFloorId = departmentStoreFloorId,
+                    departmentStoreId = departmentStoreId,
                     recordTitle = recordTitle,
                     recordLatitude = latitude.toString(),
                     recordLongitude = longitude.toString()
@@ -243,7 +243,7 @@ class RecordFragment : Fragment() {
                             parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
                             (activity as MainPageActivity).collapsePanel()
                         } else {
-                            Toast.makeText(requireContext(), "녹음 파일 저장에 실패했어요", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "현재 위치를 확인해주세요!", Toast.LENGTH_SHORT).show()
                             parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
                             (activity as MainPageActivity).collapsePanel()
                         }

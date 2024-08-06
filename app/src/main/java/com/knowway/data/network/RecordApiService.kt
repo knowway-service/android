@@ -21,25 +21,8 @@ interface RecordApiService {
     ): Call<String>
 
     companion object {
-        private const val BASE_URL = "http://192.168.0.61:8080"
-
         fun create(): RecordApiService {
-            val logger = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }
-
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
-                .build()
-
-            val retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(client)
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-            return retrofit.create(RecordApiService::class.java)
+            return ApiClient.getClient().create(RecordApiService::class.java)
         }
     }
 }
