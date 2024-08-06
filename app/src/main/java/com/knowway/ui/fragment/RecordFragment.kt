@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +32,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
-import kotlin.math.log
 
 class RecordFragment : Fragment() {
     private var _binding: FragmentRecordModalBinding? = null
@@ -50,7 +48,7 @@ class RecordFragment : Fragment() {
         val recordAudioGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: false
         val writeStorageGranted = permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
         if (!recordAudioGranted || !writeStorageGranted) {
-            Toast.makeText(context, "Permissions not granted.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "권한이 없습니다", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -109,7 +107,7 @@ class RecordFragment : Fragment() {
 
         binding.saveButtonInclude.recordingSaveButton.setOnClickListener {
             setConfirmUI(true, true)
-            setButtonVisibility(false, false, false, false)
+            setButtonVisibility(false, false, false, false, false, false)
         }
 
         binding.confirmButtonInclude.confirmButton.setOnClickListener {
@@ -134,11 +132,13 @@ class RecordFragment : Fragment() {
         }
     }
 
-    private fun setButtonVisibility(startVisible: Boolean, stopVisible: Boolean, saveVisible: Boolean, retryVisible: Boolean) {
+    private fun setButtonVisibility(startVisible: Boolean, stopVisible: Boolean, saveVisible: Boolean, retryVisible: Boolean, waveVisible: Boolean, waveGifVisible: Boolean) {
         binding.startButtonInclude.root.visibility = if (startVisible) View.VISIBLE else View.GONE
         binding.stopButtonInclude.root.visibility = if (stopVisible) View.VISIBLE else View.GONE
         binding.saveButtonInclude.root.visibility = if (saveVisible) View.VISIBLE else View.GONE
         binding.retryButtonInclude.root.visibility = if (retryVisible) View.VISIBLE else View.GONE
+        binding.recordingWave.visibility = if (waveVisible) View.VISIBLE else View.GONE
+        binding.recordingWaveGif.visibility = if (waveGifVisible) View.VISIBLE else View.GONE
     }
 
     private fun setConfirmUI(confirmVisible: Boolean, textVisible: Boolean) {
@@ -147,23 +147,17 @@ class RecordFragment : Fragment() {
     }
 
     private fun handleRecordingStart() {
-        setButtonVisibility(false, true, false, false)
-        binding.recordingWave.visibility = View.GONE
-        binding.recordingWaveGif.visibility = View.VISIBLE
+        setButtonVisibility(false, true, false, false, false, true)
         startRecording()
     }
 
     private fun handleRecordingStop() {
-        setButtonVisibility(false, false, true, true)
-        binding.recordingWave.visibility = View.VISIBLE
-        binding.recordingWaveGif.visibility = View.GONE
+        setButtonVisibility(false, false, true, true, true, false)
         stopRecording()
     }
 
     private fun handleRecordingRetry() {
-        setButtonVisibility(false, true, false, false)
-        binding.recordingWave.visibility = View.GONE
-        binding.recordingWaveGif.visibility = View.VISIBLE
+        setButtonVisibility(false, true, false, false, false, true)
         startRecording()
     }
 
@@ -229,31 +223,27 @@ class RecordFragment : Fragment() {
                     recordLatitude = latitude.toString(),
                     recordLongitude = longitude.toString()
                 )
-                Log.d("latitude", latitude.toString())
-                Log.d("longitude", longitude.toString())
                 val recordJson = Gson().toJson(recordRequest)
                 val recordBody = RequestBody.create("application/json".toMediaTypeOrNull(), recordJson)
                 // Upload file using Retrofit
                 val call = RecordApiService.create().uploadRecord(body, recordBody)
                 call.enqueue(object : Callback<String> {
                     override fun onResponse(call: Call<String>, response: Response<String>) {
-                        Log.d("response", response.toString())
                         if (response.isSuccessful) {
                             Toast.makeText(requireContext(), "녹음 파일이 성공적으로 저장되었습니다!", Toast.LENGTH_SHORT).show()
-                            parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
-                            (activity as MainPageActivity).collapsePanel()
                         } else {
                             Toast.makeText(requireContext(), "현재 위치를 확인해주세요!", Toast.LENGTH_SHORT).show()
-                            parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
-                            (activity as MainPageActivity).collapsePanel()
                         }
+                        parentFragmentManager.beginTransaction().remove(this@RecordFragment).commit()
+                        (activity as MainPageActivity).collapsePanel()
                     }
 
                     override fun onFailure(call: Call<String>, t: Throwable) {
-                        Log.d("Error", "${t.message}")
-                        Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "요청을 불러오는데 실패했어요", Toast.LENGTH_SHORT).show()
                     }
+
                 })
+
             }
         }
     }
