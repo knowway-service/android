@@ -6,12 +6,9 @@ import com.knowway.R
 import com.knowway.data.network.ApiClient
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.knowway.data.model.user.EmailDuplicationRequest
 import com.knowway.data.model.user.RegisterRequest
@@ -30,8 +27,6 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var emailDuplicateError: TextView
     private lateinit var passwordErrorMessage: TextView
     private lateinit var passwordMismatchError: TextView
-    private lateinit var signupButton: ImageButton
-    private lateinit var checkEmailButton: ImageButton
 
     private var isEmailAvailable = false
 
@@ -48,10 +43,8 @@ class SignupActivity : AppCompatActivity() {
         emailDuplicateError = findViewById(R.id.email_duplicate_error)
         passwordErrorMessage = findViewById(R.id.password_error_message)
         passwordMismatchError = findViewById(R.id.password_mismatch_error)
-        signupButton = findViewById(R.id.sign_up_button)
-        checkEmailButton = findViewById(R.id.duplication_check_button)
 
-        checkEmailButton.setOnClickListener {
+        findViewById<View>(R.id.duplication_check_button).setOnClickListener {
             val email = emailInput.text.toString().trim()
             if (email.isNotEmpty()) {
                 if (isValidEmail(email)) {
@@ -64,7 +57,7 @@ class SignupActivity : AppCompatActivity() {
             }
         }
 
-        signupButton.setOnClickListener {
+        findViewById<View>(R.id.sign_up_button).setOnClickListener {
             val email = emailInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
             val confirmPassword = confirmPasswordInput.text.toString().trim()
@@ -123,7 +116,6 @@ class SignupActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e("SignupActivity", "네트워크 오류: ${t.localizedMessage}")
             }
         })
     }
@@ -148,7 +140,6 @@ class SignupActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e("SignupActivity", "네트워크 오류: ${t.localizedMessage}")
             }
         })
     }

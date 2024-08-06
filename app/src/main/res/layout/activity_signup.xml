@@ -57,38 +57,42 @@
         android:textColor="@color/black"
         android:textColorHint="@color/dark_grey"
         android:textSize="20sp"
-
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="@+id/input_password"
         app:layout_constraintTop_toBottomOf="@id/service_subtitle" />
 
-    <ImageButton
+    <FrameLayout
         android:id="@+id/duplication_check_button"
         android:layout_width="60dp"
-        android:layout_height="0dp"
-        android:background="@drawable/signup_btn"
-        android:contentDescription="@string/confirm"
-        android:padding="10dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_effect"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="@id/input_email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.171"
         app:layout_constraintStart_toEndOf="@id/input_email"
         app:layout_constraintTop_toTopOf="@id/input_email"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0">
 
-    <TextView
-        android:id="@+id/duplication_check_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:clickable="true"
-        android:text="중복확인"
-        android:textColor="@color/white"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="@+id/duplication_check_button"
-        app:layout_constraintEnd_toEndOf="@+id/duplication_check_button"
-        app:layout_constraintStart_toStartOf="@+id/duplication_check_button"
-        app:layout_constraintTop_toTopOf="@+id/duplication_check_button" />
+        <ImageButton
+            android:id="@+id/duplication_check_image_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/signup_btn"
+            android:padding="10dp"
+            android:clickable="false"
+            android:contentDescription="@string/confirm" />
+
+        <TextView
+            android:id="@+id/duplication_check_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:text="중복확인"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/email_validation_message"
@@ -164,10 +168,10 @@
         android:textColor="@color/red"
         android:textSize="14sp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/input_password"
+        app:layout_constraintBottom_toTopOf="@+id/input_password_confirm"
+        app:layout_constraintEnd_toEndOf="@+id/input_password"
         app:layout_constraintStart_toStartOf="@+id/input_password"
-        app:layout_constraintEnd_toEndOf="@+id/input_password" />
-
+        app:layout_constraintTop_toBottomOf="@+id/input_password" />
 
     <TextView
         android:id="@+id/password_mismatch_error"
@@ -181,29 +185,34 @@
         app:layout_constraintStart_toStartOf="@+id/input_password_confirm"
         app:layout_constraintTop_toBottomOf="@id/input_password_confirm" />
 
-    <ImageButton
+    <FrameLayout
         android:id="@+id/sign_up_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:background="@drawable/login_btn"
-        android:contentDescription="회원가입"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_password_confirm" />
-
-    <TextView
-        android:id="@+id/sign_up_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="52dp"
         android:clickable="true"
-        android:text="회원가입"
-        android:textColor="@color/white"
-        android:textSize="17sp"
+        android:background="@drawable/ripple_effect"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_password_confirm" />
+        app:layout_constraintTop_toBottomOf="@id/input_password_confirm">
+
+        <ImageButton
+            android:id="@+id/sign_up_image_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/login_btn"
+            android:clickable="false"
+            android:contentDescription="회원가입" />
+
+        <TextView
+            android:id="@+id/sign_up_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:text="회원가입"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
