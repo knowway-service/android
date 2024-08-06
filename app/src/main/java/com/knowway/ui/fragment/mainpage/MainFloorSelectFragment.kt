@@ -1,13 +1,12 @@
+
 import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.knowway.R
 import com.knowway.adapter.FloorAdapter
 import com.knowway.data.model.department.Floor
@@ -73,16 +72,6 @@ class MainFloorSelectFragment : DialogFragment() {
         val floorList = floorIdList.zip(floorNameList).zip(floorMapPathList) { (id, name), mapPath ->
             Floor(id, name, mapPath)
         }
-
-        Log.d("MainFloorSelectFragment", """
-        floorIds: $floorIds
-        floorNames: $floorNames
-        floorMapPaths: $floorMapPaths
-        floorIdList: $floorIdList
-        floorNameList: $floorNameList
-        floorMapPathList: $floorMapPathList
-        floorList: $floorList
-    """.trimIndent())
 
         adapter.submitList(floorList)
     }

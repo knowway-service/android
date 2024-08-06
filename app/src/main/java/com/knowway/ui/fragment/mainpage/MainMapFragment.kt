@@ -35,7 +35,8 @@ class MainMapFragment : Fragment() {
                     .load(mapPath)
                     .skipMemoryCache(true)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .error(R.drawable.error)
+                    .placeholder(R.drawable.loading)
+                    .error(R.drawable.not_found)
                     .into(binding.imageView)
             }
         }

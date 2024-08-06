@@ -1,18 +1,22 @@
 package com.knowway.ui.viewmodel.department
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.knowway.data.exceptions.department.*
 import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.data.repository.DepartmentStoreRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.lang.Exception
+import java.io.IOException
 
 class DepartmentStoreViewModel(private val dataSource: DepartmentStoreRepository) : ViewModel() {
     private val _departmentStores = MutableStateFlow<List<DepartmentStoreResponse>>(emptyList())
-    val departmentStoresResponse: StateFlow<List<DepartmentStoreResponse>> get() = _departmentStores
+    val departmentStoresResponse: StateFlow<List<DepartmentStoreResponse>> get() = _departmentStores.asStateFlow()
+
+    private val _error = MutableStateFlow<DepartmentStoreException?>(null)
+    val error: StateFlow<DepartmentStoreException?> get() = _error.asStateFlow()
 
     fun getDepartmentStoresByLocation(latitude: String, longitude: String) {
         viewModelScope.launch {
@@ -22,10 +26,12 @@ class DepartmentStoreViewModel(private val dataSource: DepartmentStoreRepository
                     val resp = response.body()!!
                     _departmentStores.value = resp
                 } else {
-                    Log.d("DepartmentStoreViewModel", "Response not successful: ${response.message()}")
+                    _error.value = DeptByLocationApiException()
                 }
+            } catch (e: IOException) {
+                _error.value = DeptNetworkException()
             } catch (e: Exception) {
-                Log.e("DepartmentStoreViewModel", "Exception occurred", e)
+                _error.value = DeptUnknownException()
             }
         }
     }
@@ -37,10 +43,12 @@ class DepartmentStoreViewModel(private val dataSource: DepartmentStoreRepository
                 if (response.isSuccessful && response.body() != null) {
                     _departmentStores.value = response.body()!!
                 } else {
-                    Log.d("DepartmentStoreViewModel", "Response not successful: ${response.message()}")
+                    _error.value = DeptByBranchApiException()
                 }
+            } catch (e: IOException) {
+                _error.value = DeptNetworkException()
             } catch (e: Exception) {
-                Log.e("DepartmentStoreViewModel", "Exception occurred", e)
+                _error.value = DeptUnknownException()
             }
         }
     }

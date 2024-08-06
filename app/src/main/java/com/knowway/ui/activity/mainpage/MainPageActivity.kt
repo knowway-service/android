@@ -9,14 +9,18 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.*
-import com.knowway.Constants.url
 import com.knowway.R
+import com.knowway.data.exceptions.mainpage.MainPageApiException
+import com.knowway.data.exceptions.mainpage.MainPageException
+import com.knowway.data.exceptions.mainpage.MainPageNetworkException
+import com.knowway.data.exceptions.mainpage.MainPageUnknownException
 import com.knowway.data.model.department.Floor
 import com.knowway.data.repository.MainPageRepository
 import com.knowway.databinding.ActivityMainPageBinding
@@ -44,11 +48,11 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
 
     private var currentFloor: Floor? = null
     private val viewModel: MainPageViewModel by viewModels {
-        MainPageViewModelFactory(MainPageRepository(url))
+        MainPageViewModelFactory(MainPageRepository())
     }
 
     private var displayFlag = false
-    private val range = 10.0
+    private val range = 20.0
     private var isAutoPlayEnabled = false
     private var currentRecordTipFragment: MainRecordTipFragment ?= null
     private var isProximityCheckRunning = false
@@ -72,7 +76,7 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
 
         slidingUpPanelLayout = findViewById(R.id.main_frame)
         slidingUpPanelLayout.addPanelSlideListener(PanelEventListener())
-        backLayout = findViewById(R.id.back_layout)
+        backLayout = binding.backLayout
 
         val recordingBtn: ImageView = findViewById(R.id.main_record)
         recordingBtn.setOnClickListener {
@@ -81,11 +85,9 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         }
 
         sharedPreferences = getSharedPreferences("DeptPref", MODE_PRIVATE)
-
         updateDeptInfo()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
         setupLocationCallback()
 
         val deptId = sharedPreferences.getLong("dept_id", -1)
@@ -144,6 +146,25 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         binding.buttonContainer.setOnClickListener(clickListener)
         binding.buttonIcon.setOnClickListener(clickListener)
         binding.buttonText.setOnClickListener(clickListener)
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.error.collect { execption ->
+                execption?.let {
+                    handleException(it)
+                }
+            }
+        }
+    }
+
+    private fun handleException(ex: MainPageException) {
+        val msg = when (ex) {
+            is MainPageNetworkException -> ex.message
+            is MainPageApiException -> ex.message
+            is MainPageUnknownException -> ex.message
+            else -> "에러가 발생했습니다. ${ex.message}"
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+        Log.e("메인 페이지 오류 발생", msg, ex)
     }
 
     private fun setupLocationCallback() {
@@ -319,7 +340,7 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
                     it.targetLnt
                 )
                 pendingCheckProximityData = null
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
+            }
         }
     }
 
@@ -345,12 +366,8 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
 
     inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
 
-        override fun onPanelSlide(panel: View?, slideOffset: Float) {
-            // Do something when the panel is sliding
-        }
-        override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
-            // Do something when the panel state changes
-        }
+        override fun onPanelSlide(panel: View?, slideOffset: Float) {}
+        override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {}
     }
 
     data class ProximityData (
