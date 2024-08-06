@@ -10,6 +10,7 @@ import com.knowway.data.network.auth.ExpiredTokenInterceptor
 import com.knowway.data.network.auth.SendAuthTokenInterceptor
 import com.knowway.data.network.auth.TokenInterceptor
 import com.knowway.util.TokenManager
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object ApiClient {
 
@@ -39,6 +40,7 @@ object ApiClient {
         return Retrofit.Builder()
             .baseUrl(url)
             .client(okHttpClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
