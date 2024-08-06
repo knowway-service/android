@@ -21,6 +21,10 @@ class MainPageViewModel(private val dataSource: MainPageRepository) : ViewModel(
     private val _error = MutableStateFlow<MainPageException?>(null)
     val error: StateFlow<MainPageException?> get() = _error.asStateFlow()
 
+    fun updateRecords(records: List<RecordResponse>) {
+        _records.value = records
+    }
+
     fun getRecordsByDeptAndFloor(deptId:Long, floorId:Long) {
         viewModelScope.launch {
             try {

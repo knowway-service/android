@@ -164,6 +164,8 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
         editor.putLong("dept_id", dept.departmentStoreId)
         editor.putString("dept_name", dept.departmentStoreName)
         editor.putString("dept_branch", dept.departmentStoreBranch)
+        editor.putString("dept_latitude", dept.departmentStoreLatitude.toString())
+        editor.putString("dept_longitude", dept.departmentStoreLongitude.toString())
 
         val floorIds = dept.departmentStoreFloorResponseList.joinToString(",") { it.departmentStoreFloorId.toString() }
         editor.putString("dept_floor_ids", floorIds)

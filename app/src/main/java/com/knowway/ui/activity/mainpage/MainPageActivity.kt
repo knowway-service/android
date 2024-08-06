@@ -34,8 +34,10 @@ import com.knowway.ui.fragment.mainpage.MainRecordTipFragment
 import com.knowway.ui.viewmodel.mainpage.MainPageViewModel
 import com.knowway.ui.viewmodel.mainpage.MainPageViewModelFactory
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCompletionListener {
     private lateinit var binding: ActivityMainPageBinding
@@ -52,14 +54,14 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
     }
 
     private var displayFlag = false
-    private val range = 20.0
+    private val range = 10.0
     private var isAutoPlayEnabled = false
     private var currentRecordTipFragment: MainRecordTipFragment ?= null
     private var isProximityCheckRunning = false
     private var pendingCheckProximityData: ProximityData? = null
 
-    private var currentLatitude: Double? = null
-    private var currentLongitude: Double? = null
+    private var currentLatitude: Double = 0.0
+    private var currentLongitude: Double = 0.0
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
@@ -104,21 +106,34 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
             startUpdatingLocation()
         }
 
+        lifecycleScope.launch {
+            viewModel.recordsResponse.collect { records ->
+                records.forEach { record ->
+                    val latitude = record.recordLatitude.toDouble()
+                    val longitude = record.recordLongitude.toDouble()
+                    checkProximity(record.recordPath , currentLatitude, currentLongitude, latitude, longitude)
+                }
+            }
+        }
+
         binding.mainUpDown.setOnClickListener {
             val floorSelectModal = MainFloorSelectFragment()
             floorSelectModal.show(supportFragmentManager, "층 선택 모달창")
         }
 
-        val mapFooterFragment = MapFooterFragment().apply {
-            setOnToggleChangeListener(this@MainPageActivity)
+        setupInitialFragments()
+        setupButtonClickListener()
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.error.collect { execption ->
+                execption?.let {
+                    handleException(it)
+                }
+            }
         }
+    }
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.card_fragment_container, MainPersonFragment())
-            .replace(R.id.footer_container, mapFooterFragment)
-            .replace(R.id.fragment_container, RecordFragment())
-            .commit()
-
+    private fun setupButtonClickListener() {
         val clickListener = View.OnClickListener {
             if (displayFlag) {
                 binding.buttonIcon.setBackgroundResource(R.drawable.location)
@@ -146,14 +161,18 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         binding.buttonContainer.setOnClickListener(clickListener)
         binding.buttonIcon.setOnClickListener(clickListener)
         binding.buttonText.setOnClickListener(clickListener)
+    }
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.error.collect { execption ->
-                execption?.let {
-                    handleException(it)
-                }
-            }
+    private fun setupInitialFragments() {
+        val mapFooterFragment = MapFooterFragment().apply {
+            setOnToggleChangeListener(this@MainPageActivity)
         }
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.card_fragment_container, MainPersonFragment())
+            .replace(R.id.footer_container, mapFooterFragment)
+            .replace(R.id.fragment_container, RecordFragment())
+            .commit()
     }
 
     private fun handleException(ex: MainPageException) {
@@ -174,14 +193,34 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
                     currentLatitude = location.latitude
                     currentLongitude = location.longitude
                     lifecycleScope.launch {
-                        viewModel.recordsResponse.collect { records ->
-                            records.forEach { record ->
-                                val latitude = record.recordLatitude.toDouble()
-                                val longitude = record.recordLongitude.toDouble()
-                                checkProximity(record.recordPath , location.latitude, location.longitude, latitude, longitude)
-                            }
-                        }
+                        fetchRecordsAndUpdateMapUI(location)
                     }
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchRecordsAndUpdateMapUI(location: Location) {
+        viewModel.recordsResponse.collect { records ->
+            records.forEach { record ->
+                val latitude = record.recordLatitude.toDouble()
+                val longitude = record.recordLongitude.toDouble()
+                checkProximity(
+                    record.recordPath,
+                    location.latitude,
+                    location.longitude,
+                    latitude,
+                    longitude
+                )
+            }
+
+            withContext(Dispatchers.Main) {
+                val mainMapFragment =
+                    supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainMapFragment
+                if (mainMapFragment != null) {
+                    mainMapFragment.updateLocationOnMap(location.latitude, location.longitude)
+                } else {
+                    Log.e("FragmentDebug", "MainMapFragment not found or map not loaded.")
                 }
             }
         }
@@ -209,6 +248,10 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
 
     override fun onResume() {
         super.onResume()
+        val mainMapFragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainMapFragment
+        if (mainMapFragment != null) {
+            Log.d("FragmentDebug", "MainMapFragment found onResume, updating location.")
+        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
             startUpdatingLocation()
@@ -294,6 +337,11 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
 
         val fragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainMapFragment
         fragment?.loadMapImage(floor.departmentStoreMapPath)
+
+        val deptId = sharedPreferences.getLong("dept_id", -1)
+        if (deptId != -1L) {
+            viewModel.getRecordsByDeptAndFloor(deptId, floor.departmentStoreFloorId)
+        }
     }
 
     private fun showMapFragment(mapPath: String) {
@@ -365,7 +413,6 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
     }
 
     inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
-
         override fun onPanelSlide(panel: View?, slideOffset: Float) {}
         override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {}
     }
