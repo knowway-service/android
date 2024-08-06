@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.knowway.data.model.chat.ChatMessage
 import com.knowway.data.model.chat.SendMessage
 import com.knowway.data.repository.ChatRepository
-import com.knowway.data.network.ChatApiService
 import kotlinx.coroutines.launch
 
 class ChatViewModel(application: Application) : AndroidViewModel(application) {

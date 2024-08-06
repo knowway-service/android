@@ -18,7 +18,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="true">
 
             <TextView
                 android:id="@+id/dept_name"
@@ -27,17 +28,19 @@
                 android:text="더 현대 서울"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:layout_marginTop="4dp"/>
+                android:layout_marginTop="4dp"
+                android:baselineAligned="true"/>
 
             <TextView
                 android:id="@+id/dept_branch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="여의도점"
-                android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textColor="@color/dark_grey"
+                android:textSize="16sp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"/>
+                android:layout_marginTop="4dp"
+                android:layout_alignBaseline="@id/dept_name"/>
         </LinearLayout>
 
         <ImageView
