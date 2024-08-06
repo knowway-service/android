@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.data.network.AdminApiService
+import com.knowway.data.network.ApiClient
 import com.knowway.data.paging.DepartmentStorePagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class AdminDepartmentStoreViewModel : ViewModel() {
 
-    private val service = AdminApiService.create()
+    private val service: AdminApiService = ApiClient.getClient().create(AdminApiService::class.java)
 
     val departmentStoresResponse: Flow<PagingData<DepartmentStoreResponse>> = Pager(
         config = PagingConfig(

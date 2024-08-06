@@ -22,12 +22,6 @@ interface AdminApiService {
         @Query("departmentStoreBranch") departmentStoreBranch: String
     ): Response<List<DepartmentStoreResponse>>
 
-    @GET("/depts/{deptId}/floors")
-    suspend fun getDepartmentStoreFloorMap(
-        @Path("deptId") deptId: Long,
-        @Query("floor") floor: String
-    ): Response<DepartmentStoreFloorMapResponse>
-
     @GET("/admin/records")
     suspend fun getRecordsByFloor(
         @Query("departmentStoreFloorId") departmentStoreFloorId: Long,
@@ -40,18 +34,8 @@ interface AdminApiService {
         @Path("recordId") recordId: Long
     ): Response<Unit>
 
-    @POST("/points")
+    @POST("/admin/points")
     suspend fun updatePoints(
         @Body requestBody: Map<String, Long>
     ): Response<Unit>
-
-    companion object {
-        fun create(): AdminApiService {
-            val retrofit = Retrofit.Builder()
-                .baseUrl("http://${BuildConfig.BASE_IP_ADDRESS}:8080")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            return retrofit.create(AdminApiService::class.java)
-        }
-    }
 }
