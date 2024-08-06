@@ -16,7 +16,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val _messages = MutableLiveData<List<ChatMessage>>()
     val messages: LiveData<List<ChatMessage>> get() = _messages
 
-    private val chatRepository = ChatRepository(ChatApiService.create())
+    private val chatRepository = ChatRepository()
 
     private var currentPage = 0
     private var isLastPage = false

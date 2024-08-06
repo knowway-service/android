@@ -9,8 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.knowway.databinding.FragmentAdminRecordingListBinding
 import com.knowway.data.model.admin.AdminRecord
 import com.knowway.adapter.AdminRecordAdapter
-import com.knowway.data.network.AdminApiService
-import com.knowway.data.network.ApiClient
+import com.knowway.data.repository.AdminRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +24,7 @@ class AdminRecordingListFragment(
 
     private var _binding: FragmentAdminRecordingListBinding? = null
     private val binding get() = _binding!!
-    private val apiService: AdminApiService by lazy { ApiClient.getClient().create(AdminApiService::class.java) }
+    private val repository: AdminRepository = AdminRepository()
     private lateinit var recordAdapter: AdminRecordAdapter
 
     override fun onCreateView(
@@ -54,7 +53,7 @@ class AdminRecordingListFragment(
 
     fun loadRecords() {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = apiService.getRecordsByFloor(departmentStoreFloorId, areaNumber.toLong(), isInSelectionTab)
+            val response = repository.getRecordsByFloor(departmentStoreFloorId, areaNumber.toLong(), isInSelectionTab)
             if (response.isSuccessful) {
                 val records = response.body()?.map {
                     AdminRecord(it.recordId.toString(), it.recordTitle, it.recordPath)
