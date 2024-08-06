@@ -4,7 +4,6 @@ import android.app.AuthenticationRequiredException
 import android.content.Context
 import android.content.Intent
 import com.knowway.ui.activity.user.LoginActivity
-import com.knowway.util.AuthManager
 import com.knowway.util.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Request

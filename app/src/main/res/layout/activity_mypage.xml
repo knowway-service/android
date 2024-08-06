@@ -19,6 +19,21 @@
         app:layout_constraintTop_toTopOf="@id/emailTextView" />
 
     <TextView
+        android:id="@+id/logoutTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="logout"
+        android:textColor="@color/grey"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="50dp"
+        android:textSize="16sp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
         android:id="@+id/emailTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

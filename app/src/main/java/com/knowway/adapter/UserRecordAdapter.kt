@@ -24,7 +24,6 @@ import retrofit2.Response
 class UserRecordAdapter(
     private val records: MutableList<UserRecord>,
     private val context: Context,
-    private val showDeleteIcon: Boolean
 ) : RecyclerView.Adapter<UserRecordAdapter.RecordViewHolder>() {
 
     private var mediaPlayer: MediaPlayer? = null
@@ -36,14 +35,12 @@ class UserRecordAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         init {
-            // Handle clicking on the record title
             binding.recordTitle.setOnClickListener {
                 val record = records[adapterPosition]
                 record.isExpanded = !record.isExpanded
                 notifyItemChanged(adapterPosition)
             }
 
-            // Handle play/pause button click
             binding.btnPlayPause.setOnClickListener {
                 val record = records[adapterPosition]
                 if (mediaPlayer?.isPlaying == true) {
@@ -55,7 +52,6 @@ class UserRecordAdapter(
                 }
             }
 
-            // Handle trash icon click to delete the record
             binding.actionIcon.setOnClickListener {
                 val record = records[adapterPosition]
                 if (binding.actionIcon.visibility == View.VISIBLE) {
@@ -63,7 +59,6 @@ class UserRecordAdapter(
                 }
             }
 
-            // Handle seekbar actions
             binding.musicSeekbar.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
@@ -80,7 +75,6 @@ class UserRecordAdapter(
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
 
-            // Handle previous button click
             binding.btnPrevious.setOnClickListener {
                 mediaPlayer?.let {
                     val newPosition = it.currentPosition - 15000
@@ -88,7 +82,6 @@ class UserRecordAdapter(
                 }
             }
 
-            // Handle next button click
             binding.btnNext.setOnClickListener {
                 mediaPlayer?.let {
                     val newPosition = it.currentPosition + 15000

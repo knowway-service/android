@@ -105,29 +105,24 @@ class SignupActivity : AppCompatActivity() {
         val apiService = ApiClient.getClient().create(UserApiService::class.java)
         val checkEmailCall = apiService.checkEmail(EmailDuplicationRequest(email))
 
-        checkEmailCall.enqueue(object : Callback<Boolean> {
+        checkEmailCall.enqueue(object : Callback<Void> {
             override fun onResponse(
-                call: Call<Boolean>,
-                response: Response<Boolean>
+                call: Call<Void>,
+                response: Response<Void>
             ) {
                 if (response.isSuccessful) {
-                    val isAvailable = response.body() ?: false
-                    if (isAvailable) {
-                        isEmailAvailable = true
-                        emailValidationMessage.visibility = View.VISIBLE
-                        emailDuplicateError.visibility = View.GONE
-                    } else {
-                        isEmailAvailable = false
-                        emailValidationMessage.visibility = View.GONE
-                        emailDuplicateError.visibility = View.VISIBLE
-                    }
+                    isEmailAvailable = true
+                    emailValidationMessage.visibility = View.VISIBLE
+                    emailDuplicateError.visibility = View.GONE
                 } else {
                     isEmailAvailable = false
+                    emailValidationMessage.visibility = View.GONE
+                    emailDuplicateError.visibility = View.VISIBLE
                     showError("이메일이 중복되었습니다.")
                 }
             }
 
-            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e("SignupActivity", "네트워크 오류: ${t.localizedMessage}")
             }
         })
@@ -137,10 +132,10 @@ class SignupActivity : AppCompatActivity() {
         val apiService = ApiClient.getClient().create(UserApiService::class.java)
         val signupCall = apiService.registerUser(RegisterRequest(email, password))
 
-        signupCall.enqueue(object : Callback<Boolean> {
+        signupCall.enqueue(object : Callback<Void> {
             override fun onResponse(
-                call: Call<Boolean>,
-                response: Response<Boolean>
+                call: Call<Void>,
+                response: Response<Void>
             ) {
                 if (response.isSuccessful) {
                     val intent = Intent(this@SignupActivity, LoginActivity::class.java)
@@ -152,7 +147,7 @@ class SignupActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e("SignupActivity", "네트워크 오류: ${t.localizedMessage}")
             }
         })
@@ -162,6 +157,7 @@ class SignupActivity : AppCompatActivity() {
         emailDuplicateError.text = message
         emailDuplicateError.visibility = View.VISIBLE
     }
+
     private fun showPasswordError(message: String) {
         passwordErrorMessage.text = message
         passwordErrorMessage.visibility = View.VISIBLE
