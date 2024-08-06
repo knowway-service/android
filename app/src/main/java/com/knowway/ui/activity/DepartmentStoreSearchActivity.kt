@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -15,9 +15,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.knowway.Constants.url
 import com.knowway.R
 import com.knowway.adapter.DepartmentStoreAdapter
+import com.knowway.data.exceptions.department.*
+import com.knowway.data.exceptions.location.LocationException
+import com.knowway.data.exceptions.location.LocationLoadException
+import com.knowway.data.exceptions.location.LocationPermissionException
+import com.knowway.data.exceptions.location.LocationUnknownException
 import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.data.repository.DepartmentStoreRepository
 import com.knowway.databinding.ActivityDepartmentStoreSearchBinding
@@ -28,13 +32,14 @@ import com.knowway.ui.viewmodel.department.DepartmentStoreViewModelFactory
 import com.knowway.ui.viewmodel.department.LocationViewModel
 import com.knowway.ui.viewmodel.department.LocationViewModelFactory
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class DepartmentStoreSearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDepartmentStoreSearchBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val deptViewModel: DepartmentStoreViewModel by viewModels {
-        DepartmentStoreViewModelFactory(DepartmentStoreRepository(url))
+        DepartmentStoreViewModelFactory(DepartmentStoreRepository())
     }
 
     private val locationViewModel: LocationViewModel by viewModels {
@@ -99,27 +104,58 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             deptViewModel.departmentStoresResponse.collect { departmentStores ->
                 adapter.update(departmentStores)
-                Log.d("검색 결과 업데이트됨", "Department stores updated: ${departmentStores.size} items")
             }
         }
 
         lifecycleScope.launch {
             locationViewModel.location.collect { locationResponse ->
                 locationResponse?.let {
-                    Log.d("위치 정보", "Location received: Latitude=${locationResponse.latitude}, Longitude=${locationResponse.longitude}")
                     deptViewModel.getDepartmentStoresByLocation(it.latitude, it.longitude)
                     deptViewModel.departmentStoresResponse.collect { departmentStores ->
                         adapter.update(departmentStores)
-                        Log.d("위치 정보 업데이트됨", "Department stores updated: ${departmentStores.size} items")
                     }
                 }
             }
         }
+
+        lifecycleScope.launchWhenStarted {
+            combine(
+                deptViewModel.error,
+                locationViewModel.error
+            ) { deptErr, locationErr ->
+                deptErr?.let { handleDeptException(it) }
+                locationErr?.let { handleLocationException(it) }
+            }.collect()
+        }
+
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.footer_fragment_container, SelectFooterFragment())
                 .commit()
         }
+    }
+
+    private fun handleLocationException(ex: LocationException) {
+        val msg = when (ex) {
+            is LocationPermissionException -> ex.message
+            is LocationLoadException -> ex.message
+            is LocationUnknownException -> ex.message
+            else -> "위치 에러가 발생했습니다. ${ex.message}"
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+        Log.e("위치 에러 발생", msg, ex)
+    }
+
+    private fun handleDeptException(ex: DepartmentStoreException) {
+        val msg = when (ex) {
+            is DeptNetworkException -> ex.message
+            is DeptByBranchApiException -> ex.message
+            is DeptByLocationApiException -> ex.message
+            is DeptUnknownException -> ex.message
+            else -> "백화점 리스팅 에러가 발생했습니다. ${ex.message}"
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+        Log.e("백화점 리스팅 페이지 오류 발생", msg, ex)
     }
 
     private fun saveSelectedStore(dept: DepartmentStoreResponse) {
@@ -139,9 +175,6 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
         editor.putString("dept_floor_map_paths", floorMapPaths)
 
         editor.apply()
-
-        // 디버깅 포인트 추가
-        Log.d("DepartmentStoreSearchActivity", "Saved department store data: id=${dept.departmentStoreId}, name=${dept.departmentStoreName}, branch=${dept.departmentStoreBranch}, floorIds=$floorIds, floorNames=$floorNames, floorMapPaths=$floorMapPaths")
     }
 
     private fun navigateToMainPageActivity() {

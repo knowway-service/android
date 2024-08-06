@@ -1,13 +1,13 @@
 package com.knowway.data.network
 
 import android.content.Context
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import com.knowway.BuildConfig
+import com.knowway.Constants.url
 import com.knowway.data.network.auth.AuthInterceptor
 import com.knowway.data.network.auth.TokenInterceptor
 import com.knowway.util.TokenManager
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
 
@@ -33,7 +33,7 @@ object ApiClient {
         val okHttpClient = okHttpClientBuilder.build()
 
         return Retrofit.Builder()
-            .baseUrl("http://${BuildConfig.BASE_IP_ADDRESS}:8080")
+            .baseUrl(url)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
