@@ -1,6 +1,5 @@
 package com.knowway.adapter.user
 
-import android.app.AlertDialog
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Handler
@@ -10,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.knowway.data.model.user.UserRecord
@@ -113,7 +111,7 @@ class UserRecordAdapter(
             if (record.isSelectedByAdmin) {
                 binding.actionIcon.visibility = View.GONE
             } else {
-                binding.actionIcon.setImageResource(R.drawable.trash)
+                binding.actionIcon.setImageResource(R.drawable.ic_trash)
                 binding.actionIcon.visibility = View.VISIBLE
             }
 

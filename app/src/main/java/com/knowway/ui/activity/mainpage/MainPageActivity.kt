@@ -157,7 +157,7 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
                             records.forEach { record ->
                                 val latitude = record.recordLatitude.toDouble()
                                 val longitude = record.recordLongitude.toDouble()
-                                checkProximity(record.recordPath , currentLatitude!!, currentLongitude!!, latitude, longitude)
+                                checkProximity(record.recordPath , location.latitude, location.longitude, latitude, longitude)
                             }
                         }
                     }

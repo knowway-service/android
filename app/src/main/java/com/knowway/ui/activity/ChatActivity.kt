@@ -1,6 +1,7 @@
 package com.knowway.ui.activity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -33,7 +34,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
     private var storeId: Long = 1
-    private var memberChatId: Long = 44
+    private var memberChatId: Long = 0
     private lateinit var webSocketClient: WebSocketClient
     private lateinit var userNickname: String
     private var isLoadingMessages = false
@@ -51,7 +52,7 @@ class ChatActivity : AppCompatActivity() {
         val deptBranch = sharedPreferences.getString("dept_branch", "더현대 서울")
 
         val appPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        memberChatId = appPreferences.getLong("memberChatId", 44)
+        memberChatId = appPreferences.getLong("memberChatId", 0)
 
         userNickname = generateRandomNickname()
 
@@ -70,7 +71,8 @@ class ChatActivity : AppCompatActivity() {
 
         leaveButton = findViewById(R.id.ic_leave)
         leaveButton.setOnClickListener {
-            finish()
+            val intent = Intent(this, SelectMenuActivity::class.java)
+            startActivity(intent)
         }
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
