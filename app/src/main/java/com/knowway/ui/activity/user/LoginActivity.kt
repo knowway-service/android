@@ -123,13 +123,7 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    private fun logout() {
-        TokenManager.clearToken();
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
-    }
+
 
     private fun navigateToSelectMenu(memberChatId: Long) {
         Intent(this, SelectMenuActivity::class.java).apply {
