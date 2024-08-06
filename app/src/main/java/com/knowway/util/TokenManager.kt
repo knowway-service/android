@@ -17,8 +17,20 @@ class TokenManager(context: Context) {
             instance = TokenManager(context)
         }
 
+        fun getInstance(): TokenManager {
+            return instance ?: throw IllegalStateException("TokenManager not initialized")
+        }
+
         fun getToken(): String? {
-            return instance?.getToken()
+            return getInstance().getToken()
+        }
+
+        fun saveToken(token: String) {
+            getInstance().saveToken(token)
+        }
+
+        fun clearToken() {
+            getInstance().clearToken()
         }
     }
 

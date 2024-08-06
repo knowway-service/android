@@ -1,7 +1,6 @@
 package com.knowway.ui.activity
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.knowway.adapter.ViewPagerAdapter
@@ -19,12 +18,8 @@ class AdminRecordingListActivity : AppCompatActivity() {
         binding = ActivityAdminRecordingListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Retrieve departmentStoreFloorId and areaNumber from the Intent
         departmentStoreFloorId = intent.getLongExtra("departmentStoreFloorId", -1L)
         areaNumber = intent.getIntExtra("areaNumber", -1)
-
-        Log.d("ReceivedData", "Department Store Floor ID: $departmentStoreFloorId")
-        Log.d("ReceivedData", "Selected Area Number: $areaNumber")
 
         setupViewPager()
     }

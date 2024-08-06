@@ -18,14 +18,4 @@ interface ChatApiService {
 
     @POST("/chats")
     suspend fun postMessage(@Body message: SendMessage): Response<Void>
-
-    companion object {
-        fun create(): ChatApiService {
-            val retrofit = Retrofit.Builder()
-                .baseUrl("http://${BuildConfig.BASE_IP_ADDRESS}:8080")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            return retrofit.create(ChatApiService::class.java)
-        }
-    }
 }

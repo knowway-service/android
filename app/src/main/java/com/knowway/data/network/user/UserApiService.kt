@@ -6,19 +6,19 @@ import retrofit2.http.*
 
 interface UserApiService {
     @POST("/users")
-    fun registerUser(@Body request: RegisterRequest): Call<Boolean>
+    fun registerUser(@Body request: RegisterRequest): Call<Void>
 
     @POST("/users/emails")
-    fun checkEmail(@Body request: EmailDuplicationRequest): Call<Boolean>
+    fun checkEmail(@Body request: EmailDuplicationRequest): Call<Void>
 
     @POST("/login")
     fun login(@Body request: LoginRequest): Call<Void>
 
     @POST("/logout")
-    fun logout(): Call<Boolean>
+    fun logout(): Call<Void>
 
-    @GET("/admin")
-    fun isAUserAdmin(): Call<Boolean>
+    @POST("/admin")
+    fun isUserAdmin(): Call<Void>
 
     @GET("/users")
     fun getProfile(): Call<UserProfileResponse>

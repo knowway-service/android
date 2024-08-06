@@ -3,18 +3,18 @@ package com.knowway.data.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.knowway.data.model.department.DepartmentStoreResponse
-import com.knowway.data.network.AdminApiService
+import com.knowway.data.repository.AdminRepository
 import retrofit2.HttpException
 import java.io.IOException
 
 class DepartmentStorePagingSource(
-    private val service: AdminApiService
+    private val repository: AdminRepository
 ) : PagingSource<Int, DepartmentStoreResponse>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DepartmentStoreResponse> {
         val page = params.key ?: 0
         return try {
-            val response = service.getDepartmentStores(params.loadSize, page)
+            val response = repository.getDepartmentStores(params.loadSize, page)
             val departmentStores = response.body()?.content ?: emptyList()
 
             val nextKey = if (departmentStores.size < params.loadSize) {

@@ -36,8 +36,7 @@ class MypageRecordingListFragment(private val isInSelectionTab: Boolean) : Fragm
 
         apiService = ApiClient.getClient().create(UserApiService::class.java)
 
-        // Initialize the adapter with the correct parameter
-        adapter = UserRecordAdapter(records, requireContext(), isInSelectionTab)
+        adapter = UserRecordAdapter(records, requireContext())
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 

@@ -4,7 +4,6 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.knowway.R
 import com.knowway.data.model.admin.AdminRecord
-import com.knowway.data.network.AdminApiService
+import com.knowway.data.repository.AdminRepository
 import com.knowway.databinding.ItemAdminRecordBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,19 +31,19 @@ class AdminRecordAdapter(
     private val handler = Handler(Looper.getMainLooper())
     private var updateSeekBarTask: Runnable? = null
 
-    private val apiService: AdminApiService by lazy { AdminApiService.create() }
+    private val adminRepository: AdminRepository = AdminRepository()
 
     inner class RecordViewHolder(val binding: ItemAdminRecordBinding) : RecyclerView.ViewHolder(binding.root) {
 
         init {
             binding.recordTitle.setOnClickListener {
-                val record = records[adapterPosition]
+                val record = records[bindingAdapterPosition]
                 record.isExpanded = !record.isExpanded
-                notifyItemChanged(adapterPosition)
+                notifyItemChanged(bindingAdapterPosition)
             }
 
             binding.btnPlayPause.setOnClickListener {
-                val record = records[adapterPosition]
+                val record = records[bindingAdapterPosition]
                 if (mediaPlayer?.isPlaying == true) {
                     mediaPlayer?.pause()
                     binding.btnPlayPause.setImageResource(R.drawable.ic_record_play)
@@ -80,26 +79,22 @@ class AdminRecordAdapter(
             }
 
             binding.actionText.setOnClickListener {
-                val record = records[adapterPosition]
+                val record = records[bindingAdapterPosition]
                 val action = if (isInSelectionTab) "cancel" else "select"
                 CoroutineScope(Dispatchers.IO).launch {
-                    val response = apiService.selectRecord(record.recordId.toLong())
+                    val response = adminRepository.selectRecord(record.recordId.toLong())
                     if (response.isSuccessful) {
                         withContext(Dispatchers.Main) {
-                            Log.d("Action", if (isInSelectionTab) "선정 취소: ${record.recordTitle}" else "선정: ${record.recordTitle}")
                             if (!isInSelectionTab) {
-                                val pointsResponse = apiService.updatePoints(mapOf("recordId" to record.recordId.toLong()))
+                                val pointsResponse = adminRepository.updatePoints(mapOf("recordId" to record.recordId.toLong()))
                                 if (pointsResponse.isSuccessful) {
-                                    Log.d("Points", "Points updated for record: ${record.recordTitle}")
                                 } else {
-                                    Log.e("Points", "Failed to update points for record: ${record.recordTitle}")
                                 }
                             }
                             refreshData()
                         }
                     } else {
                         withContext(Dispatchers.Main) {
-                            Log.e("Action", if (isInSelectionTab) "선정 취소 실패: ${record.recordTitle}" else "선정 실패: ${record.recordTitle}")
                         }
                     }
                 }
@@ -111,14 +106,12 @@ class AdminRecordAdapter(
             binding.musicControlLayout.visibility = if (record.isExpanded) View.VISIBLE else View.GONE
             binding.btnPlayPause.setImageResource(R.drawable.ic_record_play)
 
-            // 배경 변경
             if (record.isExpanded) {
                 binding.root.setBackgroundResource(R.drawable.record_item_background_expanded)
             } else {
                 binding.root.setBackgroundResource(R.drawable.record_item_background)
             }
 
-            // 텍스트 변경
             if (isInSelectionTab) {
                 binding.actionText.text = "선정 취소"
                 binding.actionText.setTextColor(ContextCompat.getColor(context, R.color.dark_blue))
@@ -128,7 +121,7 @@ class AdminRecordAdapter(
             }
             binding.actionText.visibility = View.VISIBLE
 
-            if (mediaPlayer?.isPlaying == true && adapterPosition == currentPlayingPosition) {
+            if (mediaPlayer?.isPlaying == true && bindingAdapterPosition == currentPlayingPosition) {
                 binding.musicSeekbar.max = mediaPlayer!!.duration
                 binding.musicSeekbar.progress = mediaPlayer!!.currentPosition
                 binding.btnPlayPause.setImageResource(R.drawable.ic_record_pause)
@@ -139,13 +132,13 @@ class AdminRecordAdapter(
         }
 
         private fun playMp3(audioFileUrl: String) {
-            if (mediaPlayer != null && currentPlayingPosition != adapterPosition) {
+            if (mediaPlayer != null && currentPlayingPosition != bindingAdapterPosition) {
                 mediaPlayer?.stop()
                 mediaPlayer?.release()
                 mediaPlayer = null
             }
 
-            currentPlayingPosition = adapterPosition
+            currentPlayingPosition = bindingAdapterPosition
 
             if (mediaPlayer == null) {
                 mediaPlayer = MediaPlayer()
@@ -165,7 +158,6 @@ class AdminRecordAdapter(
                     binding.musicSeekbar.max = mediaPlayer!!.duration
                     startSeekBarUpdate()
                 } catch (e: Exception) {
-                    Log.e("MediaPlayer", "Error playing audio file: $audioFileUrl", e)
                 }
             } else {
                 mediaPlayer?.start()
@@ -204,7 +196,7 @@ class AdminRecordAdapter(
 
     override fun onViewRecycled(holder: RecordViewHolder) {
         super.onViewRecycled(holder)
-        if (holder.adapterPosition == currentPlayingPosition) {
+        if (holder.bindingAdapterPosition == currentPlayingPosition) {
             holder.binding.musicSeekbar.progress = 0
             mediaPlayer?.release()
             mediaPlayer = null

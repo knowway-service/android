@@ -4,17 +4,14 @@ import MainFloorSelectFragment
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.knowway.R
-import com.knowway.data.network.AdminApiService
 import com.knowway.databinding.ActivityAdminAreaSelectionBinding
 
 class AdminAreaSelectionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminAreaSelectionBinding
-    private val apiService: AdminApiService by lazy { AdminApiService.create() }
     private var departmentStoreFloorId: Long = -1L
     private var departmentStoreId: Long = -1L
 
@@ -32,8 +29,6 @@ class AdminAreaSelectionActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("DeptPref", MODE_PRIVATE)
         departmentStoreId = sharedPreferences.getLong("dept_id", -1L)
         val floorMapPaths = sharedPreferences.getString("dept_floor_map_paths", "").orEmpty().split(",")
-
-        Log.d("ReceivedData", "Department Store ID: $departmentStoreId")
 
         binding.imgPartDialog.clipToOutline = true
 
@@ -73,22 +68,14 @@ class AdminAreaSelectionActivity : AppCompatActivity() {
         val floorMapPath = sharedPreferences.getString("selected_floor_map_path", "")
 
         departmentStoreFloorId = floorId
-        Log.d("FloorInfo", "Updated Floor ID: $floorId")
         binding.floorText.text = floorName
         loadFloorMapImage(floorMapPath)
     }
 
-    private fun loadFloorMapImageFromPreferences() {
-        val sharedPreferences = getSharedPreferences("FloorPref", MODE_PRIVATE)
-        updateFloorInfo(sharedPreferences)
-    }
-
     private fun loadFloorMapImage(floorMapPath: String?) {
         if (floorMapPath.isNullOrEmpty()) {
-            Log.e("ImageURL", "floorMapPath is null or empty")
             binding.imgPartDialog.setImageResource(R.drawable.map_1)
         } else {
-            Log.d("ImageURL", "Loading image from URL: $floorMapPath")
             Glide.with(this)
                 .load(floorMapPath)
                 .into(binding.imgPartDialog)
@@ -100,7 +87,6 @@ class AdminAreaSelectionActivity : AppCompatActivity() {
             putExtra("areaNumber", areaNumber)
             putExtra("departmentStoreFloorId", departmentStoreFloorId)
         }
-        Log.d("Navigation", "Navigating to recording list with Floor ID: $departmentStoreFloorId and Area Number: $areaNumber")
         startActivity(intent)
     }
 }
