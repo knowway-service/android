@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.knowway.BuildConfig
+import com.knowway.Constants.url
 import com.knowway.data.network.auth.ExpiredTokenInterceptor
 import com.knowway.data.network.auth.SendAuthTokenInterceptor
 import com.knowway.data.network.auth.TokenInterceptor
@@ -36,7 +37,7 @@ object ApiClient {
         val okHttpClient = okHttpClientBuilder.build()
 
         return Retrofit.Builder()
-            .baseUrl("http://${BuildConfig.BASE_IP_ADDRESS}:8080")
+            .baseUrl(url)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
