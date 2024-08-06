@@ -7,9 +7,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.knowway.data.model.department.DepartmentStoreResponse
-import com.knowway.data.network.AdminApiService
-import com.knowway.data.network.ApiClient
 import com.knowway.data.paging.DepartmentStorePagingSource
+import com.knowway.data.repository.AdminRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class AdminDepartmentStoreViewModel : ViewModel() {
 
-    private val service: AdminApiService = ApiClient.getClient().create(AdminApiService::class.java)
+    private val repository: AdminRepository = AdminRepository()
 
     val departmentStoresResponse: Flow<PagingData<DepartmentStoreResponse>> = Pager(
         config = PagingConfig(
@@ -25,7 +24,7 @@ class AdminDepartmentStoreViewModel : ViewModel() {
             enablePlaceholders = false,
             initialLoadSize = 5
         ),
-        pagingSourceFactory = { DepartmentStorePagingSource(service) }
+        pagingSourceFactory = { DepartmentStorePagingSource(repository) }
     ).flow.cachedIn(viewModelScope)
 
     private val _searchResults = MutableStateFlow<List<DepartmentStoreResponse>>(emptyList())
@@ -33,7 +32,7 @@ class AdminDepartmentStoreViewModel : ViewModel() {
 
     fun searchDepartmentStores(branch: String) {
         viewModelScope.launch {
-            val response = service.getDepartmentStoreByBranch(branch)
+            val response = repository.getDepartmentStoreByBranch(branch)
             if (response.isSuccessful) {
                 response.body()?.let { stores ->
                     _searchResults.value = stores
