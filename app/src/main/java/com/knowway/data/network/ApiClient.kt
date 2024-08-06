@@ -5,18 +5,21 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.knowway.BuildConfig
-import com.knowway.data.network.auth.AuthInterceptor
+import com.knowway.Constants.url
+import com.knowway.data.network.auth.ExpiredTokenInterceptor
+import com.knowway.data.network.auth.SendAuthTokenInterceptor
 import com.knowway.data.network.auth.TokenInterceptor
 import com.knowway.util.TokenManager
 
 object ApiClient {
 
     private lateinit var tokenManager: TokenManager
+    private lateinit var appContext: Context
 
     fun init(context: Context) {
-        tokenManager = com.knowway.util.TokenManager(context)
+        appContext = context.applicationContext
+        tokenManager = TokenManager(appContext)
         tokenManager.clearToken()
-
     }
 
     fun getClient(): Retrofit = createRetrofit()
@@ -25,15 +28,16 @@ object ApiClient {
         val okHttpClientBuilder = OkHttpClient.Builder()
 
         okHttpClientBuilder.addInterceptor(TokenInterceptor(tokenManager))
+        okHttpClientBuilder.addInterceptor(ExpiredTokenInterceptor(appContext))
 
         tokenManager.getToken()?.let { token ->
-            okHttpClientBuilder.addInterceptor(AuthInterceptor(token))
+            okHttpClientBuilder.addInterceptor(SendAuthTokenInterceptor(token))
         }
 
         val okHttpClient = okHttpClientBuilder.build()
 
         return Retrofit.Builder()
-            .baseUrl("http://${BuildConfig.BASE_IP_ADDRESS}:8080")
+            .baseUrl(url)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

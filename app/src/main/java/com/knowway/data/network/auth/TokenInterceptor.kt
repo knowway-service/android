@@ -9,8 +9,8 @@ class TokenInterceptor(private val tokenManager: TokenManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val response = chain.proceed(request)
-
         val authHeader = response.header("Authorization")
+
         authHeader?.let {
             val token = it.removePrefix("Bearer ")
             tokenManager.saveToken(token)

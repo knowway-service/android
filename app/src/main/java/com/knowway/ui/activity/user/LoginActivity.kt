@@ -15,6 +15,7 @@ import com.knowway.data.network.ApiClient
 import com.knowway.data.network.user.UserApiService
 import com.knowway.ui.activity.AdminDepartmentStoreSearchActivity
 import com.knowway.ui.activity.SelectMenuActivity
+import com.knowway.util.TokenManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -92,49 +93,57 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-private fun handleAdminRole() {
-    startActivity(Intent(this, AdminDepartmentStoreSearchActivity::class.java))
-    finish()
-}
-
-private fun getUserChatId() {
-    val apiService = ApiClient.getClient().create(UserApiService::class.java)
-    val call = apiService.getUserChatId()
-
-    call.enqueue(object : Callback<UserChatMemberIdResponse> {
-        override fun onResponse(
-            call: Call<UserChatMemberIdResponse>,
-            response: Response<UserChatMemberIdResponse>
-        ) {
-            if (response.isSuccessful) {
-                val userChatIdResponse = response.body()
-                userChatIdResponse?.let {
-                    navigateToSelectMenu(it.memberChatId)
-                } ?: showError("유저의 고유 Chat number가 존재하지 않습니다.")
-            } else {
-                Log.d("error", "유저 Chat ID 조회 실패.")
-            }
-        }
-
-        override fun onFailure(call: Call<UserChatMemberIdResponse>, t: Throwable) {
-            Log.d("error", "네트워크 오류: ${t.localizedMessage}")
-        }
-    })
-}
-
-private fun navigateToSelectMenu(memberChatId: Long) {
-    Intent(this, SelectMenuActivity::class.java).apply {
-        val sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putLong("memberChatId", memberChatId) // Corrected key to "memberChatId"
-        editor.apply()
-        startActivity(this)
+    private fun handleAdminRole() {
+        startActivity(Intent(this, AdminDepartmentStoreSearchActivity::class.java))
         finish()
     }
-}
 
-private fun showError(message: String) {
-    loginErrorMessage.visibility = TextView.VISIBLE
-    loginErrorMessage.text = message
-}
+    private fun getUserChatId() {
+        val apiService = ApiClient.getClient().create(UserApiService::class.java)
+        val call = apiService.getUserChatId()
+
+        call.enqueue(object : Callback<UserChatMemberIdResponse> {
+            override fun onResponse(
+                call: Call<UserChatMemberIdResponse>,
+                response: Response<UserChatMemberIdResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val userChatIdResponse = response.body()
+                    userChatIdResponse?.let {
+                        navigateToSelectMenu(it.memberChatId)
+                    } ?: showError("유저의 고유 Chat number가 존재하지 않습니다.")
+                } else {
+                    Log.d("error", "유저 Chat ID 조회 실패.")
+                }
+            }
+
+            override fun onFailure(call: Call<UserChatMemberIdResponse>, t: Throwable) {
+                Log.d("error", "네트워크 오류: ${t.localizedMessage}")
+            }
+        })
+    }
+
+    private fun logout() {
+        TokenManager.clearToken();
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToSelectMenu(memberChatId: Long) {
+        Intent(this, SelectMenuActivity::class.java).apply {
+            val sharedPreferences = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putLong("memberChatId", memberChatId) // Corrected key to "memberChatId"
+            editor.apply()
+            startActivity(this)
+            finish()
+        }
+    }
+
+    private fun showError(message: String) {
+        loginErrorMessage.visibility = TextView.VISIBLE
+        loginErrorMessage.text = message
+    }
 }
