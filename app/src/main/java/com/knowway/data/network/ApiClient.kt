@@ -4,7 +4,6 @@ import android.content.Context
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.knowway.BuildConfig
 import com.knowway.Constants.url
 import com.knowway.data.network.auth.ExpiredTokenInterceptor
 import com.knowway.data.network.auth.SendAuthTokenInterceptor

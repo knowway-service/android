@@ -19,13 +19,15 @@ import com.knowway.adapter.ChatAdapter
 import com.knowway.data.model.chat.ChatMessage
 import com.knowway.data.model.chat.SendMessage
 import com.knowway.ui.viewmodel.ChatViewModel
+import com.knowway.util.TokenManager
 import org.java_websocket.client.WebSocketClient
+import org.java_websocket.drafts.Draft_6455
 import org.java_websocket.handshake.ServerHandshake
 import org.json.JSONObject
 import java.net.URI
 import java.text.SimpleDateFormat
-import kotlin.random.Random
 import java.util.*
+import kotlin.random.Random
 
 class ChatActivity : AppCompatActivity() {
     private val viewModel: ChatViewModel by viewModels()
@@ -71,8 +73,10 @@ class ChatActivity : AppCompatActivity() {
 
         leaveButton = findViewById(R.id.ic_leave)
         leaveButton.setOnClickListener {
+            webSocketClient.close()
             val intent = Intent(this, SelectMenuActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
@@ -139,8 +143,14 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun initializeWebSocket() {
+        val token = TokenManager(applicationContext).getToken()
         val uri = URI("ws://${BuildConfig.BASE_IP_ADDRESS}:8080/ws/chat/$storeId")
-        webSocketClient = object : WebSocketClient(uri) {
+        val headers = mutableMapOf<String, String>()
+        token?.let {
+            headers["Authorization"] = "Bearer $it"
+        }
+
+        webSocketClient = object : WebSocketClient(uri, Draft_6455(), headers, 0) {
             override fun onOpen(handshakedata: ServerHandshake?) {
             }
 
