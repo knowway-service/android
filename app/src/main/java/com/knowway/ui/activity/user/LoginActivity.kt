@@ -77,16 +77,16 @@ class LoginActivity : AppCompatActivity() {
 
     private fun checkUserRole() {
         val apiService = ApiClient.getClient().create(UserApiService::class.java)
-        val call = apiService.isAUserAdmin()
+        val call = apiService.isUserAdmin()
 
-        call.enqueue(object : Callback<Boolean> {
-            override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+        call.enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.code() == 403) {
                     getUserChatId()
                 } else handleAdminRole()
             }
 
-            override fun onFailure(call: Call<Boolean>, t: Throwable) {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
                 showError("유저 Chat ID 조회 실패.")
             }
         })
