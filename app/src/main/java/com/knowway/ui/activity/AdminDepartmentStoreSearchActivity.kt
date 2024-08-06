@@ -2,11 +2,8 @@ package com.knowway.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -15,7 +12,6 @@ import com.knowway.R
 import com.knowway.adapter.AdminDepartmentStoreAdapter
 import com.knowway.data.model.department.DepartmentStoreResponse
 import com.knowway.databinding.ActivityAdminDepartmentStoreSearchBinding
-import com.knowway.databinding.CustomConfirmButtonBinding
 import com.knowway.ui.viewmodel.AdminDepartmentStoreViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -39,7 +35,6 @@ class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = AdminDepartmentStoreAdapter { departmentStore ->
-            logSelectedDepartmentStore(departmentStore)
             binding.errorTextView.visibility = View.GONE
         }
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -70,7 +65,6 @@ class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
     private fun setupSearchButton() {
         binding.searchImageView.setOnClickListener {
             val query = binding.inputEditText.text.toString()
-            Log.d("SelectedDepartmentStore", "Selected: $query")
             if (query.isNotEmpty()) {
                 viewModel.searchDepartmentStores(query)
             } else {
@@ -92,10 +86,6 @@ class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun logSelectedDepartmentStore(departmentStoreResponse: DepartmentStoreResponse) {
-        Log.d("SelectedDepartmentStore", "Selected: $departmentStoreResponse")
-    }
-
     private fun saveSelectedStore(dept: DepartmentStoreResponse) {
         val sharedPreferences = getSharedPreferences("DeptPref", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -113,7 +103,5 @@ class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
         editor.putString("dept_floor_map_paths", floorMapPaths)
 
         editor.apply()
-
-        Log.d("AdminDepartmentStoreSearchActivity", "Saved department store data: id=${dept.departmentStoreId}, name=${dept.departmentStoreName}, branch=${dept.departmentStoreBranch}, floorIds=$floorIds, floorNames=$floorNames, floorMapPaths=$floorMapPaths")
     }
 }

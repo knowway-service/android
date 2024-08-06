@@ -4,7 +4,6 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.knowway.R
 import com.knowway.data.model.admin.AdminRecord
 import com.knowway.data.network.AdminApiService
+import com.knowway.data.network.ApiClient
 import com.knowway.databinding.ItemAdminRecordBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +32,9 @@ class AdminRecordAdapter(
     private val handler = Handler(Looper.getMainLooper())
     private var updateSeekBarTask: Runnable? = null
 
-    private val apiService: AdminApiService by lazy { AdminApiService.create() }
+    private val apiService: AdminApiService by lazy {
+        ApiClient.getClient().create(AdminApiService::class.java)
+    }
 
     inner class RecordViewHolder(val binding: ItemAdminRecordBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -86,20 +88,16 @@ class AdminRecordAdapter(
                     val response = apiService.selectRecord(record.recordId.toLong())
                     if (response.isSuccessful) {
                         withContext(Dispatchers.Main) {
-                            Log.d("Action", if (isInSelectionTab) "선정 취소: ${record.recordTitle}" else "선정: ${record.recordTitle}")
                             if (!isInSelectionTab) {
                                 val pointsResponse = apiService.updatePoints(mapOf("recordId" to record.recordId.toLong()))
                                 if (pointsResponse.isSuccessful) {
-                                    Log.d("Points", "Points updated for record: ${record.recordTitle}")
                                 } else {
-                                    Log.e("Points", "Failed to update points for record: ${record.recordTitle}")
                                 }
                             }
                             refreshData()
                         }
                     } else {
                         withContext(Dispatchers.Main) {
-                            Log.e("Action", if (isInSelectionTab) "선정 취소 실패: ${record.recordTitle}" else "선정 실패: ${record.recordTitle}")
                         }
                     }
                 }
@@ -111,14 +109,12 @@ class AdminRecordAdapter(
             binding.musicControlLayout.visibility = if (record.isExpanded) View.VISIBLE else View.GONE
             binding.btnPlayPause.setImageResource(R.drawable.ic_record_play)
 
-            // 배경 변경
             if (record.isExpanded) {
                 binding.root.setBackgroundResource(R.drawable.record_item_background_expanded)
             } else {
                 binding.root.setBackgroundResource(R.drawable.record_item_background)
             }
 
-            // 텍스트 변경
             if (isInSelectionTab) {
                 binding.actionText.text = "선정 취소"
                 binding.actionText.setTextColor(ContextCompat.getColor(context, R.color.dark_blue))
@@ -165,7 +161,6 @@ class AdminRecordAdapter(
                     binding.musicSeekbar.max = mediaPlayer!!.duration
                     startSeekBarUpdate()
                 } catch (e: Exception) {
-                    Log.e("MediaPlayer", "Error playing audio file: $audioFileUrl", e)
                 }
             } else {
                 mediaPlayer?.start()

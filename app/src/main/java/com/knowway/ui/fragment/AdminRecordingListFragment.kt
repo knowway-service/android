@@ -10,6 +10,7 @@ import com.knowway.databinding.FragmentAdminRecordingListBinding
 import com.knowway.data.model.admin.AdminRecord
 import com.knowway.adapter.AdminRecordAdapter
 import com.knowway.data.network.AdminApiService
+import com.knowway.data.network.ApiClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +25,7 @@ class AdminRecordingListFragment(
 
     private var _binding: FragmentAdminRecordingListBinding? = null
     private val binding get() = _binding!!
-    private val apiService: AdminApiService by lazy { AdminApiService.create() }
+    private val apiService: AdminApiService by lazy { ApiClient.getClient().create(AdminApiService::class.java) }
     private lateinit var recordAdapter: AdminRecordAdapter
 
     override fun onCreateView(
