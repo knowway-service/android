@@ -54,7 +54,7 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
     }
 
     private var displayFlag = false
-    private val range = 10.0
+    private val range = 30.0
     private var isAutoPlayEnabled = false
     private var currentRecordTipFragment: MainRecordTipFragment ?= null
     private var isProximityCheckRunning = false
@@ -202,7 +202,9 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
 
     private suspend fun fetchRecordsAndUpdateMapUI(location: Location) {
         viewModel.recordsResponse.collect { records ->
-            records.forEach { record ->
+            records
+                .filter { it.floorId == currentFloor?.departmentStoreFloorId }
+                .forEach { record ->
                 val latitude = record.recordLatitude.toDouble()
                 val longitude = record.recordLongitude.toDouble()
                 checkProximity(
@@ -342,6 +344,15 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         if (deptId != -1L) {
             viewModel.getRecordsByDeptAndFloor(deptId, floor.departmentStoreFloorId)
         }
+
+        clearProximityCheck()
+    }
+
+    private fun clearProximityCheck() {
+        stopAndReleaseCurrentRecordTipFragment()
+
+        val fragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainPersonFragment
+        fragment?.hideQuestionButton()
     }
 
     private fun showMapFragment(mapPath: String) {
