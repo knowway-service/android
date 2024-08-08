@@ -5,5 +5,6 @@ data class RecordResponse(
     val recordTitle: String,
     val recordLatitude: String,
     val recordLongitude: String,
-    val recordPath: String
+    val recordPath: String,
+    val floorId: Long
 )
