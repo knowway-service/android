@@ -7,6 +7,14 @@ import com.knowway.adapter.ViewPagerAdapter
 import com.knowway.databinding.ActivityAdminRecordingListBinding
 import com.knowway.ui.fragment.AdminRecordingListFragment
 
+/**
+ * 관리자 녹음 선정 페이지 Activity
+ *
+ * @author 이주현
+ * @since 2024.08.02
+ * @version 1.0
+ */
+
 class AdminRecordingListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminRecordingListBinding

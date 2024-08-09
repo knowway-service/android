@@ -9,6 +9,14 @@ import com.bumptech.glide.Glide
 import com.knowway.R
 import com.knowway.databinding.ActivityAdminAreaSelectionBinding
 
+/**
+ * 관리자 구역 선택 페이지 Activity
+ *
+ * @author 이주현
+ * @since 2024.08.02
+ * @version 1.0
+ */
+
 class AdminAreaSelectionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAdminAreaSelectionBinding

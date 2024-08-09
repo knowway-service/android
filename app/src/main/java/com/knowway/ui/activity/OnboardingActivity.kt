@@ -7,6 +7,15 @@ import com.knowway.R
 import com.knowway.databinding.ActivityOnboardingBinding
 import com.knowway.ui.activity.user.LoginActivity
 
+/**
+ * 온보딩 페이지 Activity
+ *
+ * @author 이주현
+ * @since 2024.07.28
+ * @version 1.0
+ */
+
+
 class OnboardingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOnboardingBinding
 

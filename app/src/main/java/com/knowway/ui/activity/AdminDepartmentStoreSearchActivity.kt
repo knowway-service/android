@@ -16,6 +16,14 @@ import com.knowway.ui.viewmodel.AdminDepartmentStoreViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+/**
+ * 관리자 백화점 조회 Activity
+ *
+ * @author 이주현
+ * @since 2024.08.01
+ * @version 1.0
+ */
+
 class AdminDepartmentStoreSearchActivity : AppCompatActivity() {
 
     private val viewModel: AdminDepartmentStoreViewModel by viewModels()
