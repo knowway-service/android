@@ -39,6 +39,13 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * 메인페이지 액티비티
+ *
+ * @author 김진규
+ * @since 2024.07.25
+ * @version 1.0
+ */
 class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCompletionListener {
     private lateinit var binding: ActivityMainPageBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -54,7 +61,7 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
     }
 
     private var displayFlag = false
-    private val range = 30.0
+    private val range = 10.0
     private var isAutoPlayEnabled = false
     private var currentRecordTipFragment: MainRecordTipFragment ?= null
     private var isProximityCheckRunning = false
