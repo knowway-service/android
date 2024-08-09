@@ -34,18 +34,14 @@ class MainPersonFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val questionGif = GifDrawable(resources, R.drawable.question)
-        binding.mainQuestion.setImageDrawable(questionGif)
+        binding.mainQuestion.setImageDrawable(GifDrawable(resources, R.drawable.question))
         binding.mainQuestion.setOnClickListener {
-            val recordTipModal = MainRecordTipFragment().apply {
+            MainRecordTipFragment().apply {
                 audioFileUrl?.let { it1 -> setAudioFileUrl(it1) }
-            }
-            recordTipModal.show(parentFragmentManager, "Record Tip Modal")
+            }.show(parentFragmentManager, "Record Tip Modal")
         }
 
-        val walkingPersonGif = GifDrawable(resources, R.drawable.walking_person)
-        binding.mainWalkingPerson.setImageDrawable(walkingPersonGif)
-
+        binding.mainWalkingPerson.setImageDrawable(GifDrawable(resources, R.drawable.walking_person))
         hideQuestionButton()
     }
 

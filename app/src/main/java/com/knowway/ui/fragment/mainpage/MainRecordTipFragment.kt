@@ -54,15 +54,13 @@ class MainRecordTipFragment : DialogFragment() {
         binding.recordConfirm.addView(confirmButtonView)
         binding.recordCancel.addView(cancelButtonView)
 
-        val confirmButton = confirmButtonView.findViewById<ImageButton>(R.id.confirmButton)
-        confirmButton.setOnClickListener {
+        confirmButtonView.findViewById<ImageButton>(R.id.confirmButton).setOnClickListener {
             audioFileUrl?.let { url ->
                 playAudio(url)
             }
         }
 
-        val cancelButton = cancelButtonView.findViewById<ImageButton>(R.id.cancelButton)
-        cancelButton.setOnClickListener {
+        cancelButtonView.findViewById<ImageButton>(R.id.cancelButton).setOnClickListener {
             stopAndReleaseMediaPlayer()
             dismiss()
         }
