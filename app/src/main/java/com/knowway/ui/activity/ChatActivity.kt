@@ -29,6 +29,23 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
 
+/**
+ * 채팅방 페이지 Activity
+ *
+ * @author 이주현
+ * @since 2024.07.31
+ * @version 1.0
+ *
+ * <pre>
+ * 수정일       수정자    수정내용
+ * ---------- -------- ---------------------
+ * 2024.07.31 이주현    최초 생성
+ * 2024.07.31 이주현    랜덤 닉네임 생성
+ * 2024.08.01 이주현    채팅방 접속자 수 조회
+ * 2024.08.05 이주현    채팅방 무한스크롤 페이징
+ * </pre>
+ */
+
 class ChatActivity : AppCompatActivity() {
     private val viewModel: ChatViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
