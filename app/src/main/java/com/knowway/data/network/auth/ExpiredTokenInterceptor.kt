@@ -9,6 +9,13 @@ import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 
+/**
+ * ExpiredTokenInterceptor
+ *
+ * @author 구지웅
+ * @since 2024.8.1
+ * @version 1.0
+ */
 class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
 
     @Throws(AuthenticationRequiredException::class)

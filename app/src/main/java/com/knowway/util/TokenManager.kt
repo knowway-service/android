@@ -4,6 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 
 
+/**
+ * TokenManager
+ *
+ * @author 구지웅
+ * @since 2024.8.1
+ * @version 1.0
+ */
 class TokenManager(context: Context) {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE)
