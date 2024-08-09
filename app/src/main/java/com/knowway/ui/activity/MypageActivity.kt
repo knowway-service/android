@@ -16,6 +16,15 @@ import com.knowway.ui.fragment.MypageFooterFragment
 import com.knowway.util.TokenManager
 import retrofit2.*
 
+
+/**
+ * MypageActivity
+ *
+ * @author 구지웅
+ * @since 2024.8.1
+ * @version 1.0
+ */
+
 class MypageActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMypageBinding

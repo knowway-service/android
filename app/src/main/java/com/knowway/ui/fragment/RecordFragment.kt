@@ -33,6 +33,13 @@ import retrofit2.Response
 import java.io.File
 import java.io.IOException
 
+/**
+ * 녹음 페이지 Fragment
+ *
+ * @author 박유진
+ * @since 2024.08.02
+ * @version 1.0
+ */
 class RecordFragment : Fragment() {
     private var _binding: FragmentRecordModalBinding? = null
     private val binding get() = _binding!!

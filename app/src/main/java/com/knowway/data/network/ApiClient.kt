@@ -11,6 +11,15 @@ import com.knowway.data.network.auth.TokenInterceptor
 import com.knowway.util.TokenManager
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
+
+/**
+ * ApiClient
+ *
+ * @author 구지웅
+ * @since 2024.8.1
+ * @version 1.0
+ */
+
 object ApiClient {
 
     private lateinit var tokenManager: TokenManager

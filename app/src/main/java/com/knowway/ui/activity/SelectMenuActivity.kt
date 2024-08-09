@@ -7,6 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.knowway.R
 import com.knowway.ui.fragment.SelectFooterFragment
 
+/**
+ * 메뉴 선택 페이지 Activity
+ *
+ * @author 이주현
+ * @since 2024.08.01
+ * @version 1.0
+ */
+
 class SelectMenuActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
