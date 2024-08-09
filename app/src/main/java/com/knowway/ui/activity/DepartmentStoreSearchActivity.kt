@@ -39,7 +39,8 @@ import kotlinx.coroutines.launch
  * 백화점 액티비티
  *
  * @author 김진규
- * @since 2024.07.25
+ * @since 2024.07.31
+ *
  * @version 1.0
  */
 class DepartmentStoreSearchActivity : AppCompatActivity() {

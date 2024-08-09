@@ -17,6 +17,13 @@ import com.bumptech.glide.request.transition.Transition
 import com.knowway.R
 import com.knowway.databinding.FragmentMainMapBinding
 
+/**
+ * 메인페이지-지도보기 프래그먼트
+ *
+ * @author 김진규
+ * @since 2024.08.01
+ * @version 1.0
+ */
 class MainMapFragment : Fragment() {
     private var _binding: FragmentMainMapBinding? = null
     private val binding get() = _binding!!

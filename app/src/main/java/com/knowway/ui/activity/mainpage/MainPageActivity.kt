@@ -43,7 +43,7 @@ import kotlinx.coroutines.withContext
  * 메인페이지 액티비티
  *
  * @author 김진규
- * @since 2024.07.25
+ * @since 2024.08.04
  * @version 1.0
  */
 class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCompletionListener {
@@ -51,7 +51,6 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var recordFragment: RecordFragment
     private lateinit var slidingUpPanelLayout: SlidingUpPanelLayout
     private lateinit var backLayout: View
 
@@ -212,16 +211,16 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
             records
                 .filter { it.floorId == currentFloor?.departmentStoreFloorId }
                 .forEach { record ->
-                val latitude = record.recordLatitude.toDouble()
-                val longitude = record.recordLongitude.toDouble()
-                checkProximity(
-                    record.recordPath,
-                    location.latitude,
-                    location.longitude,
-                    latitude,
-                    longitude
-                )
-            }
+                    val latitude = record.recordLatitude.toDouble()
+                    val longitude = record.recordLongitude.toDouble()
+                    checkProximity(
+                        record.recordPath,
+                        location.latitude,
+                        location.longitude,
+                        latitude,
+                        longitude
+                    )
+                }
 
             withContext(Dispatchers.Main) {
                 val mainMapFragment =
@@ -229,7 +228,7 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
                 if (mainMapFragment != null) {
                     mainMapFragment.updateLocationOnMap(location.latitude, location.longitude)
                 } else {
-                    Log.e("FragmentDebug", "MainMapFragment not found or map not loaded.")
+                    Log.e("층 지도 에러 발생", "층 지도를 로드하지 못했습니다.")
                 }
             }
         }
@@ -258,9 +257,6 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
     override fun onResume() {
         super.onResume()
         val mainMapFragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainMapFragment
-        if (mainMapFragment != null) {
-            Log.d("FragmentDebug", "MainMapFragment found onResume, updating location.")
-        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
             startUpdatingLocation()
