@@ -45,13 +45,11 @@ class MainMapFragment : Fragment() {
     private var currentLongitude: Double = 0.0
 
     private fun getDeptLat(): Double {
-        val sharedPreferences = requireActivity().getSharedPreferences("DeptPref", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("dept_latitude", "0.0")?.toDouble() ?: 0.0
+        return requireActivity().getSharedPreferences("DeptPref", Context.MODE_PRIVATE).getString("dept_latitude", "0.0")?.toDouble() ?: 0.0
     }
 
     private fun getDeptLon(): Double {
-        val sharedPreferences = requireActivity().getSharedPreferences("DeptPref", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("dept_longitude", "0.0")?.toDouble() ?: 0.0
+        return requireActivity().getSharedPreferences("DeptPref", Context.MODE_PRIVATE).getString("dept_longitude", "0.0")?.toDouble() ?: 0.0
     }
 
     override fun onCreateView(
@@ -88,22 +86,16 @@ class MainMapFragment : Fragment() {
                                 val latitudeRangePerPixel = 0.0001
                                 val longitudeRangePerPixel = 0.0001
 
-                                imageTopLeftLatitude =
-                                    mapCenterLat + (imageHeight / 2 * latitudeRangePerPixel)
-                                imageTopLeftLongitude =
-                                    mapCenterLon - (imageWidth / 2 * longitudeRangePerPixel)
+                                imageTopLeftLatitude = mapCenterLat + (imageHeight / 2 * latitudeRangePerPixel)
+                                imageTopLeftLongitude = mapCenterLon - (imageWidth / 2 * longitudeRangePerPixel)
 
-                                imageBottomRightLatitude =
-                                    mapCenterLat - (imageHeight / 2 * latitudeRangePerPixel)
-                                imageBottomRightLongitude =
-                                    mapCenterLon + (imageWidth / 2 * longitudeRangePerPixel)
+                                imageBottomRightLatitude = mapCenterLat - (imageHeight / 2 * latitudeRangePerPixel)
+                                imageBottomRightLongitude = mapCenterLon + (imageWidth / 2 * longitudeRangePerPixel)
 
                                 binding.map.viewTreeObserver.removeOnGlobalLayoutListener(this)
                             }
                         })
-
                     }
-
                     override fun onLoadCleared(placeholder: Drawable?) {}
                 })
         }
@@ -135,23 +127,16 @@ class MainMapFragment : Fragment() {
 
     private fun updateLocationMarker(xPercent: Double, yPercent: Double) {
         binding.locationMarker.post {
-            val width = binding.map.width
-            val height = binding.map.height
-
-            val xPosition = (width * xPercent).toFloat()
-            val yPosition = (height * yPercent).toFloat()
-
             val layoutParams = binding.locationMarker.layoutParams as? ConstraintLayout.LayoutParams
             if (layoutParams != null) {
-                layoutParams.leftMargin = (xPosition - binding.locationMarker.width / 2).toInt()
-                layoutParams.topMargin = (yPosition - binding.locationMarker.height / 2).toInt()
+                layoutParams.leftMargin = ((binding.map.width * xPercent).toFloat() - binding.locationMarker.width / 2).toInt()
+                layoutParams.topMargin = ((binding.map.height * yPercent).toFloat() - binding.locationMarker.height / 2).toInt()
 
                 binding.locationMarker.layoutParams = layoutParams
                 binding.locationMarker.requestLayout()
             } else {
                 Log.e("MapDebug", "LocationMarker layoutParams is not ConstraintLayout.LayoutParams")
             }
-
             binding.locationMarker.visibility = View.VISIBLE
         }
     }

@@ -8,7 +8,6 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -82,12 +81,10 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         binding = ActivityMainPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        slidingUpPanelLayout = findViewById(R.id.main_frame)
-        slidingUpPanelLayout.addPanelSlideListener(PanelEventListener())
+        binding.mainFrame.addPanelSlideListener(PanelEventListener())
         backLayout = binding.backLayout
 
-        val recordingBtn: ImageView = findViewById(R.id.main_record)
-        recordingBtn.setOnClickListener {
+        binding.mainRecord.setOnClickListener {
             slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
             replaceFragment()
         }
@@ -98,11 +95,9 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         setupLocationCallback()
 
-        val deptId = sharedPreferences.getLong("dept_id", -1)
-        val floorId = sharedPreferences.getLong("selected_floor_id", -1)
-
-        if (deptId != -1L && floorId != -1L) {
-            viewModel.getRecordsByDeptAndFloor(deptId, floorId)
+        if (sharedPreferences.getLong("dept_id", -1) != -1L
+            && sharedPreferences.getLong("selected_floor_id", -1) != -1L) {
+            viewModel.getRecordsByDeptAndFloor(sharedPreferences.getLong("dept_id", -1), sharedPreferences.getLong("selected_floor_id", -1))
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -115,24 +110,27 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         lifecycleScope.launch {
             viewModel.recordsResponse.collect { records ->
                 records.forEach { record ->
-                    val latitude = record.recordLatitude.toDouble()
-                    val longitude = record.recordLongitude.toDouble()
-                    checkProximity(record.recordPath , currentLatitude, currentLongitude, latitude, longitude)
+                    checkProximity(
+                        record.recordPath,
+                        currentLatitude,
+                        currentLongitude,
+                        record.recordLatitude.toDouble(),
+                        record.recordLongitude.toDouble()
+                    )
                 }
             }
         }
 
         binding.mainUpDown.setOnClickListener {
-            val floorSelectModal = MainFloorSelectFragment()
-            floorSelectModal.show(supportFragmentManager, "층 선택 모달창")
+            MainFloorSelectFragment().show(supportFragmentManager, "층 선택 모달창")
         }
 
         setupInitialFragments()
         setupButtonClickListener()
 
         lifecycleScope.launchWhenStarted {
-            viewModel.error.collect { execption ->
-                execption?.let {
+            viewModel.error.collect { e ->
+                e?.let {
                     handleException(it)
                 }
             }
@@ -144,21 +142,13 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
             if (displayFlag) {
                 binding.buttonIcon.setBackgroundResource(R.drawable.location)
                 binding.buttonText.text = "지도 보기"
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.card_fragment_container, MainPersonFragment())
-                    .setCustomAnimations(
-                        R.anim.fade_in,
-                        R.anim.fade_out,
-                        R.anim.fade_in,
-                        R.anim.fade_out
-                    )
-                    .commit()
+                showPerson()
             } else {
                 binding.buttonIcon.setBackgroundResource(R.drawable.back)
                 binding.buttonText.text = "돌아가기"
                 val mapPath = sharedPreferences.getString("selected_floor_map_path", "")
                 if (!mapPath.isNullOrEmpty()) {
-                    showMapFragment(mapPath)
+                    showMap(mapPath)
                 }
             }
             displayFlag = !displayFlag
@@ -169,27 +159,37 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         binding.buttonText.setOnClickListener(clickListener)
     }
 
-    private fun setupInitialFragments() {
-        val mapFooterFragment = MapFooterFragment().apply {
-            setOnToggleChangeListener(this@MainPageActivity)
-        }
-
+    private fun showPerson() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.card_fragment_container, MainPersonFragment())
-            .replace(R.id.footer_container, mapFooterFragment)
+            .setCustomAnimations(
+                R.anim.fade_in,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.fade_out
+            )
+            .commit()
+    }
+
+    private fun setupInitialFragments() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.card_fragment_container, MainPersonFragment())
+            .replace(R.id.footer_container, MapFooterFragment().apply {
+                setOnToggleChangeListener(this@MainPageActivity)
+            })
             .replace(R.id.fragment_container, RecordFragment())
             .commit()
     }
 
     private fun handleException(ex: MainPageException) {
-        val msg = when (ex) {
-            is MainPageNetworkException -> ex.message
-            is MainPageApiException -> ex.message
-            is MainPageUnknownException -> ex.message
-            else -> "에러가 발생했습니다. ${ex.message}"
-        }
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-        Log.e("메인 페이지 오류 발생", msg, ex)
+        Toast.makeText(
+            this, when (ex) {
+                is MainPageNetworkException -> ex.message
+                is MainPageApiException -> ex.message
+                is MainPageUnknownException -> ex.message
+                else -> "에러가 발생했습니다. ${ex.message}"
+            }, Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun setupLocationCallback() {
@@ -211,14 +211,12 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
             records
                 .filter { it.floorId == currentFloor?.departmentStoreFloorId }
                 .forEach { record ->
-                    val latitude = record.recordLatitude.toDouble()
-                    val longitude = record.recordLongitude.toDouble()
                     checkProximity(
                         record.recordPath,
                         location.latitude,
                         location.longitude,
-                        latitude,
-                        longitude
+                        record.recordLatitude.toDouble(),
+                        record.recordLongitude.toDouble()
                     )
                 }
 
@@ -256,7 +254,6 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
 
     override fun onResume() {
         super.onResume()
-        val mainMapFragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainMapFragment
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
             startUpdatingLocation()
@@ -285,17 +282,14 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
             longitude = targetLnt
         }
 
-        val distance = currentLocation.distanceTo(targetLocation)
         val fragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainPersonFragment
-        if (distance <= range) {
+        if (currentLocation.distanceTo(targetLocation) <= range) {
             fragment?.showQuestionButton(recordPath)
-            if (isAutoPlayEnabled) {
-                if (currentRecordTipFragment == null) {
-                    isProximityCheckRunning = true
-                    currentRecordTipFragment = MainRecordTipFragment().apply {
-                        setOnAudioCompletionListener(this@MainPageActivity)
-                        playAudio(recordPath)
-                    }
+            if (isAutoPlayEnabled && currentRecordTipFragment == null) {
+                isProximityCheckRunning = true
+                currentRecordTipFragment = MainRecordTipFragment().apply {
+                    setOnAudioCompletionListener(this@MainPageActivity)
+                    playAudio(recordPath)
                 }
             }
         } else {
@@ -306,31 +300,20 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
 
 
     private fun updateDeptInfo() {
-        val deptName = sharedPreferences.getString("dept_name", "백화점")
-        val deptBranch = sharedPreferences.getString("dept_branch", "지점")
+        val floorIdList = sharedPreferences.getString("dept_floor_ids", "")?.split(",")?.mapNotNull { it.toLongOrNull() } ?: emptyList()
+        val floorNameList = sharedPreferences.getString("dept_floor_names", "")?.split(",") ?: emptyList()
+        val floorMapPathList = sharedPreferences.getString("dept_floor_map_paths", "")?.split(",") ?: emptyList()
 
-        val floorIds = sharedPreferences.getString("dept_floor_ids", "")
-        val floorNames = sharedPreferences.getString("dept_floor_names", "")
-        val floorMapPaths = sharedPreferences.getString("dept_floor_map_paths", "")
+        binding.mainDeptTitle.text = sharedPreferences.getString("dept_name", "백화점")
+        binding.mainDeptBranch.text = sharedPreferences.getString("dept_branch", "지점")
 
-        val floorIdList = floorIds?.split(",")?.mapNotNull { it.toLongOrNull() } ?: emptyList()
-        val floorNameList = floorNames?.split(",") ?: emptyList()
-        val floorMapPathList = floorMapPaths?.split(",") ?: emptyList()
-
-        val floorList = floorIdList.zip(floorNameList).zip(floorMapPathList) { (id, name), mapPath ->
+        currentFloor = floorIdList.zip(floorNameList).zip(floorMapPathList) { (id, name), mapPath ->
             Floor(id, name, mapPath)
-        }
-
-        binding.mainDeptTitle.text = deptName
-        binding.mainDeptBranch.text = deptBranch
-
-        currentFloor = floorList.firstOrNull()
+        }.firstOrNull()
         binding.mainFloor.text = currentFloor?.departmentStoreFloor ?: "정보 없음"
 
         currentFloor?.let { sharedPreferences.edit().putLong("selected_floor_id", it.departmentStoreFloorId).apply() }
-        sharedPreferences.edit().putString("selected_floor_map_path",
-            currentFloor?.departmentStoreMapPath
-        ).apply()
+        sharedPreferences.edit().putString("selected_floor_map_path", currentFloor?.departmentStoreMapPath).apply()
     }
 
     fun updateCurrentFloor(floor: Floor) {
@@ -340,8 +323,7 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
         sharedPreferences.edit().putLong("selected_floor_id", floor.departmentStoreFloorId).apply()
         sharedPreferences.edit().putString("selected_floor_map_path", floor.departmentStoreMapPath).apply()
 
-        val fragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainMapFragment
-        fragment?.loadMapImage(floor.departmentStoreMapPath)
+        (supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainMapFragment)?.loadMapImage(floor.departmentStoreMapPath)
 
         val deptId = sharedPreferences.getLong("dept_id", -1)
         if (deptId != -1L) {
@@ -353,20 +335,16 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
 
     private fun clearProximityCheck() {
         stopAndReleaseCurrentRecordTipFragment()
-
-        val fragment = supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainPersonFragment
-        fragment?.hideQuestionButton()
+        (supportFragmentManager.findFragmentById(R.id.card_fragment_container) as? MainPersonFragment)?.hideQuestionButton()
     }
 
-    private fun showMapFragment(mapPath: String) {
-        val fragment = MainMapFragment().apply {
-            arguments = Bundle().apply {
-                putString("map_path", mapPath)
-            }
-        }
-
+    private fun showMap(mapPath: String) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.card_fragment_container, fragment)
+            .replace(R.id.card_fragment_container, MainMapFragment().apply {
+                arguments = Bundle().apply {
+                    putString("map_path", mapPath)
+                }
+            })
             .addToBackStack(null)
             .setCustomAnimations(
                 R.anim.fade_in,
@@ -378,9 +356,11 @@ class MainPageActivity : AppCompatActivity(), OnToggleChangeListener, OnAudioCom
     }
 
     private fun replaceFragment() {
-        val recordFragment = RecordFragment.newInstance(currentLatitude, currentLongitude)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, recordFragment)
+            .replace(
+                R.id.fragment_container,
+                RecordFragment.newInstance(currentLatitude, currentLongitude)
+            )
             .commit()
     }
 

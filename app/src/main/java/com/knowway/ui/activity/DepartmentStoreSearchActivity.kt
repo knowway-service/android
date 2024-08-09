@@ -75,8 +75,7 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
 
         destination = intent.getIntExtra("key", 0)
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         } else {
             locationViewModel.getLastKnownLocation()
@@ -89,10 +88,7 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
         binding.searchRv.adapter = adapter
 
         binding.searchImageView.setOnClickListener {
-            val query = binding.inputEditText.text.toString()
-            if (query.isNotEmpty()) {
-                deptViewModel.getDepartmentStoreByBranch(query)
-            }
+            deptViewModel.getDepartmentStoreByBranch(binding.inputEditText.text.toString())
         }
 
         binding.nextBtn.setOnClickListener {
@@ -127,10 +123,7 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launchWhenStarted {
-            combine(
-                deptViewModel.error,
-                locationViewModel.error
-            ) { deptErr, locationErr ->
+            combine(deptViewModel.error, locationViewModel.error) { deptErr, locationErr ->
                 deptErr?.let { handleDeptException(it) }
                 locationErr?.let { handleLocationException(it) }
             }.collect()
@@ -144,31 +137,30 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
     }
 
     private fun handleLocationException(ex: LocationException) {
-        val msg = when (ex) {
-            is LocationPermissionException -> ex.message
-            is LocationLoadException -> ex.message
-            is LocationUnknownException -> ex.message
-            else -> "위치 에러가 발생했습니다. ${ex.message}"
-        }
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-        Log.e("위치 에러 발생", msg, ex)
+        Toast.makeText(
+            this, when (ex) {
+                is LocationPermissionException -> ex.message
+                is LocationLoadException -> ex.message
+                is LocationUnknownException -> ex.message
+                else -> "위치 에러가 발생했습니다. ${ex.message}"
+            }, Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun handleDeptException(ex: DepartmentStoreException) {
-        val msg = when (ex) {
-            is DeptNetworkException -> ex.message
-            is DeptByBranchApiException -> ex.message
-            is DeptByLocationApiException -> ex.message
-            is DeptUnknownException -> ex.message
-            else -> "백화점 리스팅 에러가 발생했습니다. ${ex.message}"
-        }
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-        Log.e("백화점 리스팅 페이지 오류 발생", msg, ex)
+        Toast.makeText(
+            this, when (ex) {
+                is DeptNetworkException -> ex.message
+                is DeptByBranchApiException -> ex.message
+                is DeptByLocationApiException -> ex.message
+                is DeptUnknownException -> ex.message
+                else -> "백화점 리스팅 에러가 발생했습니다. ${ex.message}"
+            }, Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun saveSelectedStore(dept: DepartmentStoreResponse) {
-        val sharedPreferences = getSharedPreferences("DeptPref", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
+        val editor = getSharedPreferences("DeptPref", MODE_PRIVATE).edit()
         editor.putLong("dept_id", dept.departmentStoreId)
         editor.putString("dept_name", dept.departmentStoreName)
         editor.putString("dept_branch", dept.departmentStoreBranch)
@@ -188,12 +180,10 @@ class DepartmentStoreSearchActivity : AppCompatActivity() {
     }
 
     private fun navigateToMainPageActivity() {
-        val intent = Intent(this, MainPageActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, MainPageActivity::class.java))
     }
 
     private fun navigateToChatActivity() {
-        val intent = Intent(this, ChatActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, ChatActivity::class.java))
     }
 }

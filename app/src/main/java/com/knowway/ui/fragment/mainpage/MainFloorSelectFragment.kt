@@ -25,8 +25,7 @@ class MainFloorSelectFragment : DialogFragment() {
     private val binding get() = _binding!!
     private val adapter: FloorAdapter by lazy {
         FloorAdapter { floor ->
-            val sharedPreferences = requireContext().getSharedPreferences("FloorPref", MODE_PRIVATE)
-            with(sharedPreferences.edit()) {
+            with(requireContext().getSharedPreferences("FloorPref", MODE_PRIVATE).edit()) {
                 putLong("selected_floor_id", floor.departmentStoreFloorId)
                 putString("selected_floor_name", floor.departmentStoreFloor)
                 putString("selected_floor_map_path", floor.departmentStoreMapPath)
@@ -68,19 +67,14 @@ class MainFloorSelectFragment : DialogFragment() {
 
     private fun loadAndDisplayFloorData() {
         val sharedPreferences = requireContext().getSharedPreferences("DeptPref", MODE_PRIVATE)
-        val floorIds = sharedPreferences.getString("dept_floor_ids", "")
-        val floorNames = sharedPreferences.getString("dept_floor_names", "")
-        val floorMapPaths = sharedPreferences.getString("dept_floor_map_paths", "")
-
-        val floorIdList = floorIds?.split(",")?.mapNotNull { it.toLongOrNull() } ?: emptyList()
-        val floorNameList = floorNames?.split(",") ?: emptyList()
-        val floorMapPathList = floorMapPaths?.split(",") ?: emptyList()
-
-        val floorList = floorIdList.zip(floorNameList).zip(floorMapPathList) { (id, name), mapPath ->
-            Floor(id, name, mapPath)
-        }
-
-        adapter.submitList(floorList)
+        adapter.submitList(
+            (sharedPreferences.getString("dept_floor_ids", "")?.split(",")
+                ?.mapNotNull { it.toLongOrNull() } ?: emptyList())
+                .zip(sharedPreferences.getString("dept_floor_names", "")?.split(",") ?: emptyList())
+                .zip(sharedPreferences.getString("dept_floor_map_paths", "")?.split(",") ?: emptyList()) {
+                        (id, name), mapPath -> Floor(id, name, mapPath)
+                }
+        )
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
