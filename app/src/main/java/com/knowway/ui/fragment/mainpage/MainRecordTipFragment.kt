@@ -13,6 +13,14 @@ import com.knowway.R
 import com.knowway.databinding.FragmentRecordTipBinding
 import com.knowway.ui.fragment.OnAudioCompletionListener
 
+/**
+ * 메인페이지-녹음 재생 프래그먼트
+ *
+ * @author 김진규
+ * @since 2024.08.02
+ *
+ * @version 1.0
+ */
 class MainRecordTipFragment : DialogFragment() {
     private var mediaPlayer: MediaPlayer? = null
     private var audioFileUrl: String? = null

@@ -13,6 +13,13 @@ import com.knowway.data.model.department.Floor
 import com.knowway.databinding.FragmentFloorSelectBinding
 import com.knowway.ui.activity.mainpage.MainPageActivity
 
+/**
+ * 메인페이지-층 선택 프래그먼트
+ *
+ * @author 김진규
+ * @since 2024.08.01
+ * @version 1.0
+ */
 class MainFloorSelectFragment : DialogFragment() {
     private var _binding: FragmentFloorSelectBinding? = null
     private val binding get() = _binding!!
