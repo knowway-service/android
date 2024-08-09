@@ -18,6 +18,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
+/**
+ * SignupActivity
+ *
+ * @author 구지웅
+ * @since 2024.8.1
+ * @version 1.0
+ */
 class SignupActivity : AppCompatActivity() {
 
     private lateinit var emailInput: EditText
